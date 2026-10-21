@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -76,9 +77,7 @@ function main() {
   assert(task, 'canonical task SHELL-UI-016 not found');
   assert(sha256(task.block) === SOURCE_CONTRACT_SHA256, 'source contract SHA256 mismatch');
   assert(packageJson.name === '@vento/ui-web' && packageJson.private === true, 'private package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     'export function RecoverableErrorState',
@@ -172,32 +171,7 @@ function main() {
   cover(48, () => includesAll(readme, ['SHELL, NEXO, FOGO, ORIGO, VISO, PULSO y NUMERA', '7/7'], 'seven consumer decisions'));
   cover(49, () => includesAll(readme, ['paridad por consumidor', 'antes de retirar legacy'], 'consumer parity and legacy retirement'));
   cover(50, () => {
-    assertGitUnchanged([
-      'package.json',
-      'package-lock.json',
-      'packages/ui-web/package.json',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/src/Card.tsx',
-      'packages/ui-web/src/card.css',
-      'packages/ui-web/src/EmptyState.tsx',
-      'packages/ui-web/src/empty-state.css',
-      'packages/ui-web/src/ContextIndicator.tsx',
-      'packages/ui-web/src/context-indicator.css',
-      'packages/ui-web/src/PrimaryActionPanel.tsx',
-      'packages/ui-web/src/primary-action-panel.css',
-      'packages/ui-web/src/SensitiveActionConfirmation.tsx',
-      'packages/ui-web/src/sensitive-action-confirmation.css',
-      'packages/ui-web/src/ContextDiagnostic.tsx',
-      'packages/ui-web/src/context-diagnostic.css',
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-    ]);
+    assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/PrimaryActionPanel.tsx', 'packages/ui-web/src/primary-action-panel.css', 'packages/ui-web/src/SensitiveActionConfirmation.tsx', 'packages/ui-web/src/sensitive-action-confirmation.css', 'packages/ui-web/src/ContextDiagnostic.tsx', 'packages/ui-web/src/context-diagnostic.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
   });
 
   includesAll(css, CATEGORIES.map((category) => `[data-error-category='${category}']`), 'category styling');
@@ -207,7 +181,7 @@ function main() {
   includesAll(readme, ['SHELL-UI-016::GLOBAL', 'src/RecoverableErrorState.tsx', 'src/recoverable-error-state.css', 'scripts/validate-recoverable-error-state.mjs'], 'README materialization');
   assert(covered.size === 50, `scenario coverage count mismatch: ${covered.size}`);
   for (let number = 1; number <= 50; number += 1) assert(covered.has(number), `scenario ${number} not covered`);
-  console.log('PASS: SHELL-UI-016 RecoverableErrorState validated; scenarios=50 categories=3 preserved_states=5 ssr=SAFE authority=NONE recovery=EXTERNAL consumers=0/7 exports=DEFERRED');
+  console.log('PASS: SHELL-UI-016 RecoverableErrorState validated; scenarios=50 categories=3 preserved_states=5 ssr=SAFE authority=NONE recovery=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE');
 }
 
 try {

@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -105,9 +106,7 @@ function main() {
     assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
   });
   cover(4, () => {
-    for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-      assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-    }
+    validateManifest(packageJson);
   });
   cover(5, () => includesAll(buttonSource, [
     'export function Button',
@@ -231,26 +230,14 @@ function main() {
     'SHELL-MIG-*',
     'SHELL-UI-014',
   ], 'future adoption and sensitive-action deferral'));
-  cover(50, () => assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-    'packages/ui-web/src/Alert.tsx',
-    'packages/ui-web/src/alert.css',
-    'packages/ui-web/scripts/validate-alert.mjs',
-    'src/components/ui',
-    'templates/app-shell-standard',
-    'packages/contracts',
-    'packages/os-context',
-    'packages/supabase',
-  ]));
+  cover(50, () => assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']));
 
   assert(covered.size === 50, `scenario coverage mismatch: ${covered.size}/50`);
   for (let number = 1; number <= 50; number += 1) {
     assert(covered.has(number), `scenario ${number} not covered`);
   }
 
-  console.log('PASS: SHELL-UI-003 Button validated; scenarios=50 variants=5 sizes=3 loading=SAFE ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-003 Button validated; scenarios=50 variants=5 sizes=3 loading=SAFE ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=PRIVATE_CANDIDATE');
 }
 
 try {

@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -122,18 +123,7 @@ function main() {
     packageJson.name === '@vento/ui-web' && packageJson.private === true,
     'private package identity mismatch',
   );
-  for (const key of [
-    'version',
-    'main',
-    'types',
-    'exports',
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-    'scripts',
-  ]) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(
     source,
@@ -296,52 +286,12 @@ function main() {
 
   assert(covered.size === 68, `expected 68 covered scenarios; got ${covered.size}`);
 
-  assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-    'packages/ui-web/src/Alert.tsx',
-    'packages/ui-web/src/alert.css',
-    'packages/ui-web/src/Button.tsx',
-    'packages/ui-web/src/button.css',
-    'packages/ui-web/src/Card.tsx',
-    'packages/ui-web/src/card.css',
-    'packages/ui-web/src/EmptyState.tsx',
-    'packages/ui-web/src/empty-state.css',
-    'packages/ui-web/src/ContextIndicator.tsx',
-    'packages/ui-web/src/context-indicator.css',
-    'packages/ui-web/src/SiteSelector.tsx',
-    'packages/ui-web/src/site-selector.css',
-    'packages/ui-web/src/AreaSelector.tsx',
-    'packages/ui-web/src/area-selector.css',
-    'packages/ui-web/src/SimulatedRoleNotice.tsx',
-    'packages/ui-web/src/simulated-role-notice.css',
-    'packages/ui-web/src/AppShell.tsx',
-    'packages/ui-web/src/app-shell.css',
-    'packages/ui-web/src/TaskNavigation.tsx',
-    'packages/ui-web/src/task-navigation.css',
-    'packages/ui-web/src/ProcessStatusLine.tsx',
-    'packages/ui-web/src/process-status-line.css',
-    'packages/ui-web/src/PrimaryActionPanel.tsx',
-    'packages/ui-web/src/primary-action-panel.css',
-    'packages/ui-web/src/SensitiveActionConfirmation.tsx',
-    'packages/ui-web/src/sensitive-action-confirmation.css',
-    'packages/ui-web/src/ContextDiagnostic.tsx',
-    'packages/ui-web/src/context-diagnostic.css',
-    'packages/ui-web/src/RecoverableErrorState.tsx',
-    'packages/ui-web/src/recoverable-error-state.css',
-    'packages/ui-web/scripts/validate-recoverable-error-state.mjs',
-    'src/components/ui',
-    'templates/app-shell-standard',
-    'packages/contracts',
-    'packages/os-context',
-    'packages/supabase',
-  ]);
+  assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/SiteSelector.tsx', 'packages/ui-web/src/site-selector.css', 'packages/ui-web/src/AreaSelector.tsx', 'packages/ui-web/src/area-selector.css', 'packages/ui-web/src/SimulatedRoleNotice.tsx', 'packages/ui-web/src/simulated-role-notice.css', 'packages/ui-web/src/AppShell.tsx', 'packages/ui-web/src/app-shell.css', 'packages/ui-web/src/TaskNavigation.tsx', 'packages/ui-web/src/task-navigation.css', 'packages/ui-web/src/ProcessStatusLine.tsx', 'packages/ui-web/src/process-status-line.css', 'packages/ui-web/src/PrimaryActionPanel.tsx', 'packages/ui-web/src/primary-action-panel.css', 'packages/ui-web/src/SensitiveActionConfirmation.tsx', 'packages/ui-web/src/sensitive-action-confirmation.css', 'packages/ui-web/src/ContextDiagnostic.tsx', 'packages/ui-web/src/context-diagnostic.css', 'packages/ui-web/src/RecoverableErrorState.tsx', 'packages/ui-web/src/recoverable-error-state.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
 
   console.log(
     'PASS: SHELL-UI-017 TabletTaskSurface validated; '
       + 'scenarios=68 classes=2 slots=7 ssr=SAFE authority=NONE '
-      + 'device_detection=NONE consumers=0/7 exports=DEFERRED',
+      + 'device_detection=NONE consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

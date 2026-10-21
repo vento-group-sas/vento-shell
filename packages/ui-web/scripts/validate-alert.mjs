@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -102,9 +103,7 @@ function main() {
     assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
   });
   cover(4, () => {
-    for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-      assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-    }
+    validateManifest(packageJson);
   });
   cover(5, () => includesAll(alertSource, ['export function Alert', 'export interface AlertProps'], 'Alert source'));
   cover(6, () => {
@@ -162,23 +161,14 @@ function main() {
   });
   cover(48, () => includesAll(readme, ['Sin consumidores migrados.', 'legacy', 'SHELL-MIG-*'], 'consumer migration deferral'));
   cover(49, () => includesAll(readme, ['Sin entrypoint CSS publico o distribuible.', 'certificacion de contraste', 'Superficie publica diferida'], 'future certification deferral'));
-  cover(50, () => assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-    'src/components/ui',
-    'templates/app-shell-standard',
-    'packages/contracts',
-    'packages/os-context',
-    'packages/supabase',
-  ]));
+  cover(50, () => assertGitUnchanged(['package.json', 'package-lock.json', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']));
 
   assert(covered.size === 50, `scenario coverage mismatch: ${covered.size}/50`);
   for (let number = 1; number <= 50; number += 1) {
     assert(covered.has(number), `scenario ${number} not covered`);
   }
 
-  console.log('PASS: SHELL-UI-002 Alert validated; scenarios=50 variants=4 ssr=SAFE aria_defaults=NONE consumers=NOT_MIGRATED legacy=UNCHANGED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-002 Alert validated; scenarios=50 variants=4 ssr=SAFE aria_defaults=NONE consumers=NOT_MIGRATED legacy=UNCHANGED exports=PRIVATE_CANDIDATE');
 }
 
 try {

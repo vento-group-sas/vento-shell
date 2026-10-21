@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -169,9 +170,7 @@ function main() {
 
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     'export type TaskNavigationPresentationState =',
@@ -437,20 +436,10 @@ function main() {
     assert(covered.has(number), `missing scenario ${number}`);
   }
 
-  assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-    'packages/ui-web/src/AppShell.tsx',
-    'packages/ui-web/src/app-shell.css',
-    'templates/app-shell-standard',
-    'packages/contracts',
-    'packages/os-context',
-    'packages/supabase',
-  ]);
+  assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/AppShell.tsx', 'packages/ui-web/src/app-shell.css', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
 
   console.log(
-    'PASS: SHELL-UI-011 TaskNavigation validated; scenarios=50 server_safe=YES authority=NONE router=EXTERNAL consumers=0/7 exports=DEFERRED',
+    'PASS: SHELL-UI-011 TaskNavigation validated; scenarios=50 server_safe=YES authority=NONE router=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

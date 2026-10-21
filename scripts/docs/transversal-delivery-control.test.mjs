@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import {
   assessTransversalDelivery,
+  assessTransversalPreflight,
   deliveryRecordPath,
   readTransversalPolicy,
   runTransversalControl,
@@ -87,6 +88,23 @@ function draft() {
   };
 }
 
+// Synthetic, structurally complete rollback used only for readiness gate tests.
+function completeRollback() {
+  return {
+    status: 'COMPLETE',
+    owner: 'fixture package owner',
+    baseline: {
+      repository: 'vento-group-sas/vento-shell',
+      commit_sha: 'a'.repeat(40),
+      manifest: 'package.json',
+      lockfile: 'package-lock.json',
+    },
+    steps: ['Restore the previously certified consumer snapshot'],
+    validation_commands: ['npm ci'],
+    stop_conditions: ['Abort if the baseline no longer matches'],
+  };
+}
+
 test('policy profiles use existing canonical package identity, never GAP identities', () => {
   const p = policy();
   assert.equal(validateTransversalPolicy(p), true);
@@ -155,11 +173,145 @@ test('ready approval requires complete physical discovery, tests and lock eviden
   assert.throws(() => validateDraftDossier(record, { packageName: '@vento/ui-web', taskIds: record.source_task_ids }),
     /READY_FOR_APPROVAL_WITH_INCOMPLETE_SCOPE/u);
   record.physical_discovery.status = 'COMPLETE';
+  record.physical_discovery.searches.push({ surface: 'PACKAGE_TREE', observation: '19 approved modules' });
+  record.physical_discovery.findings.push('Physical scope reviewed');
   record.target_repositories = ['vento-group-sas/vento-shell'];
   record.physical_targets = [{ repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/package.json', operation: 'MODIFY', symbol_or_surface: 'distribution manifest' }];
   record.validation_commands = ['npm run docs:plan:check'];
   record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING', instance: 'GAP-PKG-004' }];
+  record.rollback = completeRollback();
   assert.equal(validateDraftDossier(record, { packageName: '@vento/ui-web', taskIds: record.source_task_ids }), true);
+});
+
+test('ready dossier rejects unresolved resource conflicts before physical admission', () => {
+  const record = draft();
+  record.status = 'READY_FOR_APPROVAL';
+  record.physical_discovery.status = 'COMPLETE';
+  record.physical_discovery.searches.push({ surface: 'RESOURCE_LOCKS' });
+  record.physical_discovery.findings.push('Paths reviewed');
+  record.target_repositories = ['vento-group-sas/vento-shell'];
+  record.physical_targets = [{
+    repository: 'vento-group-sas/vento-shell',
+    path: 'packages/ui-web/package.json',
+    operation: 'MODIFY',
+    symbol_or_surface: 'package manifest',
+  }];
+  record.validation_commands = ['npm run docs:transversal:check'];
+  record.resource_conflict_evidence = [{ status: 'UNRESOLVED_RECHECK_REQUIRED', owner: 'GAP-PKG-004' }];
+  assert.throws(
+    () => validateDraftDossier(record, { packageName: '@vento/ui-web', taskIds: record.source_task_ids }),
+    /READY_FOR_APPROVAL_WITH_UNRESOLVED_CONFLICTS/u,
+  );
+});
+
+test('ready dossier rejects pending and malformed rollback even with otherwise complete scope', () => {
+  const record = draft();
+  record.status = 'READY_FOR_APPROVAL';
+  record.physical_discovery.status = 'COMPLETE';
+  record.physical_discovery.searches.push({ surface: 'PACKAGE_TREE' });
+  record.physical_discovery.findings.push('Scope verified');
+  record.target_repositories = ['vento-group-sas/vento-shell'];
+  record.physical_targets = [{
+    repository: 'vento-group-sas/vento-shell',
+    path: 'packages/ui-web/package.json',
+    operation: 'MODIFY',
+    symbol_or_surface: 'private manifest',
+  }];
+  record.validation_commands = ['npm run docs:transversal:check'];
+  record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING' }];
+  const validate = () => validateDraftDossier(record, {
+    packageName: '@vento/ui-web', taskIds: record.source_task_ids,
+  });
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), steps: [] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), validation_commands: [''] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), stop_conditions: [] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), baseline: {
+    ...completeRollback().baseline, commit_sha: 'invalid',
+  } };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = completeRollback();
+  assert.equal(validate(), true);
+});
+
+test('preflight blocks absent and incomplete dossiers without touching the package', (t) => {
+  const { root, policy: p } = fixture(t);
+  const manifestPath = path.join(root, 'packages/ui-web/package.json');
+  const before = fs.readFileSync(manifestPath, 'utf8');
+  const missing = assessTransversalPreflight({ root, packageName: '@vento/ui-web' });
+  assert.equal(missing.status, 'BLOCKED');
+  assert.deepEqual(missing.blockers, ['DOSSIER_MISSING']);
+  file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(draft()));
+  const incomplete = assessTransversalPreflight({ root, packageName: '@vento/ui-web' });
+  assert.equal(incomplete.status, 'BLOCKED');
+  assert(incomplete.blockers.includes('DOSSIER_NOT_READY_FOR_APPROVAL'));
+  assert(incomplete.blockers.includes('PHYSICAL_DISCOVERY_INCOMPLETE'));
+  assert(incomplete.blockers.includes('RESOURCE_CONFLICT_EVIDENCE_UNRESOLVED'));
+  assert.equal(incomplete.physical_authorized, false);
+  assert.throws(() => runTransversalControl({ root, operation: 'preflight' }), /PREFLIGHT_BLOCKED/u);
+  assert.equal(fs.readFileSync(manifestPath, 'utf8'), before);
+});
+
+test('preflight checks real target existence, local ownership and rejects deletes without admission', (t) => {
+  const { root, policy: p } = fixture(t);
+  const record = draft();
+  record.target_repositories = ['vento-group-sas/vento-shell', 'vento-group-sas/vento-viso'];
+  record.physical_targets = [
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/package.json',
+      operation: 'CREATE', symbol_or_surface: 'must not overwrite',
+    },
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/src/does-not-exist.tsx',
+      operation: 'MODIFY', symbol_or_surface: 'must exist',
+    },
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/README.md',
+      operation: 'DELETE', symbol_or_surface: 'requires separate gate',
+    },
+    {
+      repository: 'vento-group-sas/vento-viso', path: 'src/app/page.tsx',
+      operation: 'MODIFY', symbol_or_surface: 'requires separate checkout',
+    },
+  ];
+  file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(record));
+  const result = assessTransversalPreflight({ root, packageName: '@vento/ui-web' });
+  assert.equal(result.status, 'BLOCKED');
+  assert(result.blockers.includes('PHYSICAL_TARGET_CREATE_ALREADY_EXISTS:packages/ui-web/package.json'));
+  assert(result.blockers.includes('PHYSICAL_TARGET_MODIFY_MISSING:packages/ui-web/src/does-not-exist.tsx'));
+  assert(result.blockers.includes('PHYSICAL_TARGET_DELETE_REQUIRES_SEPARATE_GATE:packages/ui-web/README.md'));
+  assert(result.blockers.includes('EXTERNAL_REPOSITORY_REQUIRES_INDEPENDENT_CHECK:vento-group-sas/vento-viso'));
+  assert.equal(result.physical_authorized, false);
+});
+
+test('complete preflight is only READY_FOR_APPROVAL and never a physical authorization', (t) => {
+  const { root, policy: p } = fixture(t);
+  const record = draft();
+  record.status = 'READY_FOR_APPROVAL';
+  record.physical_discovery.status = 'COMPLETE';
+  record.physical_discovery.searches.push({ surface: 'SOURCE' });
+  record.physical_discovery.findings.push('Approved source reviewed');
+  record.target_repositories = ['vento-group-sas/vento-shell'];
+  record.physical_targets = [{
+    repository: 'vento-group-sas/vento-shell',
+    path: 'packages/ui-web/package.json',
+    operation: 'MODIFY',
+    symbol_or_surface: 'physical candidate',
+  }];
+  record.validation_commands = ['npm run docs:transversal:check'];
+  record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING', instance: 'GAP-PKG-004' }];
+  record.rollback = completeRollback();
+  file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(record));
+  const result = runTransversalControl({ root, operation: 'preflight' });
+  assert.equal(result.length, 1);
+  assert.equal(result[0].status, 'READY_FOR_APPROVAL');
+  assert.equal(result[0].physical_authorized, false);
+  assert.equal(result[0].remote_mutations_authorized, false);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root, 'packages/ui-web/package.json'), 'utf8')).private, true);
+  assert.throws(() => runTransversalControl({ root, operation: 'authorize' }), /UNSUPPORTED_OPERATION/u);
 });
 
 test('duplicate physical targets and path traversal are rejected', () => {

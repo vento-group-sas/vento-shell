@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -145,18 +146,7 @@ function main() {
     packageJson.name === '@vento/ui-web' && packageJson.private === true,
     'private package identity mismatch',
   );
-  for (const key of [
-    'version',
-    'main',
-    'types',
-    'exports',
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-    'scripts',
-  ]) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(
     source,
@@ -324,17 +314,12 @@ function main() {
     ],
     'README UI020 materialization',
   );
-  assertGitUnchanged([
-    'packages/ui-web/package.json',
-    'packages/ui-web/src/InterruptedProcessState.tsx',
-    'packages/ui-web/src/interrupted-process-state.css',
-    'packages/ui-web/scripts/validate-interrupted-process-state.mjs',
-  ]);
+  assertGitUnchanged(['packages/ui-web/src/InterruptedProcessState.tsx', 'packages/ui-web/src/interrupted-process-state.css']);
 
   console.log(
     'PASS: SHELL-UI-020 CrossAppHandoff validated; '
       + 'scenarios=76 states=7 slots=7 ssr=SAFE authority=NONE navigation=EXTERNAL '
-      + 'handoff=EXTERNAL consumers=0/7 exports=DEFERRED',
+      + 'handoff=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

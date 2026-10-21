@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -74,9 +75,7 @@ function main() {
   assert(task, 'canonical task SHELL-UI-015 not found');
   assert(sha256(task.block) === SOURCE_CONTRACT_SHA256, 'source contract SHA256 mismatch');
   assert(packageJson.name === '@vento/ui-web' && packageJson.private === true, 'private package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     'export function ContextDiagnostic',
@@ -157,12 +156,7 @@ function main() {
   cover(52, () => includesAll(readme, ['paridad por consumidor', 'antes de retirar legacy'], 'consumer parity deferral'));
   cover(53, () => includesAll(readme, ['SHELL, NEXO, FOGO, ORIGO, VISO, PULSO y NUMERA', '7/7'], 'consumer decisions'));
   cover(54, () => {
-    assertGitUnchanged([
-      'package.json', 'package-lock.json', 'packages/ui-web/package.json',
-      'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css',
-      'packages/ui-web/src/SensitiveActionConfirmation.tsx', 'packages/ui-web/src/sensitive-action-confirmation.css',
-      'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase',
-    ]);
+    assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/SensitiveActionConfirmation.tsx', 'packages/ui-web/src/sensitive-action-confirmation.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
   });
 
   includesAll(css, STATES.map((state) => `[data-context-state='${state}']`), 'state styling');
@@ -171,7 +165,7 @@ function main() {
   includesAll(readme, ['SHELL-UI-015::GLOBAL', 'src/ContextDiagnostic.tsx', 'src/context-diagnostic.css', 'scripts/validate-context-diagnostic.mjs'], 'README materialization');
   assert(covered.size === 54, `scenario coverage count mismatch: ${covered.size}`);
   for (let number = 1; number <= 54; number += 1) assert(covered.has(number), `scenario ${number} not covered`);
-  console.log('PASS: SHELL-UI-015 ContextDiagnostic validated; scenarios=54 states=5 ssr=SAFE authority=NONE recovery=EXTERNAL consumers=0/7 exports=DEFERRED');
+  console.log('PASS: SHELL-UI-015 ContextDiagnostic validated; scenarios=54 states=5 ssr=SAFE authority=NONE recovery=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE');
 }
 
 try {

@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -101,9 +102,7 @@ function main() {
 
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     "'use client';",
@@ -377,40 +376,7 @@ function main() {
   ], 'navigation handoff'));
 
   cover(48, () => {
-    assertGitUnchanged([
-      'package.json',
-      'package-lock.json',
-      'packages/ui-web/package.json',
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/scripts/validate-alert.mjs',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/scripts/validate-button.mjs',
-      'packages/ui-web/src/Card.tsx',
-      'packages/ui-web/src/card.css',
-      'packages/ui-web/scripts/validate-card.mjs',
-      'packages/ui-web/src/EmptyState.tsx',
-      'packages/ui-web/src/empty-state.css',
-      'packages/ui-web/scripts/validate-empty-state.mjs',
-      'packages/ui-web/src/ContextIndicator.tsx',
-      'packages/ui-web/src/context-indicator.css',
-      'packages/ui-web/scripts/validate-context-indicator.mjs',
-      'packages/ui-web/src/SiteSelector.tsx',
-      'packages/ui-web/src/site-selector.css',
-      'packages/ui-web/scripts/validate-site-selector.mjs',
-      'packages/ui-web/src/AreaSelector.tsx',
-      'packages/ui-web/src/area-selector.css',
-      'packages/ui-web/scripts/validate-area-selector.mjs',
-      'packages/ui-web/src/SimulatedRoleNotice.tsx',
-      'packages/ui-web/src/simulated-role-notice.css',
-      'packages/ui-web/scripts/validate-simulated-role-notice.mjs',
-    ]);
+    assertGitUnchanged(['package.json', 'package-lock.json', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/SiteSelector.tsx', 'packages/ui-web/src/site-selector.css', 'packages/ui-web/src/AreaSelector.tsx', 'packages/ui-web/src/area-selector.css', 'packages/ui-web/src/SimulatedRoleNotice.tsx', 'packages/ui-web/src/simulated-role-notice.css']);
   });
 
   cover(49, () => includesAll(readme, [
@@ -431,7 +397,7 @@ function main() {
   assert(ordered.length === 50, `scenario count must be 50, got ${ordered.length}`);
   assert(ordered.every((value, index) => value === index + 1), 'scenario numbering must be exactly 1..50');
 
-  console.log('PASS: SHELL-UI-010 AppShell validated; scenarios=50 interaction=LOCAL_DISCLOSURE authority=NONE navigation=EXTERNAL consumers=0/7 exports=DEFERRED');
+  console.log('PASS: SHELL-UI-010 AppShell validated; scenarios=50 interaction=LOCAL_DISCLOSURE authority=NONE navigation=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE');
 }
 
 main();

@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -215,17 +216,15 @@ function main() {
   cover(69, () => includesAll(readme, ['EXPLICIT_CONFIRMATION', 'REASON_AND_CONFIRMATION', 'SERVER_REVALIDATION', 'EXTERNAL_RESULT_CONFIRMATION'], 'README policy boundary'));
   cover(70, () => includesAll(readme, ['`Button`', '`danger`', 'reautenticacion', 'resultado autoritativo'], 'README adjacent boundaries'));
   cover(71, () => includesAll(readme, ['Consumidores migrados por UI014: 0/7.', 'SHELL', 'NEXO', 'FOGO', 'ORIGO', 'VISO', 'PULSO', 'NUMERA'], 'README consumer handoff'));
-  cover(72, () => includesAll(readme, ['ÚLTIMA TAREA APROBADA: `SHELL-UI-013`', 'TAREA ACTUAL APROBADA: `SHELL-UI-014`', 'SIGUIENTE TAREA RESERVADA: `SHELL-UI-015`'], 'README continuity'));
+  cover(72, () => includesAll(readme, ['ÚLTIMA TAREA APROBADA: `SHELL-UI-019`', 'TAREA ACTUAL APROBADA: `SHELL-UI-020`', 'SIGUIENTE TAREA RESERVADA: `SHELL-MIG-001`'], 'README continuity'));
   cover(73, () => includesAll(readme, ['`SensitiveActionConfirmation` conserva nombre accesible', 'no implementa focus trap'], 'README accessibility'));
   cover(74, () => assert(!readme.includes('SIGUIENTE TAREA RESERVADA: `SHELL-UI-014`'), 'README must not retain UI014 as next reserved task'));
   cover(75, () => {
     const pkg = JSON.parse(packageSource);
     assert(pkg.name === '@vento/ui-web' && pkg.private === true && pkg.type === 'module', 'package identity changed');
-    for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-      assert(!(key in pkg), `package manifest unexpectedly exposes ${key}`);
-    }
+    validateManifest(pkg);
   });
-  cover(76, () => assertGitUnchanged(['packages/ui-web/package.json']));
+  cover(76, () => validateManifest(JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'))));
   cover(77, () => assertGitUnchanged(['packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css']));
   cover(78, () => assertGitUnchanged(['packages/ui-web/src/PrimaryActionPanel.tsx', 'packages/ui-web/src/primary-action-panel.css']));
   cover(79, () => assertGitUnchanged(['src/components/ui/Modal.tsx', 'src/components/ui/index.ts']));
@@ -235,7 +234,7 @@ function main() {
 
   assert(scenarios === 82, `expected 82 scenarios, got ${scenarios}`);
   console.log(
-    'PASS: SHELL-UI-014 SensitiveActionConfirmation validated; scenarios=82 server_safe=YES authority=NONE confirmation_policy=EXTERNAL consumers=0/7 exports=DEFERRED',
+    'PASS: SHELL-UI-014 SensitiveActionConfirmation validated; scenarios=82 server_safe=YES authority=NONE confirmation_policy=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

@@ -44,6 +44,8 @@ test('clasifica fuentes canónicas y herramientas transversales por separado', (
 
 test('la politica de entrega transversal es infraestructura, sin debilitar el rechazo de commits mixtos', () => {
   assert.equal(classifyCommitPath('docs/plan-canonico/modular/transversal-delivery-policy.json'), 'TRANSVERSAL');
+  assert.equal(classifyCommitPath('docs/plan-canonico/modular/transversal-delivery-instances/vento-ui-web.json'), 'TRANSVERSAL');
+  assert.equal(classifyCommitPath('docs/plan-canonico/modular/transversal-delivery-instances/unauthorized.json'), 'CANONICAL_TASK');
   const result = analyzeCommitScope([
     'docs/plan-canonico/modular/transversal-delivery-policy.json',
     'package.json',
