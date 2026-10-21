@@ -124,7 +124,7 @@ test('las entradas ESM y subpaths empaquetados se pueden importar en Node', asyn
 });
 
 
-test('tarballs reales: instalacion npm offline, import ESM y resolucion de tipos aisladas', (t) => {
+test('tarballs reales: instalacion npm con peers exactos, ESM y tipos aislados', (t) => {
   const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-npm-consumer-'));
   t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
@@ -147,7 +147,7 @@ test('tarballs reales: instalacion npm offline, import ESM y resolucion de tipos
 
   fs.writeFileSync(path.join(temp, 'package.json'),
     JSON.stringify({ name: 'isolated-vento-consumer', private: true, type: 'module' }));
-  const install = command(['install', '--offline', '--ignore-scripts', '--no-audit',
+  const install = command(['install', '--prefer-offline', '--registry=https://registry.npmjs.org/', '--ignore-scripts', '--no-audit',
     '--no-fund', '--no-package-lock', ...tarballs,
     '@supabase/ssr@0.8.0', '@supabase/supabase-js@2.90.1'], temp);
   assert.equal(install.status, 0,
