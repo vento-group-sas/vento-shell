@@ -199,6 +199,19 @@ export function validateDraftDossier(record, { packageName, taskIds: expectedTas
     if (record.resource_conflict_evidence.some((entry) => !entry || entry.status !== 'NON_CONFLICTING')) {
       fail('READY_FOR_APPROVAL_WITH_UNRESOLVED_CONFLICTS');
     }
+    const rollback = record.rollback;
+    const baseline = rollback.baseline;
+    const populated = (value) => typeof value === 'string' && value.trim().length > 0;
+    const actionList = (value) => Array.isArray(value) && value.length > 0
+      && value.every(populated);
+    if (rollback.status !== 'COMPLETE' || !baseline || typeof baseline !== 'object'
+      || !populated(rollback.owner)
+      || !populated(baseline.repository) || !/^[0-9a-f]{40}$/u.test(baseline.commit_sha)
+      || !populated(baseline.manifest) || !populated(baseline.lockfile)
+      || !actionList(rollback.steps) || !actionList(rollback.validation_commands)
+      || !actionList(rollback.stop_conditions)) {
+      fail('READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK');
+    }
   }
   return true;
 }

@@ -88,6 +88,23 @@ function draft() {
   };
 }
 
+// Synthetic, structurally complete rollback used only for readiness gate tests.
+function completeRollback() {
+  return {
+    status: 'COMPLETE',
+    owner: 'fixture package owner',
+    baseline: {
+      repository: 'vento-group-sas/vento-shell',
+      commit_sha: 'a'.repeat(40),
+      manifest: 'package.json',
+      lockfile: 'package-lock.json',
+    },
+    steps: ['Restore the previously certified consumer snapshot'],
+    validation_commands: ['npm ci'],
+    stop_conditions: ['Abort if the baseline no longer matches'],
+  };
+}
+
 test('policy profiles use existing canonical package identity, never GAP identities', () => {
   const p = policy();
   assert.equal(validateTransversalPolicy(p), true);
@@ -162,6 +179,7 @@ test('ready approval requires complete physical discovery, tests and lock eviden
   record.physical_targets = [{ repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/package.json', operation: 'MODIFY', symbol_or_surface: 'distribution manifest' }];
   record.validation_commands = ['npm run docs:plan:check'];
   record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING', instance: 'GAP-PKG-004' }];
+  record.rollback = completeRollback();
   assert.equal(validateDraftDossier(record, { packageName: '@vento/ui-web', taskIds: record.source_task_ids }), true);
 });
 
@@ -184,6 +202,39 @@ test('ready dossier rejects unresolved resource conflicts before physical admiss
     () => validateDraftDossier(record, { packageName: '@vento/ui-web', taskIds: record.source_task_ids }),
     /READY_FOR_APPROVAL_WITH_UNRESOLVED_CONFLICTS/u,
   );
+});
+
+test('ready dossier rejects pending and malformed rollback even with otherwise complete scope', () => {
+  const record = draft();
+  record.status = 'READY_FOR_APPROVAL';
+  record.physical_discovery.status = 'COMPLETE';
+  record.physical_discovery.searches.push({ surface: 'PACKAGE_TREE' });
+  record.physical_discovery.findings.push('Scope verified');
+  record.target_repositories = ['vento-group-sas/vento-shell'];
+  record.physical_targets = [{
+    repository: 'vento-group-sas/vento-shell',
+    path: 'packages/ui-web/package.json',
+    operation: 'MODIFY',
+    symbol_or_surface: 'private manifest',
+  }];
+  record.validation_commands = ['npm run docs:transversal:check'];
+  record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING' }];
+  const validate = () => validateDraftDossier(record, {
+    packageName: '@vento/ui-web', taskIds: record.source_task_ids,
+  });
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), steps: [] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), validation_commands: [''] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), stop_conditions: [] };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = { ...completeRollback(), baseline: {
+    ...completeRollback().baseline, commit_sha: 'invalid',
+  } };
+  assert.throws(validate, /READY_FOR_APPROVAL_WITH_INCOMPLETE_ROLLBACK/u);
+  record.rollback = completeRollback();
+  assert.equal(validate(), true);
 });
 
 test('preflight blocks absent and incomplete dossiers without touching the package', (t) => {
@@ -252,6 +303,7 @@ test('complete preflight is only READY_FOR_APPROVAL and never a physical authori
   }];
   record.validation_commands = ['npm run docs:transversal:check'];
   record.resource_conflict_evidence = [{ status: 'NON_CONFLICTING', instance: 'GAP-PKG-004' }];
+  record.rollback = completeRollback();
   file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(record));
   const result = runTransversalControl({ root, operation: 'preflight' });
   assert.equal(result.length, 1);
