@@ -44,7 +44,8 @@ export function assessManifest(manifest, expectedName) {
   if (!manifest.exports || exportTargets(manifest.exports).length === 0) {
     blockers.push('PUBLIC_EXPORTS_NOT_MATERIALIZED');
   } else if (exportTargets(manifest.exports).some((value) =>
-    /(?:^|\/)src\/|\.tsx?$/u.test(value))) {
+    /(?:^|\/)src\//u.test(value)
+      || (/\.(?:[cm]?ts|tsx)$/u.test(value) && !/\.d\.[cm]?ts$/u.test(value)))) {
     blockers.push('PUBLIC_EXPORTS_REFERENCE_SOURCES');
   }
   if (!Array.isArray(manifest.files) || !manifest.files.includes('dist/')) {
