@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "policy_id": "CANONICAL-IMPLEMENTATION-CONTROL-001",
-  "authorization_mode": "EXPLICIT_PER_INSTANCE",
+  "authorization_mode": "EXPLICIT_PER_PHASE",
   "automatic_authorization": false,
   "single_primary_action": false,
   "execution_operator_policy": {
@@ -17,7 +17,7 @@
       "read_checks": true,
       "require_approved_scope": true,
       "require_published_branch": true,
-      "push": "APPROVAL_REQUIRED_PER_ACTION",
+      "push": "PHASE_APPROVED_SCOPE",
       "merge": "APPROVAL_REQUIRED_PER_ACTION",
       "auto_merge": false,
       "deploy": "APPROVAL_REQUIRED_PER_ACTION",
@@ -41,5 +41,28 @@
     "VERIFIED",
     "DEFERRED"
   ],
-  "authorization_entrypoint": "docs:implementation:authorize"
+  "authorization_entrypoint": "docs:implementation:authorize",
+  "phase_execution": {
+    "mode": "APPROVED_PACKAGE_PHASE",
+    "approval_granularity": "ONCE_PER_PACKAGE_PHASE",
+    "phase_source": "APPROVED_PACKAGE_GATE",
+    "in_phase_operations": [
+      "EDIT_APPROVED_SCOPE",
+      "RUN_VALIDATIONS",
+      "FIX_DEFECTS",
+      "LOCAL_COMMIT",
+      "PUSH_APPROVED_BRANCH",
+      "CREATE_OR_UPDATE_PR"
+    ],
+    "independent_decisions": [
+      "EXPAND_SCOPE",
+      "MERGE",
+      "DEPLOY",
+      "PUBLISH_PACKAGE",
+      "REMOTE_DATABASE_MUTATION",
+      "CHANGE_CREDENTIALS"
+    ],
+    "checkpoint_policy": "PHASE_ENTRY_RISK_BOUNDARY_AND_CLOSE",
+    "evidence_policy": "FRESH_CANDIDATE_AND_PRESERVED_HISTORY"
+  }
 }
