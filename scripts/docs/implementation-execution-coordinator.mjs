@@ -21,6 +21,7 @@ import {
 import {
   instanceRecordRelativePath,
   loadImplementationControl,
+  isPackagePhaseInstance,
   validateImplementationControl,
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
@@ -1298,7 +1299,7 @@ async function printStatus({ root, explicitInstanceId }) {
 }
 
 export function describePhaseAuthorizationGate({ instanceId, authorizationMode }) {
-  if (authorizationMode === 'EXPLICIT_PER_PHASE') {
+  if (isPackagePhaseInstance(instanceId, authorizationMode)) {
     return {
       NEXT_GATE: 'REUSE_APPROVED_PACKAGE_PHASE',
       NEXT_ACTION: `npm run docs:implementation:authorize -- --instance-id ${instanceId} --from-phase-approval`,
