@@ -9,6 +9,7 @@ import zlib from 'node:zlib';
 
 import {
   asSha256Identity,
+  assessPrivateReleasePreview,
   collectInternalDependencies,
   detectSecretsInTarball,
   evaluateReleaseCandidate,
@@ -16,6 +17,9 @@ import {
   normalizeSyntheticState,
   packageSlug,
   parseSemver,
+  privateReleaseCreateArgs,
+  privateReleaseNotes,
+  releasePreviewManifest,
   planCoordinatedRelease,
   runGate,
   sriSha512,
@@ -669,4 +673,197 @@ test('helper 02 - secret detector ignores ordinary package text and coordinated 
     reasons: [],
     order: [],
   });
+});
+
+test('private GitHub Release contains verifiable metadata but no public npm tarball asset', () => {
+  const scenario = baseScenario({
+    manifest: baseManifest('@vento/contracts', '1.0.0-alpha.1'),
+    contract: { release_channel: 'next', release_channel_type: 'PRERELEASE' },
+  });
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  const contract = {
+    github_repository: 'vento-group-sas/vento-shell',
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+  };
+  const args = privateReleaseCreateArgs(candidate, contract);
+  const notes = privateReleaseNotes(candidate);
+  assert.deepEqual(args.slice(0, 3), ['release', 'create', candidate.tag_name]);
+  assert(args.includes('--prerelease'));
+  assert(args.includes('--verify-tag'));
+  assert(!args.some((arg) => /\.tgz$|\.json$/u.test(arg)));
+  assert.equal(args[args.indexOf('--notes') + 1], notes);
+  assert.match(notes, /^VENTO-PRIVATE-NPM-RELEASE-V1\n/u);
+  assert.match(notes, /artifact=PRIVATE_GITLAB_NPM_ONLY$/u);
+  assert(notes.includes(candidate.tarball_sha256));
+  assert(notes.includes(candidate.pack_integrity));
+  assert(!notes.includes('token='));
+});
+
+test('real publication cannot target a public npm registry or unrelated GitHub repository', () => {
+  const scenario = baseScenario({
+    contract: {
+      execution_mode: 'REAL',
+      github_repository: 'vento-group-sas/vento-shell',
+      registry_url: 'https://registry.npmjs.org/',
+    },
+  });
+  const errors = validateReleaseContract(scenario.contract, { manifest: scenario.manifest });
+  assert(errors.includes('REGISTRY_NOT_PRIVATE_GITLAB'));
+  assert.throws(() => privateReleaseCreateArgs(
+    evaluateReleaseCandidate(scenario).candidate, scenario.contract,
+  ), /PRIVATE_RELEASE_DESTINATION_INVALID/u);
+  const unrelated = {
+    ...scenario.contract,
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+    github_repository: 'somewhere-else/not-vento',
+  };
+  assert(validateReleaseContract(unrelated, { manifest: scenario.manifest })
+    .includes('GITHUB_REPOSITORY_NOT_CANONICAL'));
+});
+
+test('public release metadata requires strict source commit and integrity', () => {
+  const scenario = baseScenario();
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, tarball_sha256: 'sha256:invalid',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, pack_integrity: 'sha512-INVALID@',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, source_commit: 'bad',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+});
+
+test('stable metadata-only release is not marked prerelease', () => {
+  const scenario = baseScenario();
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  const args = privateReleaseCreateArgs(candidate, {
+    github_repository: 'vento-group-sas/vento-shell',
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+  });
+  assert(!args.includes('--prerelease'));
+  assert(args.includes('--verify-tag'));
+});
+
+
+function privateSourcePilotScenario() {
+  const manifest = {
+    ...baseManifest('@vento/contracts', '1.0.0-alpha.1'),
+    private: true,
+    files: ['dist/'],
+  };
+  const { preview } = releasePreviewManifest(manifest);
+  const js = 'export const fixture = 1;\n';
+  const declarations = 'export declare const fixture: number;\n';
+  const tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify(preview),
+    'package/dist/index.js': js,
+    'package/dist/index.d.ts': declarations,
+  });
+  return baseScenario({
+    manifest,
+    tarballBuffer,
+    contract: {
+      release_preview_mode: 'EPHEMERAL_PRIVATE_SOURCE',
+      release_channel: 'next',
+      release_channel_type: 'PRERELEASE',
+    },
+    buildEvidence: {
+      // CI002 certified the private pack; private:false preview cannot match
+      // those full tarball bytes. The dist bytes must still match exactly.
+      pack_integrity: sriSha512(Buffer.from('private-source-build')),
+      artifact_file_manifest: [
+        { path: 'index.js', sha256: hash(js) },
+        { path: 'index.d.ts', sha256: hash(declarations) },
+      ],
+    },
+  });
+}
+
+test('private authoring manifest can release only an exact CI002-certified dist preview', () => {
+  const scenario = privateSourcePilotScenario();
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'READY', result.reasons.join(','));
+  assert.notEqual(scenario.buildEvidence.pack_integrity, sriSha512(scenario.tarballBuffer));
+  assert.deepEqual(assessPrivateReleasePreview({
+    sourceManifest: scenario.manifest,
+    tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  }), []);
+});
+
+test('private package cannot use source tarball or bypass declared preview mode', () => {
+  const scenario = privateSourcePilotScenario();
+  scenario.contract.release_preview_mode = undefined;
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.includes('PRIVATE_SOURCE_PREVIEW_REQUIRED'));
+  scenario.contract.release_preview_mode = 'unapproved';
+  const invalid = evaluateReleaseCandidate(scenario);
+  assert(invalid.reasons.includes('RELEASE_PREVIEW_MODE_INVALID'));
+});
+
+test('private preview rejects a tampered dist file even with a valid npm tar manifest', () => {
+  const scenario = privateSourcePilotScenario();
+  const { preview } = releasePreviewManifest(scenario.manifest);
+  scenario.tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify(preview),
+    'package/dist/index.js': 'export const fixture = "tampered";\n',
+    'package/dist/index.d.ts': 'export declare const fixture: number;\n',
+  });
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.some((reason) => reason.startsWith('PRIVATE_PREVIEW_DIST_BYTES_DIVERGENCE:')));
+});
+
+test('private preview rejects extra dist files and undeclared manifest permissions', () => {
+  const scenario = privateSourcePilotScenario();
+  const { preview } = releasePreviewManifest(scenario.manifest);
+  scenario.tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify({
+      ...preview,
+      scripts: { prepublishOnly: 'node unsafe.mjs' },
+    }),
+    'package/dist/index.js': 'export const fixture = 1;\n',
+    'package/dist/index.d.ts': 'export declare const fixture: number;\n',
+    'package/dist/hidden.js': 'export const hidden = true;\n',
+  });
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.includes('PRIVATE_PREVIEW_MANIFEST_DIVERGENCE'));
+  assert(result.reasons.includes('PRIVATE_PREVIEW_DIST_FILESET_DIVERGENCE'));
+});
+
+test('preview policy rejects unpinned internal package version before release', () => {
+  const scenario = privateSourcePilotScenario();
+  const malformed = { ...scenario.manifest, dependencies: { '@vento/os-context': '^0.1.0' } };
+  assert.throws(() => releasePreviewManifest(malformed), /INTERNAL_VERSION_NOT_EXACT/u);
+  const evaluation = assessPrivateReleasePreview({
+    sourceManifest: malformed, tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  });
+  assert(evaluation.includes('PRIVATE_PREVIEW_SOURCE_INVALID'));
+});
+
+
+test('release preview rejects symlink entries even when regular dist hashes appear valid', () => {
+  const scenario = privateSourcePilotScenario();
+  const archive = zlib.gunzipSync(scenario.tarballBuffer);
+  const name = Buffer.from('package/dist/index.js');
+  const headerOffset = archive.indexOf(name);
+  assert(headerOffset >= 0 && headerOffset % 512 === 0);
+  archive[headerOffset + 156] = '2'.charCodeAt(0);
+  archive.fill(0x20, headerOffset + 148, headerOffset + 156);
+  const header = archive.subarray(headerOffset, headerOffset + 512);
+  let checksum = 0;
+  for (const byte of header) checksum += byte;
+  header.write(checksum.toString(8).padStart(6, '0') + '\0 ', 148, 'ascii');
+  scenario.tarballBuffer = zlib.gzipSync(archive, { mtime: 0 });
+  const errors = assessPrivateReleasePreview({
+    sourceManifest: scenario.manifest,
+    tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  });
+  assert(errors.includes('PRIVATE_PREVIEW_ARCHIVE_INVALID'));
 });
