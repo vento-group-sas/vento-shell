@@ -774,8 +774,8 @@ function privateSourcePilotScenario() {
       // those full tarball bytes. The dist bytes must still match exactly.
       pack_integrity: sriSha512(Buffer.from('private-source-build')),
       artifact_file_manifest: [
-        { path: 'dist/index.js', sha256: hash(js) },
-        { path: 'dist/index.d.ts', sha256: hash(declarations) },
+        { path: 'index.js', sha256: hash(js) },
+        { path: 'index.d.ts', sha256: hash(declarations) },
       ],
     },
   });
