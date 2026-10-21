@@ -324,20 +324,20 @@ export function assessPrivateReleasePreview({
   }
   const files = buildEvidence?.artifact_file_manifest;
   if (!Array.isArray(files) || files.length === 0
-    || files.some((item) => !/^dist\/[A-Za-z0-9_./-]+$/u.test(item?.path ?? '')
+    || files.some((item) => !/^[A-Za-z0-9_./-]+$/u.test(item?.path ?? '')
       || item.path.includes('..')
       || !/^sha256:[a-f0-9]{64}$/u.test(item?.sha256 ?? ''))) {
     reasons.push('PRIVATE_PREVIEW_BUILD_MANIFEST_INVALID');
   } else {
     const actual = entries.filter((entry) => entry.path.startsWith('package/dist/'));
-    const expectedPaths = files.map((entry) => 'package/' + entry.path);
+    const expectedPaths = files.map((entry) => 'package/dist/' + entry.path);
     if (new Set(expectedPaths).size !== expectedPaths.length
       || actual.length !== files.length
       || actual.some((entry) => !expectedPaths.includes(entry.path))) {
       reasons.push('PRIVATE_PREVIEW_DIST_FILESET_DIVERGENCE');
     }
     for (const item of files) {
-      const entry = actual.find((candidate) => candidate.path === 'package/' + item.path);
+      const entry = actual.find((candidate) => candidate.path === 'package/dist/' + item.path);
       if (!entry || asSha256Identity(entry.content) !== item.sha256) {
         reasons.push('PRIVATE_PREVIEW_DIST_BYTES_DIVERGENCE:' + item.path);
       }
