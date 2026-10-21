@@ -101,6 +101,27 @@ test('PENDING_AUTHORIZATION no expone comando mutante ejecutable y conserva refe
   assert.match(model.fingerprint_sha256, /^[a-f0-9]{64}$/u);
 });
 
+test('paquete de trabajo limita PR y exige permiso humano por cada accion remota protegida', () => {
+  const modelInput = coordinated();
+  const prPermissions = {
+    create: true,
+    update_title_body: true,
+    read_checks: true,
+    require_approved_scope: true,
+    require_published_branch: true,
+    push: 'APPROVAL_REQUIRED_PER_ACTION',
+    merge: 'APPROVAL_REQUIRED_PER_ACTION',
+    auto_merge: false,
+    deploy: 'APPROVAL_REQUIRED_PER_ACTION',
+    remote_code_edits: false,
+  };
+  modelInput.executionOperatorPolicy.assistantPullRequestOperations = prPermissions;
+  const model = buildImplementationWorkPackage({ coordinatedStatus: modelInput });
+  assert.deepEqual(model.control_equivalence.assistant_pull_request_operations, prPermissions);
+  assert.equal(model.control_equivalence.assistant_remote_mutations, false);
+  assert.equal(model.control_equivalence.assistant_pull_request_operations.merge, 'APPROVAL_REQUIRED_PER_ACTION');
+});
+
 test('AUTHORIZED prepara secuencia de tres invocaciones sobre el accelerator existente', () => {
   const model = buildImplementationWorkPackage({
     coordinatedStatus: coordinated({
