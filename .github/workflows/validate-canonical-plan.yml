@@ -24,6 +24,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   validate:
@@ -89,6 +90,9 @@ jobs:
       - name: Instalar dependencias bloqueadas
         run: npm ci --prefer-offline --no-audit --no-fund
 
+      - name: Probar verificacion de Squash and Merge por procedencia real
+        run: node --test scripts/docs/verified-squash-merge-gate.test.mjs
+
       - name: Verificar alcance fisico autorizado de implementacion
         if: github.event_name == 'pull_request' && steps.scope.outputs.implementation_pr == 'true'
         shell: bash
@@ -132,8 +136,9 @@ jobs:
         env:
           BEFORE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          mapfile -t first_parent_new < <(git rev-list --first-parent "$BEFORE_SHA..$HEAD_SHA")
+          mapfile -t first_parent_new < <(git rev-list --first-parent --reverse "$BEFORE_SHA..$HEAD_SHA")
           only_merge_commits=true
           if [ "${#first_parent_new[@]}" -eq 0 ]; then
             only_merge_commits=false
@@ -149,7 +154,20 @@ jobs:
             echo "Push a main compuesto solo por merge commits; el aislamiento por commit ya fue validado en el PR."
             exit 0
           fi
-          npm run docs:commit-scope:check -- --range "$BEFORE_SHA..$HEAD_SHA"
+          for commit in "${first_parent_new[@]}"; do
+            parent_count=$(git rev-list --parents -n 1 "$commit" | awk '{print NF-1}')
+            if [ "$parent_count" -ge 2 ]; then
+              echo "Merge commit validado previamente en PR: $commit"
+              continue
+            fi
+            parent_sha=$(git rev-parse "${commit}^")
+            if npm run docs:commit-scope:check -- --range "$parent_sha..$commit"; then
+              echo "Commit directo con alcance aislado: $commit"
+            else
+              echo "Alcance mixto: comprobando PR fusionado y commits originales contra GitHub."
+              node scripts/docs/verified-squash-merge-gate.mjs "$commit" "$parent_sha"
+            fi
+          done
 
       - name: Impedir nueva deuda de lint en pull request
         if: github.event_name == 'pull_request' && steps.scope.outputs.canonical_docs_only != 'true'
