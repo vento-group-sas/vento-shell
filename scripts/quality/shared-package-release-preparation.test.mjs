@@ -198,6 +198,9 @@ test('canonical and package CI actions use maintained Node 24 runtime without ex
   const paths = [
     '.github/workflows/vento-shared-npm-registry-qa.yml',
     '.github/workflows/validate-canonical-plan.yml',
+    '.github/workflows/vento-required-gate.yml',
+    '.github/workflows/vento-repository-publication.yml',
+    '.github/workflows/vento-night-documentation-autopilot.yml',
   ];
   for (const filename of paths) {
     const workflow = fs.readFileSync(path.join(root, filename), 'utf8');
@@ -211,4 +214,10 @@ test('canonical and package CI actions use maintained Node 24 runtime without ex
     'PROTECTED_AUDIT_CACHING_MUST_BE_DISABLED');
   assert.match(qa, /environment: npm-packages-publish/u);
   assert.match(qa, /persist-credentials: false/u);
+  const publication = fs.readFileSync(path.join(root, paths[3]), 'utf8');
+  const autopilot = fs.readFileSync(path.join(root, paths[4]), 'utf8');
+  assert.match(publication, /package-manager-cache: false/u,
+    'PUBLICATION_WORKFLOW_CACHE_DISABLED');
+  assert.equal((autopilot.match(/package-manager-cache: false/gu) ?? []).length, 4,
+    'DOC_AUTOPILOT_JOBS_MUST_DISABLE_UNUSED_CACHE');
 });
