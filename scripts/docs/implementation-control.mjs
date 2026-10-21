@@ -701,7 +701,9 @@ export function deriveImplementationControl({
       instruction: integrityRecovery
         ? `El ledger declara ${instance.declaredStatus}, pero la evidencia efectiva solo soporta ${instance.effectiveStatus}. Reconciliar según ${instance.recoveryAction ?? 'MANUAL_RECONCILIATION_REQUIRED'} antes de cualquier mutación.`
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
+          ? control.authorization_mode === 'EXPLICIT_PER_PHASE'
+            ? `Reutilizar la aprobación humana vigente del package gate para ${instance.instanceId}; no solicitar aprobación nueva para la misma fase.`
+            : `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
           : type === 'EJECUTAR_IMPLEMENTACION'
             ? `Reanudar ${instance.instanceId} desde ${instance.status} exclusivamente mediante ${IMPLEMENTATION_MUTATING_ENTRYPOINT}; el coordinador resuelve internamente start, preverify, repair y finish.`
             : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
@@ -711,7 +713,9 @@ export function deriveImplementationControl({
       command: integrityRecovery
         ? null
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
+          ? control.authorization_mode === 'EXPLICIT_PER_PHASE'
+            ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --from-phase-approval`
+            : `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
           : type === 'EJECUTAR_IMPLEMENTACION'
             ? `npm run ${IMPLEMENTATION_MUTATING_ENTRYPOINT} -- --instance-id ${instance.instanceId}`
             : null,
