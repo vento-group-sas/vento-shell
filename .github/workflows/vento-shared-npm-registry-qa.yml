@@ -137,6 +137,22 @@ jobs:
             --contract scripts/quality/vento-contracts-pilot-build-contract.json \
             --evidence-root .delivery/shared-package-builds --json
 
+      - name: Verificar que las evidencias CI001 y CI002 siguen vigentes
+        shell: bash
+        run: |
+          set -- .delivery/shared-package-tests/vento__contracts/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --verify-evidence "$1" --json
+          set -- .delivery/shared-package-builds/vento__contracts/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --verify-evidence "$1" --json
+
       - name: Conservar evidencia CI001 CI002 sin tarball ni secretos
         uses: actions/upload-artifact@v7
         with:
