@@ -858,6 +858,12 @@ test('autorizacion por fase agrupa pasos sin autorizar riesgos externos', () => 
   assert.equal(isPackagePhaseInstance('SHELL-CI-021::GAP-PKG-045', 'EXPLICIT_PER_PHASE'), true);
   assert.equal(isPackagePhaseInstance('SHELL-CI-001::GLOBAL', 'EXPLICIT_PER_PHASE'), false);
   assert.equal(isPackagePhaseInstance('SHELL-CI-021::GAP-PKG-045', 'EXPLICIT_PER_INSTANCE'), false);
+  const reordered = Object.fromEntries(Object.entries(phase).reverse());
+  reordered.in_phase_operations = [...reordered.in_phase_operations].reverse();
+  assert.equal(deriveImplementationControl({
+    control: { ...policy, phase_execution: reordered },
+    workTopology: topology(),
+  }).authorizationMode, 'EXPLICIT_PER_PHASE');
   assert.throws(() => deriveImplementationControl({
     control: { ...policy, phase_execution: { ...phase, independent_decisions: ['MERGE'] } },
     workTopology: topology(),
