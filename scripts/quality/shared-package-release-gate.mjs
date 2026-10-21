@@ -459,6 +459,11 @@ export function readTarEntries(tarballBuffer) {
     const bodyStart = offset + 512;
     const bodyEnd = bodyStart + size;
     if (bodyEnd > raw.length) throw new Error('Malformed tarball: entry exceeds archive length.');
+    // Never accept symlinks, hardlinks or device entries inside release tarballs.
+    // npm may emit PAX metadata (x/g) for long names; do not reject those.
+    if (['1', '2', '3', '4', '6', '7'].includes(type)) {
+      throw new Error('Unsafe tarball entry type.');
+    }
     if (type === '0' || type === '\0') entries.push({ path: fullName, content: raw.subarray(bodyStart, bodyEnd) });
     offset = bodyStart + Math.ceil(size / 512) * 512;
   }
