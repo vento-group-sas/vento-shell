@@ -6,6 +6,8 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-registry-preflight.mjs"
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -16,6 +18,8 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-registry-preflight.mjs"
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -25,6 +29,11 @@ on:
       audit_registry:
         description: "Consultar el registro privado GitLab solo por GET (requiere entorno protegido)"
         required: true
+        type: boolean
+        default: false
+      audit_protection:
+        description: "Comprobar reglas de protección @vento/* solo con GET (activar audit_registry)"
+        required: false
         type: boolean
         default: false
 
@@ -88,6 +97,11 @@ jobs:
       - name: Ejecutar regresiones de distribucion UI Web
         run: npm run test --workspace @vento/ui-web
 
+      - name: Verificar release previews sin acceso al registry ni secretos
+        run: |
+          node --test scripts/quality/shared-package-release-preparation.test.mjs
+          node scripts/quality/shared-package-release-preparation.mjs stage
+
   gitlab-registry-readonly:
     name: GitLab npm - autenticacion y versiones (solo GET)
     if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.audit_registry == true }}
@@ -111,3 +125,10 @@ jobs:
           GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
           GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
         run: node scripts/quality/shared-package-registry-preflight.mjs registry
+
+      - name: Auditar protecciones GitLab npm para los cuatro paquetes (GET)
+        if: ${{ inputs.audit_protection == true }}
+        env:
+          GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
+          GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
+        run: node scripts/quality/shared-package-release-preparation.mjs protection
