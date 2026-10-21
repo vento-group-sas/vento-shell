@@ -335,3 +335,19 @@ test('private audit refuses failed API requests and unapproved pilot identity', 
   }), /PILOT_IDENTITY_NOT_AUTHORIZED/u);
   assert.equal(calls, 0);
 });
+
+
+test('missing registry enabled or archival flags cannot be inferred as safe', async () => {
+  for (const project of [
+    { packages_enabled: null },
+    { packages_enabled: false },
+    { archived: null },
+    { archived: true },
+  ]) {
+    const f = authorityFixture({ project });
+    await assert.rejects(auditPrivatePublicationAuthority({
+      token: 'fixture', registryUrl: NPM_REGISTRY_URL,
+      fetchImpl: f.fetchImpl,
+    }), /PROJECT_PRIVACY_OR_PACKAGE_ACCESS_INVALID/u);
+  }
+});
