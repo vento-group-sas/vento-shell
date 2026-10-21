@@ -62,6 +62,11 @@ test('coordinator reconoce aprobacion previa de fase sin otra HUMAN_GATE', () =>
     instanceId, authorizationMode: 'EXPLICIT_PER_INSTANCE',
   });
   assert.equal(legacy.HUMAN_GATE, 'SI');
+  const global = describePhaseAuthorizationGate({
+    instanceId: 'SHELL-CI-001::GLOBAL', authorizationMode: 'EXPLICIT_PER_PHASE',
+  });
+  assert.equal(global.HUMAN_GATE, 'SI');
+  assert.equal(global.NEXT_GATE, 'EXPLICIT_PHYSICAL_AUTHORIZATION');
 });
 
 test('resuelve instance_id explícito o desde la acción coordinada', () => {
