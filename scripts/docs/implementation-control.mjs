@@ -26,6 +26,11 @@ const AUTHORIZED_LIFECYCLE_STATUSES = new Set([
   'VERIFIED',
 ]);
 
+export function isPackagePhaseInstance(instanceId, authorizationMode) {
+  return authorizationMode === 'EXPLICIT_PER_PHASE'
+    && /^SHELL-CI-02[0-4]::GAP-PKG-\d{3}$/u.test(String(instanceId ?? ''));
+}
+
 function fail(errors) {
   throw new Error(`implementation-control.json inválido:\n- ${errors.join('\n- ')}`);
 }
@@ -690,6 +695,7 @@ export function deriveImplementationControl({
       || left.instanceId.localeCompare(right.instanceId, 'en')
     ));
   const actionForInstance = (instance) => {
+    const reusePhaseApproval = isPackagePhaseInstance(instance.instanceId, control.authorization_mode);
     const integrityRecovery = instance.stateIntegrityRecoveryRequired === true;
     const type = integrityRecovery
       ? 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY'
@@ -701,7 +707,7 @@ export function deriveImplementationControl({
       instruction: integrityRecovery
         ? `El ledger declara ${instance.declaredStatus}, pero la evidencia efectiva solo soporta ${instance.effectiveStatus}. Reconciliar según ${instance.recoveryAction ?? 'MANUAL_RECONCILIATION_REQUIRED'} antes de cualquier mutación.`
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? control.authorization_mode === 'EXPLICIT_PER_PHASE'
+          ? reusePhaseApproval
             ? `Reutilizar la aprobación humana vigente del package gate para ${instance.instanceId}; no solicitar aprobación nueva para la misma fase.`
             : `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
           : type === 'EJECUTAR_IMPLEMENTACION'
@@ -713,7 +719,7 @@ export function deriveImplementationControl({
       command: integrityRecovery
         ? null
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? control.authorization_mode === 'EXPLICIT_PER_PHASE'
+          ? reusePhaseApproval
             ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --from-phase-approval`
             : `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
           : type === 'EJECUTAR_IMPLEMENTACION'
