@@ -281,9 +281,12 @@ async function main() {
   try {
     const result = await executeRelease(parseArgs(process.argv.slice(2)));
     console.log(JSON.stringify(result, null, 2));
-  } catch {
-    // Fail closed and do not echo subprocess stderr or credentials.
-    console.error('VENTO_PRIVATE_RELEASE:BLOCKED_OR_FAILED');
+  } catch (error) {
+    // Preserve a safe, actionable error code; never print untrusted network
+    // bodies, subprocess stderr, npm headers, token content or raw exceptions.
+    const message = error instanceof Error ? error.message : '';
+    const trusted = message.match(/^(?:VENTO_PRIVATE_RELEASE|VENTO_NPM_RELEASE_PREP):[A-Z0-9_]+/u);
+    console.error(trusted?.[0] ?? 'VENTO_PRIVATE_RELEASE:REMOTE_OPERATION_FAILED_OR_UNVERIFIED');
     process.exitCode = 1;
   }
 }
