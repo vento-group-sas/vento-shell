@@ -91,6 +91,54 @@ export function verifyPreview({ bytes, metadata, preview, targets }) {
   };
 }
 
+
+export function packPilotPrivatePreview({
+  root = ROOT, temporaryRoot, packageName = PILOT_PACKAGE,
+} = {}) {
+  check(packageName === PILOT_PACKAGE, 'ONLY_CONTRACTS_PILOT_AUTHORIZED');
+  check(path.isAbsolute(temporaryRoot ?? ''), 'ABSOLUTE_TEMP_DIRECTORY_REQUIRED');
+  const target = PACKAGE_LOCATIONS.find((item) => item.name === packageName);
+  check(Boolean(target), 'PILOT_NOT_CANONICAL');
+  const tempStat = fs.lstatSync(temporaryRoot);
+  check(tempStat.isDirectory() && !tempStat.isSymbolicLink()
+    && fs.readdirSync(temporaryRoot).length === 0,
+  'TEMP_DIRECTORY_NOT_EMPTY_OR_UNSAFE');
+  fs.chmodSync(temporaryRoot, 0o700);
+  const pkg = path.join(root, 'packages', target.directory);
+  const sourcePath = path.join(pkg, 'package.json');
+  const original = fs.readFileSync(sourcePath);
+  const originalHash = createHash('sha256').update(original).digest('hex');
+  const { preview, targets } = releasePreviewManifest(JSON.parse(original.toString('utf8')));
+  check(preview.name === packageName && preview.version === PILOT_VERSION,
+    'PILOT_VERSION_MISMATCH');
+  safeDist(path.join(pkg, 'dist'));
+  const stage = path.join(temporaryRoot, 'staged-preview');
+  const archives = path.join(temporaryRoot, 'archives');
+  fs.mkdirSync(stage, { mode: 0o700 });
+  fs.mkdirSync(archives, { mode: 0o700 });
+  fs.cpSync(path.join(pkg, 'dist'), path.join(stage, 'dist'), { recursive: true });
+  const readme = path.join(pkg, 'README.md');
+  if (fs.existsSync(readme)) {
+    check(fs.lstatSync(readme).isFile()
+      && !fs.lstatSync(readme).isSymbolicLink(), 'README_UNSAFE');
+    fs.copyFileSync(readme, path.join(stage, 'README.md'));
+  }
+  fs.writeFileSync(path.join(stage, 'package.json'),
+    JSON.stringify(preview, null, 2) + '\n', { mode: 0o600 });
+  const userconfig = path.join(temporaryRoot, 'empty.npmrc');
+  fs.writeFileSync(userconfig, '', { mode: 0o600 });
+  const metadata = npmPack(stage, archives, userconfig);
+  const tarballPath = path.resolve(archives, String(metadata.filename ?? ''));
+  check(path.dirname(tarballPath) === archives
+    && fs.lstatSync(tarballPath).isFile()
+    && !fs.lstatSync(tarballPath).isSymbolicLink(), 'TARBALL_PATH_UNSAFE');
+  const bytes = fs.readFileSync(tarballPath);
+  const report = verifyPreview({ bytes, metadata, preview, targets });
+  check(createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex')
+    === originalHash, 'PRIVATE_MANIFEST_MUTATED');
+  return { tarballPath, report };
+}
+
 export function stagePreviews({ root = ROOT, sourceCommit = process.env.GITHUB_SHA } = {}) {
   check(SHA.test(String(sourceCommit)), 'SOURCE_COMMIT_REQUIRED');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-release-prep-'));
