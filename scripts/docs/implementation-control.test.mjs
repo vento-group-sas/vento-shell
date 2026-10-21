@@ -233,17 +233,38 @@ test('la directiva conserva IMPLEMENTED hasta completar evidencia remota', () =>
   assert.match(source, /reconciliar el `main` más reciente/u);
 });
 
-test('rechaza habilitar escrituras automáticas del asistente por inferencia', () => {
+test('escrituras y Git local son booleanos gobernados independientemente del remoto', () => {
+  const result = deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_repository_writes: true,
+        assistant_git_operations: true,
+        assistant_remote_mutations: false,
+      },
+      instances: [scope('AUTHORIZED')],
+    },
+    workTopology: topology(),
+  });
+  assert.equal(result.executionOperatorPolicy.assistantRepositoryWrites, true);
+  assert.equal(result.executionOperatorPolicy.assistantGitOperations, true);
+  assert.equal(result.executionOperatorPolicy.assistantRemoteMutations, false);
+});
+
+test('prohibe habilitar mutaciones remotas aunque Git local este autorizado', () => {
   assert.throws(() => deriveImplementationControl({
     control: {
       ...baseControl,
       execution_operator_policy: {
         ...baseControl.execution_operator_policy,
         assistant_repository_writes: true,
+        assistant_git_operations: true,
+        assistant_remote_mutations: true,
       },
     },
     workTopology: topology(),
-  }), /assistant_repository_writes debe ser false/u);
+  }), /assistant_remote_mutations debe ser false/u);
 });
 
 test('habilita validaciones MCP gobernadas sin habilitar escrituras, Git ni remoto', () => {

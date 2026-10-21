@@ -250,8 +250,18 @@ select is(
       and p.prokind in ('f', 'p')
       and has_function_privilege('anon', p.oid, 'EXECUTE')
   ),
-  91::bigint,
-  'legacy anon EXECUTE surface remains frozen at 91 functions'
+  (
+    91::bigint - case
+      when exists (
+        select 1
+        from supabase_migrations.schema_migrations m
+        where m.version = '20261012173553'
+          and cardinality(m.statements) > 0
+      ) then 5::bigint
+      else 0::bigint
+    end
+  ),
+  'anon EXECUTE baseline 91 minus five exact GAP-PKG-004 revocations after its migration'
 );
 
 select is(

@@ -34,7 +34,7 @@ async function getLatestInvitation(
   email: string,
   siteId: string,
 ) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("staff_invitations")
     .select("id, status, resend_count, auth_user_id, employee_id, last_sent_at")
     .eq("email", email)
@@ -42,6 +42,7 @@ async function getLatestInvitation(
     .order("created_at", { ascending: false })
     .limit(1)
 
+  if (error) throw new Error("INVITATION_LOOKUP_FAILED")
   return Array.isArray(data) ? data[0] ?? null : null
 }
 
@@ -61,21 +62,6 @@ async function getInvitationActorAuditId(
   }
 
   return data?.id ?? null
-}
-
-async function cleanupProvisionedInviteUser(
-  supabase: ReturnType<typeof createClient>,
-  userId: string | null,
-) {
-  if (!userId) return
-
-  const { error } = await supabase.auth.admin.deleteUser(userId)
-  if (error) {
-    console.error("[staff-invitations-create] cleanup failed:", {
-      userId,
-      error,
-    })
-  }
 }
 
 async function persistInvitationRecord(
@@ -139,17 +125,22 @@ async function persistInvitationRecord(
     updated_at: now,
   }
 
+  if (params.status === "failed" && (!existing?.id || existing.status !== "sent")) {
+    throw new Error("INVITATION_NO_LONGER_PENDING")
+  }
   if (existing?.id && existing.status !== "accepted" && existing.status !== "cancelled") {
     const { data, error } = await supabase
       .from("staff_invitations")
       .update(payload)
       .eq("id", existing.id)
+      .eq("status", existing.status)
       .select("id")
-      .single()
-
+      .maybeSingle()
     if (error) throw error
-    return data?.id ?? existing.id
+    if (!data?.id) throw new Error("INVITATION_CHANGED_DURING_UPDATE")
+    return data.id
   }
+  if (params.status === "failed") throw new Error("INVITATION_NOT_FOUND")
 
   const { data, error } = await supabase
     .from("staff_invitations")
@@ -301,6 +292,27 @@ serve(async (req) => {
     )
   }
 
+  // An existing invitation must be inspected before generating a new Auth
+  // link: a retry can otherwise invalidate a link already accepted by mail.
+  const priorInvitation = await getLatestInvitation(supabase, email, siteId)
+  if (priorInvitation &&
+      (priorInvitation.status === "sent" || priorInvitation.status === "failed")) {
+    const { data: unresolved, error: unresolvedError } = await supabase.rpc(
+      "has_unresolved_staff_invitation_delivery_v1",
+      { p_invitation_id: priorInvitation.id },
+    )
+    if (unresolvedError || unresolved !== false) {
+      return buildJsonResponse({ error: "Invitation delivery requires reconciliation" }, 409)
+    }
+    if (priorInvitation.status === "sent") {
+      return buildJsonResponse({
+        invited: true, invitation_id: priorInvitation.id, status: "sent",
+        email, message: "La invitación ya existe. Usa reenvío controlado si es necesario.",
+      })
+    }
+    return buildJsonResponse({ error: "Use controlled invitation resend" }, 409)
+  }
+
   const { data: linkData, error: linkError } =
     await supabase.auth.admin.generateLink({
       type: "invite",
@@ -308,8 +320,7 @@ serve(async (req) => {
       options: {
         redirectTo: setPasswordWebUrl || undefined,
         data: {
-          role,
-          site_id: siteId,
+          // Untrusted Auth user_metadata must never carry staff role/site.
           full_name: payload.full_name ?? null,
         },
       },
@@ -342,7 +353,24 @@ serve(async (req) => {
     }
 
     const existingInvitation = await getLatestInvitation(supabase, email, siteId)
-    if (existingInvitation?.status === "sent") {
+    if (existingInvitation?.status === "sent" || existingInvitation?.status === "failed") {
+      // Auth can report a duplicate after another request persisted an
+      // invitation. The mail may still be queued or have an unknown outcome.
+      // Do not report delivery before its durable outbox event is resolved.
+      const { data: unresolved, error: unresolvedError } = await supabase.rpc(
+        "has_unresolved_staff_invitation_delivery_v1",
+        { p_invitation_id: existingInvitation.id },
+      )
+      if (unresolvedError || unresolved !== false) {
+        return buildJsonResponse({ error: "Invitation delivery requires reconciliation" }, 409)
+      }
+      if (existingInvitation.status === "failed") {
+        return buildJsonResponse({
+          error: "Previous invitation failed; review it before retrying",
+          invitation_id: existingInvitation.id,
+          status: "failed",
+        }, 409)
+      }
       return buildJsonResponse({
         invited: true,
         invitation_id: existingInvitation.id,
@@ -392,74 +420,31 @@ serve(async (req) => {
       )
     }
 
-    const now = new Date().toISOString()
-    const fullName =
-      existingFullName ||
-      email.split("@")[0] ||
-      "Empleado"
-
-    const { error: clearPrimaryError } = await supabase
-      .from("employee_sites")
-      .update({ is_primary: false })
-      .eq("employee_id", existingUserId)
-      .eq("is_primary", true)
-      .neq("site_id", siteId)
-    if (clearPrimaryError) {
-      return buildJsonResponse({ error: clearPrimaryError.message }, 500)
-    }
-
-    const { error: employeeError } = await supabase.from("employees").upsert(
-      {
-        id: existingUserId,
-        full_name: fullName,
-        alias: null,
-        role,
-        site_id: siteId,
-        is_active: true,
-        joined_at: now,
-        updated_at: now,
-      },
-      { onConflict: "id" },
-    )
-    if (employeeError) {
-      return buildJsonResponse({ error: employeeError.message }, 400)
-    }
-
-    const { error: siteError } = await supabase.from("employee_sites").upsert(
-      {
-        employee_id: existingUserId,
-        site_id: siteId,
-        is_primary: true,
-        is_active: true,
-      },
-      { onConflict: "employee_id,site_id" },
-    )
-    if (siteError) {
-      return buildJsonResponse({ error: siteError.message }, 500)
-    }
-
+    const fullName = existingFullName || email.split("@")[0] || "Empleado"
     let invitationId: string | null = null
     try {
+      // A service-only RPC atomically completes employment for existing Auth accounts.
       invitationId = await persistInvitationRecord(supabase, {
-        email,
-        fullName,
-        role,
-        siteId,
-        invitedByAuditId,
+        email, fullName, role, siteId, invitedByAuditId,
         invitedByEmployeeId: userData.user.id,
-        status: "linked_existing_user",
-        authUserId: existingUserId,
-        employeeId: existingUserId,
-        expiredAt,
-        metadata: {
-          source: "staff-invitations-create",
-          existing_user_flow: true,
-        },
-        notes:
-          "Usuario existente en Auth agregado al equipo. Si solo usa OTP en otra app, debe crear contraseña desde recuperación.",
+        status: "sent", authUserId: existingUserId, employeeId: null, expiredAt,
+        metadata: { source: "staff-invitations-create", existing_user_flow: true },
+        notes: "Vinculacion de cuenta Auth existente por transaccion.",
       })
-    } catch (persistError) {
-      console.error("[staff-invitations-create] persist linked_existing_user failed:", persistError)
+      if (!invitationId) throw new Error("INVITATION_RECORD_REQUIRED")
+      const { data: completed, error: completionError } = await supabase.rpc(
+        "complete_staff_invitation_v1",
+        {
+          p_invitation_id: invitationId, p_auth_user_id: existingUserId,
+          p_email: email, p_full_name: fullName, p_alias: null,
+          p_completion_status: "linked_existing_user",
+        },
+      )
+      if (completionError) throw completionError
+      if (completed !== true) throw new Error("INVITATION_NO_LONGER_PENDING")
+    } catch (error) {
+      console.error("[staff-invitations-create] existing user linking failed:", error)
+      return buildJsonResponse({ error: "No se pudo vincular al equipo; reintenta" }, 409)
     }
 
     return buildJsonResponse({
@@ -505,37 +490,8 @@ serve(async (req) => {
     email.split("@")[0] ||
     "Empleado"
 
-  const { error: empErr } = await supabase.from("employees").upsert(
-    {
-      id: newUserId,
-      full_name: fullName,
-      alias: null,
-      role,
-      site_id: siteId,
-      is_active: true,
-      joined_at: now,
-      updated_at: now,
-    },
-    { onConflict: "id" },
-  )
-  if (empErr) {
-    await cleanupProvisionedInviteUser(supabase, newUserId)
-    return buildJsonResponse({ error: empErr.message }, 500)
-  }
-
-  const { error: siteErr } = await supabase.from("employee_sites").upsert(
-    {
-      employee_id: newUserId,
-      site_id: siteId,
-      is_primary: true,
-      is_active: true,
-    },
-    { onConflict: "employee_id,site_id" },
-  )
-  if (siteErr) {
-    await cleanupProvisionedInviteUser(supabase, newUserId)
-    return buildJsonResponse({ error: siteErr.message }, 500)
-  }
+  // No employees or employee_sites are provisioned while invitation status is sent.
+  // The employees INSERT trigger otherwise activates employee_sites prematurely.
 
   const resendKey = Deno.env.get("RESEND_API_KEY")
   const fromEmail =
@@ -553,7 +509,7 @@ serve(async (req) => {
       invitedByEmployeeId: userData.user.id,
       status: "sent",
       authUserId: newUserId,
-      employeeId: newUserId,
+      employeeId: null,
       inviteTokenHash,
       lastSentAt: now,
       expiredAt,
@@ -565,11 +521,26 @@ serve(async (req) => {
     })
   } catch (persistError) {
     console.error("[staff-invitations-create] persist sent failed:", persistError)
-    await cleanupProvisionedInviteUser(supabase, newUserId)
     return buildJsonResponse(
       { error: "No se pudo registrar la invitación operativa" },
       500,
     )
+  }
+
+  if (!invitationId) return buildJsonResponse({ error: "Invitation persistence incomplete" }, 500)
+  const { data: deliveryId, error: deliveryClaimError } = await supabase.rpc(
+    "claim_staff_invitation_delivery_v1",
+    { p_invitation_id: invitationId, p_event_key: `initial:${invitationId}` },
+  )
+  if (deliveryClaimError || !deliveryId) {
+    return buildJsonResponse({ error: "Invitation delivery reservation failed" }, 409)
+  }
+  async function finishDelivery(state: "delivered" | "rejected" | "uncertain") {
+    const { data, error } = await supabase.rpc(
+      "finish_staff_invitation_delivery_v1",
+      { p_delivery_id: deliveryId, p_delivery_state: state, p_provider_message_id: null },
+    )
+    return !error && data === true
   }
 
   if (resendKey) {
@@ -593,6 +564,7 @@ serve(async (req) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${resendKey}`,
+        "Idempotency-Key": deliveryId,
       },
       body: JSON.stringify({
         from: fromEmail,
@@ -600,8 +572,22 @@ serve(async (req) => {
         subject: inviteSubject,
         html,
       }),
-    })
+      signal: AbortSignal.timeout(20_000),
+    }).catch(() => null)
+    if (!res) {
+      if (!await finishDelivery("uncertain")) {
+        return buildJsonResponse({ error: "Invitation delivery state uncertain" }, 409)
+      }
+      return buildJsonResponse({ error: "Mail provider confirmation missing; manual reconciliation required" }, 502)
+    }
     if (!res.ok) {
+      const state = res.status >= 500 ? "uncertain" : "rejected"
+      if (!await finishDelivery(state)) {
+        return buildJsonResponse({ error: "Invitation delivery outcome could not be persisted" }, 409)
+      }
+      if (state === "uncertain") {
+        return buildJsonResponse({ error: "Mail provider outcome uncertain; manual reconciliation required" }, 502)
+      }
       const errText = await res.text()
       try {
         await persistInvitationRecord(supabase, {
@@ -613,7 +599,7 @@ serve(async (req) => {
           invitedByEmployeeId: userData.user.id,
           status: "failed",
           authUserId: newUserId,
-          employeeId: newUserId,
+          employeeId: null,
           inviteTokenHash,
           expiredAt,
           metadata: {
@@ -625,8 +611,7 @@ serve(async (req) => {
       } catch (persistError) {
         console.error("[staff-invitations-create] persist failed email error failed:", persistError)
       }
-      await cleanupProvisionedInviteUser(supabase, newUserId)
-      return buildJsonResponse(
+        return buildJsonResponse(
         {
           error: "No se pudo enviar el correo",
           details: errText.slice(0, 200),
@@ -634,7 +619,13 @@ serve(async (req) => {
         500,
       )
     }
+    if (!await finishDelivery("delivered")) {
+      return buildJsonResponse({ error: "Mail accepted but delivery result was not committed" }, 409)
+    }
   } else {
+    if (!await finishDelivery("rejected")) {
+      return buildJsonResponse({ error: "Missing mail credentials and delivery not reconciled" }, 409)
+    }
     try {
       await persistInvitationRecord(supabase, {
         email,
@@ -645,7 +636,7 @@ serve(async (req) => {
         invitedByEmployeeId: userData.user.id,
         status: "failed",
         authUserId: newUserId,
-        employeeId: newUserId,
+        employeeId: null,
         inviteTokenHash,
         expiredAt,
         metadata: {
@@ -657,7 +648,6 @@ serve(async (req) => {
     } catch (persistError) {
       console.error("[staff-invitations-create] persist missing resend failed:", persistError)
     }
-    await cleanupProvisionedInviteUser(supabase, newUserId)
     return buildJsonResponse(
       {
         error:
