@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import test from 'node:test';
 
 import { NPM_REGISTRY_URL } from './shared-package-registry-preflight.mjs';
@@ -109,4 +111,25 @@ test('preparation summary states explicitly that no publication or private tarba
   assert.equal(report.publication_executed, false);
   assert.equal(report.release_channel, 'next');
   assert(!JSON.stringify(report).includes('_authToken'));
+});
+
+
+test('GitHub publication is manual, main-only, SHA-pinned and credential-isolated', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const workflow = fs.readFileSync(
+    path.join(root, '.github/workflows/vento-contracts-private-npm-release.yml'),
+    'utf8',
+  );
+  assert.match(workflow, /\bon:\s*\n\s+workflow_dispatch:/u);
+  assert.doesNotMatch(workflow, /\n\s+(?:push|pull_request|schedule|repository_dispatch):/u);
+  assert.equal((workflow.match(/if: \$\{\{ github\.ref == 'refs\/heads\/main'/gu) ?? []).length, 2);
+  assert.match(workflow, /environment: npm-packages-publish/u);
+  assert.match(workflow, /permissions:\n  contents: read/u);
+  assert.match(workflow, /permissions:\n      contents: write/u);
+  assert.match(workflow, /persist-credentials: \$\{\{ inputs\.operation == 'publish' \}\}/u);
+  assert.match(workflow, /test "\$EXPECTED_SHA" = "\$GITHUB_SHA"/u);
+  assert.match(workflow, /cancel-in-progress: false/u);
+  assert.match(workflow, /--mode "\$OPERATION"/u);
+  assert.equal((workflow.match(/GITLAB_NPM_PUBLISH_TOKEN: \$\{\{/gu) ?? []).length, 1);
+  assert.doesNotMatch(workflow, /npm publish|\.tgz|--force|sudo /u);
 });
