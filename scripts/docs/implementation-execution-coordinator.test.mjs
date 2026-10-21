@@ -11,6 +11,7 @@ import {
   candidateValidationState,
   evaluateCandidateRepairReceipt,
   classifyExecutionState,
+  describePhaseAuthorizationGate,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
   resolveImplementationRuntimeDecision,
@@ -46,6 +47,21 @@ test('clasifica estados físicos en gates deterministas', () => {
   for (const [status, expected] of cases) {
     assert.equal(classifyExecutionState({ status }), expected);
   }
+});
+
+test('coordinator reconoce aprobacion previa de fase sin otra HUMAN_GATE', () => {
+  const instanceId = 'SHELL-CI-021::GAP-PKG-045';
+  const phase = describePhaseAuthorizationGate({
+    instanceId, authorizationMode: 'EXPLICIT_PER_PHASE',
+  });
+  assert.equal(phase.NEXT_GATE, 'REUSE_APPROVED_PACKAGE_PHASE');
+  assert.equal(phase.HUMAN_GATE, 'PHASE_APPROVAL_ALREADY_RECORDED');
+  assert.match(phase.NEXT_ACTION, /--from-phase-approval/u);
+  assert.doesNotMatch(phase.NEXT_ACTION, /--approval-statement/u);
+  const legacy = describePhaseAuthorizationGate({
+    instanceId, authorizationMode: 'EXPLICIT_PER_INSTANCE',
+  });
+  assert.equal(legacy.HUMAN_GATE, 'SI');
 });
 
 test('resuelve instance_id explícito o desde la acción coordinada', () => {
