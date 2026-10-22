@@ -220,6 +220,9 @@ async function execute() {
     steps.push({ name: 'npm-install-tarball',
       status: install.ok ? 'PASS' : 'FAIL' });
     if (!install.ok) block('FAILED_NPM_INSTALL_TARBALL');
+    // Distinguish npm re-resolution from the transitory probe's TypeScript
+    // surface without assuming an existing VISO TS2345 is unchanged.
+    const postInstallTypecheck = command('npm', ['run', 'typecheck'], viso, 180000);
     fs.writeFileSync(path.join(viso, '.ci005-contracts-runtime.mjs'),
       runtimeProgram(surface));
     fs.writeFileSync(path.join(viso, '.ci005-contracts-types.ts'),
@@ -253,6 +256,19 @@ async function execute() {
           JSON.stringify({
             status: 'BLOCKED', failed_step: name,
             exit_code: done.code, compiler: done.compiler,
+            typecheck_baseline: {
+              ok: baselineTypecheck.ok, compiler: baselineTypecheck.compiler,
+            },
+            typecheck_after_install: {
+              ok: postInstallTypecheck.ok, compiler: postInstallTypecheck.compiler,
+            },
+            ...(name === 'viso-typecheck'
+              ? { compare: {
+                install_changed: JSON.stringify(baselineTypecheck.compiler.identities)
+                  !== JSON.stringify(postInstallTypecheck.compiler.identities),
+                probe_changed: JSON.stringify(postInstallTypecheck.compiler.identities)
+                  !== JSON.stringify(done.compiler.identities),
+              } } : {}),
             candidate: CANDIDATE, candidate_version: VERSION,
             package_sha: sha, consumer_sha: visoSnapshot.consumer_commit,
             publication_executed: false, relation_certified: false,
