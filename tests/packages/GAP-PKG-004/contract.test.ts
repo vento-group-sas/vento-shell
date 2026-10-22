@@ -200,6 +200,48 @@ test('GAP-PKG-004 disables only legacy scheduled checkout jobs, preserving audit
     'SQL candidate must not silently approve a remote migration');
 });
 
+test('VPROC-0008 administrative checkout candidate is fail-closed, audited and idempotent', () => {
+  const sql = read('supabase/migrations/20261020223916_attendance_geofence_authority.sql');
+  assert.match(sql, /create table if not exists public\.attendance_administrative_decisions/u);
+  assert.match(sql, /ticket_id uuid not null unique references public\.support_tickets\(id\)/u);
+  assert.match(sql, /alter table public\.attendance_administrative_decisions enable row level security/u);
+  assert.match(sql, /revoke all on public\.attendance_administrative_decisions from public, anon, authenticated/u);
+  const fn = /create or replace function public\.decide_attendance_checkout_review_v1\([\s\S]*?\$admin_attendance\$;/u.exec(sql)?.[0];
+  assert.ok(fn, 'The administrative decision must exist in the server transaction');
+  assert.match(fn, /auth\.jwt\(\) ->> 'role'/u);
+  assert.match(fn, /'anima\.attendance\.checkout_review\.decide'/u,
+    'A dedicated site-scoped permission, not shift scheduling, is mandatory');
+  assert.match(fn, /public\.has_permission\([\s\S]*?v_ticket\.site_id/u);
+  assert.match(fn, /pg_advisory_xact_lock/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_REPLAY_CONFLICT/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_SESSION_CHANGED/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_BREAK_OPEN/u);
+  assert.match(fn, /p_decision = 'approve'[\s\S]*?insert into public\.attendance_logs/u);
+  assert.match(fn, /insert into public\.attendance_administrative_decisions/u);
+  assert.doesNotMatch(fn, /update public\.attendance_logs|delete from public\.attendance_logs/iu);
+  assert.match(fn, /p_checkout_at timestamptz/u);
+  assert.match(fn, /p_checkout_at is null or p_checkout_at > clock_timestamp\(\)/u);
+  assert.match(fn, /p_checkout_at <= v_checkin\.occurred_at/u);
+  assert.match(fn, /v_checkin\.employee_id is distinct from[\s\S]*?coalesce\(v_ticket\.target_employee_id, v_ticket\.created_by\)/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_SELF_APPROVAL_DENIED/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_EVIDENCE_MISSING/u);
+  assert.match(fn, /v_existing\.approved_checkout_at is distinct from p_checkout_at/u);
+  assert.match(fn, /p_decision = 'approve' then[\s\S]*?insert into public\.attendance_logs/u);
+  assert.match(fn, /'system', p_checkout_at/u, 'The manager-approved instant must not become server arrival time');
+  assert.match(fn, /v_shift\.published_at/u, 'Preserve the published schedule reference');
+  assert.match(fn, /update public\.support_tickets[\s\S]*?status = 'resolved'/u);
+  assert.match(fn, /insert into public\.support_messages/u);
+  assert.match(sql, /check \(\(decision = 'approve'\) = \(approved_checkout_at is not null\)\)/u);
+  assert.match(sql, /revoke execute on function public\.decide_attendance_checkout_review_v1\(uuid,uuid,text,text,timestamptz\)[\s\S]*?from public, anon/u);
+  const permissions = JSON.parse(read(
+    'packages/contracts/authorization/catalog/versions/1.0.0/permissions.json',
+  )) as Array<{ permission_key: string }>;
+  assert.equal(permissions.some((p) => p.permission_key ===
+    'anima.attendance.checkout_review.decide'), false,
+  'Until its canonical grant is approved, the candidate MUST stay inaccessible');
+  assert.equal(gate.authorization.decision, 'PENDING');
+});
+
 test('GAP-PKG-004 SQL candidate remains consistent with versioned migration manifest', () => {
   const body = read(fixtures.migration_path).replace(/\r\n?/gu, '\n');
   const digest = createHash('sha256').update(body).digest('hex');

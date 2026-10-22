@@ -203,4 +203,208 @@ revoke execute on function public.apply_geofence_auto_checkout_v1(uuid)
 grant execute on function public.apply_geofence_auto_checkout_v1(uuid)
   to service_role;
 
+
+-- VPROC-0008: revision administrativa gobernada, aun NO HABILITADA por catalogo.
+-- La funcion no concede permisos. El identificador de autorizacion requiere
+-- alta canónica separada y pruebas territoriales antes de una activacion.
+create table if not exists public.attendance_administrative_decisions (
+  id uuid primary key default gen_random_uuid(),
+  ticket_id uuid not null unique references public.support_tickets(id),
+  check_in_log_id uuid not null references public.attendance_logs(id),
+  employee_id uuid not null references public.employees(id),
+  site_id uuid not null references public.sites(id),
+  shift_id uuid not null references public.employee_shifts(id),
+  shift_published_at timestamptz not null,
+  actor_id uuid not null references public.employees(id),
+  decision text not null check (decision in ('approve','reject')),
+  reason text not null check (length(btrim(reason)) between 15 and 1000),
+  approved_checkout_at timestamptz,
+  decided_at timestamptz not null default clock_timestamp(),
+  checkout_log_id uuid unique references public.attendance_logs(id),
+  check ((decision = 'approve') = (checkout_log_id is not null)),
+  check ((decision = 'approve') = (approved_checkout_at is not null))
+);
+
+create index if not exists attendance_administrative_decisions_employee_idx
+on public.attendance_administrative_decisions(employee_id, decided_at desc);
+alter table public.attendance_administrative_decisions enable row level security;
+revoke all on public.attendance_administrative_decisions from public, anon, authenticated;
+grant select, insert on public.attendance_administrative_decisions to service_role;
+
+create or replace function public.decide_attendance_checkout_review_v1(
+  p_ticket_id uuid, p_check_in_log_id uuid, p_decision text, p_reason text,
+  p_checkout_at timestamptz
+) returns table(result text, decision_id uuid, checkout_log_id uuid)
+language plpgsql security definer set search_path = ''
+as $admin_attendance$
+declare
+  v_actor uuid := auth.uid();
+  v_ticket public.support_tickets%rowtype;
+  v_existing public.attendance_administrative_decisions%rowtype;
+  v_checkin public.attendance_logs%rowtype;
+  v_latest public.attendance_logs%rowtype;
+  v_shift public.employee_shifts%rowtype;
+  v_decision_id uuid;
+  v_checkout_id uuid;
+  v_reason text := btrim(coalesce(p_reason, ''));
+begin
+  if (auth.jwt() ->> 'role') is distinct from 'authenticated'
+     or v_actor is null
+     or p_ticket_id is null or p_check_in_log_id is null
+     or p_decision is null or p_decision not in ('approve','reject')
+     or length(v_reason) not between 15 and 1000
+     or (p_decision = 'approve'
+         and (p_checkout_at is null or p_checkout_at > clock_timestamp()))
+     or (p_decision = 'reject' and p_checkout_at is not null)
+  then
+    raise exception 'ATTENDANCE_REVIEW_INVALID' using errcode = '22023';
+  end if;
+
+  select * into v_ticket from public.support_tickets
+  where id = p_ticket_id for update;
+  if not found or v_ticket.category <> 'attendance'
+     or v_ticket.site_id is null
+     or not exists (
+       select 1 from public.support_messages m
+       where m.ticket_id = p_ticket_id
+     )
+  then
+    raise exception 'ATTENDANCE_REVIEW_EVIDENCE_MISSING' using errcode = 'P0002';
+  end if;
+
+  -- Siempre denegar hasta registrar el permiso canónico y asignarlo
+  -- explícitamente al decisor en el territorio de la solicitud.
+  if not public.has_permission(
+    'anima.attendance.checkout_review.decide', v_ticket.site_id, null
+  ) then
+    raise exception 'ATTENDANCE_REVIEW_FORBIDDEN' using errcode = '42501';
+  end if;
+  if not exists (
+    select 1 from public.employees e
+    where e.id = v_actor and e.is_active is true
+  ) then
+    raise exception 'ATTENDANCE_REVIEW_ACTOR_INACTIVE' using errcode = '42501';
+  end if;
+  if v_actor = coalesce(v_ticket.target_employee_id, v_ticket.created_by) then
+    raise exception 'ATTENDANCE_REVIEW_SELF_APPROVAL_DENIED' using errcode = '42501';
+  end if;
+
+  select * into v_existing from public.attendance_administrative_decisions
+  where ticket_id = p_ticket_id;
+  if found then
+    if v_existing.check_in_log_id is distinct from p_check_in_log_id
+       or v_existing.actor_id is distinct from v_actor
+       or v_existing.decision is distinct from p_decision
+       or v_existing.reason is distinct from v_reason
+       or v_existing.approved_checkout_at is distinct from p_checkout_at
+    then
+      raise exception 'ATTENDANCE_REVIEW_REPLAY_CONFLICT' using errcode = '23505';
+    end if;
+    return query select 'duplicate'::text, v_existing.id, v_existing.checkout_log_id;
+    return;
+  end if;
+
+  if v_ticket.status::text not in ('open', 'in_progress') then
+    raise exception 'ATTENDANCE_REVIEW_NOT_OPEN' using errcode = 'P0001';
+  end if;
+
+  -- Mismo lock por trabajador que el trigger de secuencia y el autocierre.
+  -- Tomarlo antes del FOR UPDATE del evento para no invertir el orden
+  -- de locks frente a un checkout concurrente del trabajador.
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtext(
+      coalesce(v_ticket.target_employee_id, v_ticket.created_by)::text
+    )::bigint
+  );
+  select * into v_checkin from public.attendance_logs
+  where id = p_check_in_log_id for update;
+  if not found or v_checkin.action <> 'check_in'
+     or v_checkin.employee_id is distinct from
+          coalesce(v_ticket.target_employee_id, v_ticket.created_by)
+     or v_checkin.site_id is distinct from v_ticket.site_id
+     or v_checkin.shift_id is null
+  then
+    raise exception 'ATTENDANCE_REVIEW_WRONG_SESSION' using errcode = 'P0001';
+  end if;
+  select * into v_shift from public.employee_shifts
+  where id = v_checkin.shift_id
+    and employee_id = v_checkin.employee_id
+    and site_id = v_checkin.site_id
+    and published_at is not null and status <> 'cancelled'
+    and shift_kind = 'laboral';
+  if not found then
+    raise exception 'ATTENDANCE_REVIEW_SHIFT_INVALID' using errcode = 'P0001';
+  end if;
+  if p_decision = 'approve' and p_checkout_at <= v_checkin.occurred_at then
+    raise exception 'ATTENDANCE_REVIEW_OUT_OF_ORDER' using errcode = '22023';
+  end if;
+
+  if p_decision = 'approve' then
+    select * into v_latest from public.attendance_logs
+    where employee_id = v_checkin.employee_id
+    order by occurred_at desc, created_at desc, id desc
+    limit 1 for update;
+    if not found or v_latest.id is distinct from v_checkin.id then
+      raise exception 'ATTENDANCE_REVIEW_SESSION_CHANGED' using errcode = 'P0001';
+    end if;
+    if exists (
+      select 1 from public.attendance_breaks
+      where employee_id = v_checkin.employee_id and ended_at is null
+    ) then
+      raise exception 'ATTENDANCE_REVIEW_BREAK_OPEN' using errcode = 'P0001';
+    end if;
+
+    -- El instante aprobado deriva de evidencia administrativa: nunca se
+    -- sustituye silenciosamente por la hora de llegada de la solicitud.
+    insert into public.attendance_logs (
+      employee_id, site_id, geofence_site_id, shift_id, action,
+      source, occurred_at, client_event_id, notes, device_info
+    ) values (
+      v_checkin.employee_id, v_checkin.site_id,
+      coalesce(v_checkin.geofence_site_id, v_checkin.site_id),
+      v_checkin.shift_id, 'check_out', 'system', p_checkout_at,
+      'attendance-admin-review:' || p_ticket_id::text,
+      'Salida administrativa aprobada tras revisión',
+      pg_catalog.jsonb_build_object(
+        'authority','attendance_admin_review_v1',
+        'ticketId',p_ticket_id,'checkInId',v_checkin.id,
+        'approvedBy',v_actor,'approvedCheckoutAt',p_checkout_at
+      )
+    ) returning id into v_checkout_id;
+  end if;
+
+  insert into public.attendance_administrative_decisions (
+    ticket_id, check_in_log_id, employee_id, site_id,
+    shift_id, shift_published_at, actor_id, decision, reason,
+    approved_checkout_at, checkout_log_id
+  ) values (
+    p_ticket_id, v_checkin.id, v_checkin.employee_id, v_checkin.site_id,
+    v_checkin.shift_id, v_shift.published_at, v_actor, p_decision,
+    v_reason, p_checkout_at, v_checkout_id
+  ) returning id into v_decision_id;
+
+  -- La resolución del caso y su notificación quedan en el MISMO commit
+  -- que la decisión y el evento derivado: no se anuncia éxito parcial.
+  update public.support_tickets
+  set status = 'resolved', resolved_at = clock_timestamp(),
+      updated_at = clock_timestamp(), assigned_to = v_actor
+  where id = p_ticket_id;
+  insert into public.support_messages(ticket_id, author_id, body)
+  values (
+    p_ticket_id, v_actor,
+    case when p_decision = 'approve'
+      then 'Revisión de salida aprobada. La asistencia fue actualizada por un responsable.'
+      else 'Revisión de salida rechazada. La asistencia no fue modificada.'
+    end
+  );
+
+  return query select 'applied'::text, v_decision_id, v_checkout_id;
+end;
+$admin_attendance$;
+
+revoke execute on function public.decide_attendance_checkout_review_v1(uuid,uuid,text,text,timestamptz)
+from public, anon;
+grant execute on function public.decide_attendance_checkout_review_v1(uuid,uuid,text,text,timestamptz)
+to authenticated;
+
 commit;
