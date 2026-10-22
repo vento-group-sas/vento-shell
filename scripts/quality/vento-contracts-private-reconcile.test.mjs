@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import test from 'node:test';
 
 import {
   SOURCE_SHA, PILOT, TAG, REGISTRY, TAR_SHA, TAR_SRI,
   verifyRecoveryContext, verifyMetadata, verifyExistingRegistryMetadata,
-  verifyCurrentPilotCompatibility,
+  verifyMatchingTarballs, verifiedRemoteState, verifyCurrentPilotCompatibility,
 } from './vento-contracts-private-reconcile.mjs';
 
 const repository = path.resolve(import.meta.dirname, '../..');
@@ -72,22 +73,91 @@ test('existing GitHub Release must match and have zero public assets', () => {
   }
 });
 
-test('a listed GitLab npm version must have the exact original SRI', () => {
+test('GitLab npm metadata may omit dist.integrity but must bind exact protected version', () => {
+  const tarball = 'https://gitlab.com/api/v4/projects/87892751/packages/npm/'
+    + '@vento/contracts/-/vento-contracts-1.0.0-alpha.1.tgz';
   const base = {
     name: '@vento/contracts', version: '1.0.0-alpha.1',
-    'dist.integrity': TAR_SRI,
+    'dist.integrity': TAR_SRI, 'dist.shasum': 'a'.repeat(40),
+    'dist.tarball': tarball,
   };
-  assert.doesNotThrow(() => verifyExistingRegistryMetadata(base));
-  for (const wrong of [
-    { name: '@vento/ui-web' },
-    { version: '1.0.0-alpha.2' },
-    { 'dist.integrity': 'sha512-somethingelse' },
+  assert.equal(verifyExistingRegistryMetadata(base).metadata_integrity_present, true);
+  assert.equal(verifyExistingRegistryMetadata([base]).registry_tarball_url, tarball);
+  const { ['dist.integrity']: removed, ...legacy } = base;
+  assert.equal(removed, TAR_SRI);
+  assert.equal(verifyExistingRegistryMetadata(legacy).metadata_integrity_present, false);
+  const nested = {
+    name: base.name, version: base.version,
+    dist: { integrity: TAR_SRI, shasum: base['dist.shasum'], tarball },
+  };
+  assert.equal(verifyExistingRegistryMetadata(nested).shasum, 'a'.repeat(40));
+  for (const invalid of [
+    null, [], [base, base], [[base]], {},
+    { ...base, name: '@vento/ui-web' },
+    { ...base, version: '1.0.0-alpha.2' },
+    { ...base, 'dist.integrity': 'sha512-mismatched' },
+    { ...base, 'dist.shasum': '' },
+    { ...base, 'dist.shasum': 'abc123' },
+    { ...base, 'dist.tarball': 'https://registry.npmjs.org/a.tgz' },
+    { ...base, 'dist.tarball': 'https://gitlab.com/api/v4/projects/1/packages/npm/a.tgz' },
+    { ...base, 'dist.tarball': tarball + '?secret=1' },
+    { ...base, 'dist.tarball': null },
+    { ...base, dist: { integrity: 'sha512-different' } },
   ]) {
-    assert.throws(() => verifyExistingRegistryMetadata({ ...base, ...wrong }),
-      /EXISTING_REGISTRY_INTEGRITY_MISMATCH/u);
+    assert.throws(() => verifyExistingRegistryMetadata(invalid),
+      /VENTO_CI003_RECOVERY:/u);
   }
-  assert.throws(() => verifyExistingRegistryMetadata(null),
-    /EXISTING_REGISTRY_INTEGRITY_MISMATCH/u);
+});
+
+test('physical npm readback requires byte identity plus SHA1 SHA256 and SHA512', () => {
+  const source = Buffer.from('Synthetic test tarball, not a production artifact.');
+  const sha1 = createHash('sha1').update(source).digest('hex');
+  const sha256 = createHash('sha256').update(source).digest('hex');
+  const sri = 'sha512-' + createHash('sha512').update(source).digest('base64');
+  const args = {
+    originalBytes: source, downloadedBytes: Buffer.from(source),
+    expectedSha256: sha256, expectedSri: sri, registryShasum: sha1,
+  };
+  assert.deepEqual(verifyMatchingTarballs(args), {
+    sha1, sha256: 'sha256:' + sha256, sri,
+  });
+  for (const changed of [
+    { downloadedBytes: Buffer.from('tampered') },
+    { downloadedBytes: Buffer.alloc(0) },
+    { originalBytes: 'untrusted-string' },
+    { expectedSha256: 'f'.repeat(64) },
+    { expectedSri: 'sha512-invalid' },
+    { registryShasum: '0'.repeat(40) },
+  ]) {
+    assert.throws(() => verifyMatchingTarballs({ ...args, ...changed }),
+      /VENTO_CI003_RECOVERY:/u);
+  }
+});
+
+test('canonical idempotent state is pinned to the actual prerelease only', () => {
+  const candidate = {
+    package_name: '@vento/contracts', release_version: '1.0.0-alpha.1',
+    source_commit: SOURCE_SHA, tag_name: TAG,
+    tarball_sha256: 'sha256:' + TAR_SHA,
+    pack_integrity: TAR_SRI, release_channel: 'next',
+  };
+  const state = verifiedRemoteState(candidate);
+  assert.equal(state.tags[TAG].annotated, true);
+  assert.equal(state.releases[TAG].immutable, true);
+  assert.equal(state.registry[PILOT].pack_integrity, TAR_SRI);
+  assert.equal(state.channels['@vento/contracts'].next, '1.0.0-alpha.1');
+  for (const invalid of [
+    { package_name: '@vento/ui-web' },
+    { release_version: '1.0.0-alpha.2' },
+    { source_commit: '0'.repeat(40) },
+    { tag_name: 'untrusted' },
+    { tarball_sha256: 'sha256:untrusted' },
+    { pack_integrity: 'sha512-untrusted' },
+    { release_channel: 'latest' },
+  ]) {
+    assert.throws(() => verifiedRemoteState({ ...candidate, ...invalid }),
+      /VENTO_CI003_RECOVERY:CANONICAL_CANDIDATE_NOT_PINNED_TO_PILOT/u);
+  }
 });
 
 test('current-run CI005 identity is accepted; stale or unrelated evidence is rejected', () => {
@@ -129,8 +199,15 @@ test('recovery reads original source and guards protected npm mutation', () => {
   assert(!workflow.includes('contents: write'));
   assert(!workflow.includes('operation: publish'));
   assert(runner.includes('requirePilotCompatibility'));
-  assert(runner.includes('REAL_RELEASE_CONFIRMATION'));
-  assert(runner.includes('allowRealRelease: true'));
+  assert(!runner.includes('REAL_RELEASE_CONFIRMATION'));
+  assert(!runner.includes('allowRealRelease: true'));
+  assert(runner.includes("'pack', PILOT"));
+  assert(runner.includes('verifyMatchingTarballs'));
+  assert(runner.includes('verifiedRemoteState(candidate.candidate)'));
+  assert(runner.includes('evaluateReleaseCandidate'));
+  assert(runner.includes('remote_write_executed: false'));
+  assert(runner.includes('SHELL-CI-003::RECOVERY_PHYSICAL_READBACK'));
+  assert(!runner.includes("'publish', tarballPath"));
   assert(runner.includes('verifyMetadata(release, notes)'));
   assert(runner.includes('parseRemoteAnnotatedTag'));
   assert(!runner.includes("['tag', '-a'"));
