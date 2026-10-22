@@ -307,7 +307,7 @@ test("security: empty/invalid field and correlation identity fail without silent
   assert.equal(parseSafeDecisionProjection({ ...decision(), correlation_id: null }).correlation_id, null);
 });
 
-test("security: no Supabase, network, renderer or global grant state enters contract parsers", () => {
+test("security: no Supabase, network, renderer or global grant state enters contract parsers", async () => {
   const source = readFileSync(new URL("./safe-projections-v1.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /from\s+["'](?:@supabase|react|react-dom|next|react-native|expo)|\bfetch\s*\(|XMLHttpRequest\s*\(|localStorage\b|globalThis\./u);
   assert.deepEqual(Object.keys(await import("./safe-projections-v1.mjs")).sort(), [
