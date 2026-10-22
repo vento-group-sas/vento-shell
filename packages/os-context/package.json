@@ -13,13 +13,14 @@
     }
   },
   "peerDependencies": {
-    "@supabase/supabase-js": ">=2.90.0"
+    "@supabase/supabase-js": ">=2.90.0 <3"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "test": "node --test scripts/client.test.mjs",
     "validate": "node ../../scripts/quality/shared-package-distribution-gate.mjs @vento/os-context"
   }
 }
