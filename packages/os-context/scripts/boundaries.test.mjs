@@ -9,7 +9,7 @@ import * as legacy from "../dist/legacy/index.js";
 
 const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const SERVER_EXPORTS = [
-  "createAuthorizationScope", "evaluateAuthorization",
+  "evaluateAuthorization",
   "getSafeContextProjection", "getSafeDecisionProjection",
   "requireAuthorization", "resolveAccessContext",
 ];
@@ -67,8 +67,12 @@ test("contractual: there is no implicit root runtime entrypoint", async () => {
   });
 });
 
-test("contractual: server exports the six reserved canonical names only", () => {
+test("contractual: server exports exactly five SHELL-AUTH-002 operations", () => {
   assert.deepEqual(Object.keys(server), SERVER_EXPORTS);
+});
+
+test("security: future authorization scope is NOT owned by SHELL-AUTH-002", () => {
+  assert.equal(Object.hasOwn(server, "createAuthorizationScope"), false);
 });
 
 test("contractual: client exports only the two canonical parser names", () => {
@@ -123,7 +127,7 @@ test("security: all canonical server operations reject fabricated allow inputs",
       /CANONICAL_AUTHORIZATION_CONTRACT_PENDING/u,
     );
   }
-  for (const name of ["getSafeContextProjection", "getSafeDecisionProjection", "createAuthorizationScope"]) {
+  for (const name of ["getSafeContextProjection", "getSafeDecisionProjection"]) {
     assert.throws(() => server[name]({ final_decision: { outcome: "ALLOW" } }),
       /CANONICAL_AUTHORIZATION_CONTRACT_PENDING/u);
   }
