@@ -29,7 +29,7 @@ function denied() {
       app_code: "shell",
       permission_key: "shell.access",
       operation_kind: "APP_ACCESS",
-      resource_request: { kind: "NON_RESOURCE" },
+      resource_request: { mode: "NON_RESOURCE" },
       requested_fields: [],
       request_source: "SERVER_ACTION",
     },
@@ -320,9 +320,10 @@ test("security: opaque resource request rejects root-level authority and outcome
   // Ordinary domain data is not an authority assertion.
   const domain = denied();
   domain.request.resource_request = {
-    kind: "NON_RESOURCE",
+    mode: "RESOURCE_DRAFT",
     draft: { employee_id: "target-employee", role: "business-field" },
   };
+  domain.resource.request_shape = "DRAFT";
   assert.equal(inspect(domain), undefined);
 });
 
@@ -833,7 +834,10 @@ test("contractual: opaque resource leaves accept nested JSON without granting au
 test("security: nested getters in opaque resource data are never executed", () => {
   let invoked = 0;
   for (const target of [
-    (d, child) => { d.request.resource_request = { kind: "NON_RESOURCE", nested: { child } }; },
+    (d, child) => {
+      d.request.resource_request = { mode: "RESOURCE_DRAFT", draft: { nested: { child } } };
+      d.resource.request_shape = "DRAFT";
+    },
     (d, child) => { d.resource.state_snapshot = { nested: { child } }; },
     (d, child) => { d.resource.ownership = { nested: { child } }; },
     (d, child) => { d.resource.subject = { nested: { child } }; },
@@ -903,6 +907,135 @@ test("security: nested arrays and circular resource snapshots fail closed", () =
   getterArray.resource.state_snapshot = { items };
   fail(getterArray);
   assert.equal(invoked, 0);
+});
+
+test("contractual: all six request modes match AUTH-DB-034 physical names", () => {
+  const fixtures = [
+    ["EXISTING_RESOURCE", "EXISTING", { locator: { id: "document-1" } }],
+    ["RESOURCE_DRAFT", "DRAFT", { draft: { related_site_id: "untrusted-proposal" } }],
+    ["COLLECTION", "COLLECTION", { server_filter: { status: "OPEN" } }],
+    ["AGGREGATE", "AGGREGATE", { server_filter: { group_by: ["site"] } }],
+    ["BULK", "BULK", { items: [{ id: "item-1" }, { id: "item-2" }] }],
+    ["NON_RESOURCE", "NON_RESOURCE", {}],
+  ];
+  for (const [mode, shape, payload] of fixtures) {
+    const d = denied();
+    d.request.resource_request = { mode, ...payload };
+    d.resource.request_shape = shape;
+    assert.equal(inspect(d), undefined, mode);
+    assert.equal(inspect(d) === true, false);
+  }
+});
+
+test("security: missing, invented and legacy-alias request modes fail closed", () => {
+  for (const payload of [
+    {}, { kind: "NON_RESOURCE" }, { mode: "EXISTING" },
+    { mode: "DRAFT", draft: {} }, { mode: "NON_RESOURCE", draft: {} },
+    { mode: "NON_RESOURCE", force_allow: true },
+    { mode: "COLLECTION", server_filter: {}, select_all: true },
+    { mode: "EXISTING_RESOURCE", locator: { id: "1" }, actor_id: "fake" },
+    { mode: null },
+  ]) {
+    const d = denied();
+    d.request.resource_request = payload;
+    fail(d);
+  }
+});
+
+test("contractual: request modes require their precise payload categories", () => {
+  for (const [mode, shape, key, bad] of [
+    ["EXISTING_RESOURCE", "EXISTING", "locator", []],
+    ["EXISTING_RESOURCE", "EXISTING", "locator", {}],
+    ["RESOURCE_DRAFT", "DRAFT", "draft", null],
+    ["COLLECTION", "COLLECTION", "server_filter", ["all"]],
+    ["AGGREGATE", "AGGREGATE", "server_filter", "everything"],
+    ["BULK", "BULK", "items", {}],
+    ["BULK", "BULK", "items", []],
+  ]) {
+    const d = denied();
+    d.request.resource_request = { mode, [key]: bad };
+    d.resource.request_shape = shape;
+    fail(d);
+    const missing = denied();
+    missing.request.resource_request = { mode };
+    missing.resource.request_shape = shape;
+    fail(missing);
+  }
+  const scoped = denied();
+  scoped.request.resource_request = { mode: "COLLECTION", server_filter: {} };
+  scoped.resource.request_shape = "COLLECTION";
+  // Empty caller predicates never imply broad server authorization.
+  assert.equal(inspect(scoped), undefined);
+});
+
+test("security: bulk item arrays reject holes, nonrecords and empty locators", () => {
+  for (const items of [
+    new Array(2), [null], [false], [1], ["id"], [{}],
+    [{ id: "valid" }, undefined],
+  ]) {
+    const d = denied();
+    d.request.resource_request = { mode: "BULK", items };
+    d.resource.request_shape = "BULK";
+    fail(d);
+  }
+  const getterBulk = denied();
+  let invoked = 0;
+  const item = {};
+  Object.defineProperty(item, "id", {
+    enumerable: true, get() { invoked++; throw Error("BULK_ID_GETTER"); },
+  });
+  getterBulk.request.resource_request = { mode: "BULK", items: [item] };
+  getterBulk.resource.request_shape = "BULK";
+  fail(getterBulk);
+  assert.equal(invoked, 0);
+});
+
+test("contractual: versions and idempotency are conditional fields, never authority", () => {
+  for (const [mode, shape, payload] of [
+    ["EXISTING_RESOURCE", "EXISTING", { locator: { id: "v1" }, expected_version: "version-7" }],
+    ["RESOURCE_DRAFT", "DRAFT", { draft: {}, idempotency_key: "create-123" }],
+    ["BULK", "BULK", { items: [{ id: "v1" }], idempotency_key: "bulk-123" }],
+  ]) {
+    const valid = denied();
+    valid.request.resource_request = { mode, ...payload };
+    valid.resource.request_shape = shape;
+    assert.equal(inspect(valid), undefined);
+    const key = Object.hasOwn(payload, "expected_version") ? "expected_version" : "idempotency_key";
+    for (const wrong of ["", null, 10, false]) {
+      const d = denied();
+      d.request.resource_request = { mode, ...payload, [key]: wrong };
+      d.resource.request_shape = shape;
+      fail(d);
+    }
+  }
+  for (const [mode, shape, payload] of [
+    ["NON_RESOURCE", "NON_RESOURCE", { expected_version: "x" }],
+    ["COLLECTION", "COLLECTION", { server_filter: {}, idempotency_key: "x" }],
+    ["BULK", "BULK", { items: [{ id: "x" }], atomicity: "PARTIAL_WITH_RESULTS" }],
+  ]) {
+    const d = denied();
+    d.request.resource_request = { mode, ...payload };
+    d.resource.request_shape = shape;
+    fail(d);
+  }
+});
+
+test("security: a different resolved request_shape cannot be reused for the request", () => {
+  for (const [mode, payload] of [
+    ["EXISTING_RESOURCE", { locator: { id: "x" } }],
+    ["RESOURCE_DRAFT", { draft: {} }],
+    ["COLLECTION", { server_filter: {} }],
+    ["AGGREGATE", { server_filter: {} }],
+    ["BULK", { items: [{ id: "x" }] }],
+  ]) {
+    const d = denied();
+    d.request.resource_request = { mode, ...payload };
+    // The old NON_RESOURCE outcome is not valid for a different mode.
+    fail(d);
+  }
+  const extra = denied();
+  extra.request.resource_request = { mode: "NON_RESOURCE", resolver_name: "caller-chosen" };
+  fail(extra);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
