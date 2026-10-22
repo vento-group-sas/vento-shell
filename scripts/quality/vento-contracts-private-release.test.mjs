@@ -136,6 +136,33 @@ test('GitHub publication is manual, main-only, SHA-pinned and credential-isolate
 });
 
 
+
+test('CI005 consumer evidence is generated without publish credentials and restored in the same run', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const workflow = fs.readFileSync(
+    path.join(root, '.github/workflows/vento-contracts-private-npm-release.yml'),
+    'utf8',
+  );
+  const [certify, protectedJob] = workflow.split('  protected-private-registry:\n');
+  assert(certify && protectedJob);
+  assert.match(certify, /persist-credentials: false/u);
+  assert.doesNotMatch(certify, /GITLAB_NPM_PUBLISH_TOKEN:|GH_TOKEN:/u);
+  assert.match(certify, /if: \$\{\{ inputs\.operation == 'publish' \}\}\n        run: \|\n          npm run build --workspace @vento\/os-context/u);
+  assert.match(certify, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
+  assert.match(certify, /uses: actions\/upload-artifact@v7/u);
+  assert.match(protectedJob, /uses: actions\/download-artifact@v7/u);
+  const identity = ['vento-contracts-ci005-protected-', '$', '{{ github.sha }}-', '$', '{{ github.run_id }}'].join('');
+  assert.equal(workflow.split('name: ' + identity).length - 1, 2);
+  assert.equal(workflow.split('path: .delivery/shared-package-compatibility/contracts-pilot').length - 1, 2);
+  assert.match(certify, /if-no-files-found: error/u);
+  assert(certify.indexOf('vento-contracts-viso-consumer-probe.mjs')
+    < certify.indexOf('uses: actions/upload-artifact@v7'));
+  assert(protectedJob.indexOf('uses: actions/download-artifact@v7')
+    < protectedJob.indexOf('GITLAB_NPM_PUBLISH_TOKEN:'));
+  assert.doesNotMatch(protectedJob, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
+});
+
+
 test('real private publication requires CI005 pilot identity and refuses uncertified compatibility', () => {
   const release = releaseContract(SHA);
   assert.equal(release.compatibility_required, false);

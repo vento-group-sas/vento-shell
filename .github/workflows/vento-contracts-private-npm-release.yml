@@ -29,7 +29,7 @@ jobs:
     name: Certificar SHA y evidencias sin credenciales
     if: ${{ github.ref == 'refs/heads/main' && github.repository == 'vento-group-sas/vento-shell' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Rechazar SHA, canal o paquete no aprobado
         shell: bash
@@ -73,6 +73,22 @@ jobs:
             --evidence-root .delivery/shared-package-builds --json
       - name: Certificar preparacion CI003 sin remotos ni publicacion
         run: node scripts/quality/vento-contracts-private-release.mjs --mode prepare
+      - name: Verificar CI005 fisico de VISO sin credenciales de publicacion
+        if: ${{ inputs.operation == 'publish' }}
+        run: |
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+          node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+          node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+      - name: Transferir evidencia CI005 certificada del mismo SHA y workflow
+        if: ${{ inputs.operation == 'publish' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci005-protected-${{ github.sha }}-${{ github.run_id }}
+          path: .delivery/shared-package-compatibility/contracts-pilot/*.json
+          if-no-files-found: error
+          retention-days: 7
 
   protected-private-registry:
     name: Auditar o publicar prerelease protegido con SHA exacto
@@ -110,6 +126,12 @@ jobs:
             --package-root packages/contracts \
             --contract scripts/quality/vento-contracts-pilot-build-contract.json \
             --evidence-root .delivery/shared-package-builds --json
+      - name: Recuperar evidencia CI005 de este run antes de publicar
+        if: ${{ inputs.operation == 'publish' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: vento-contracts-ci005-protected-${{ github.sha }}-${{ github.run_id }}
+          path: .delivery/shared-package-compatibility/contracts-pilot
       - name: Auditar GitLab privado o publicar un unico prerelease por CI003
         env:
           GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
