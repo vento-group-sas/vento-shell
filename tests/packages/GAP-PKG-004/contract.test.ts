@@ -21,7 +21,7 @@ type Gate = {
   canonical_snapshot: { task_ids: string[] };
   implementation_units: Array<{ unit_id: string }>;
   physical_identity: { targets: Target[] };
-  physical_discovery: { findings: Target[]; status: string; unresolved_findings: string[] };
+  physical_discovery: { findings: Target[]; status: string; unresolved_findings: string[]; searches: Array<{ repository: string; surface: string; method: string; evidence: string }> };
   evidence_plan: { observability: Array<{ signal: string }>; acceptance_criteria: string[]; rollback_steps: string[] };
   deployment_environment: { production_authorized: boolean };
 };
@@ -96,6 +96,42 @@ test('GAP-PKG-004 preserves physical target and finding integrity during discove
       assert.equal(fs.existsSync(path.join(root, target.path)), true, target.path);
     }
   }
+});
+
+test('GAP-PKG-004 matures nine historical unresolved issues with 51/51 physical traceability', () => {
+  const pendingTargetPath =
+    'packages/contracts/authorization/catalog/candidates/anima-attendance-checkout-review.json';
+  const target = gate.physical_identity.targets.find((entry) => entry.path === pendingTargetPath);
+  const finding = gate.physical_discovery.findings.find((entry) => entry.path === pendingTargetPath);
+  assert.ok(target, 'Sensitive permission candidate has an explicit authorized physical target');
+  assert.deepEqual(finding, target,
+    'The permission candidate must also have a matching physical discovery finding');
+  const targets = uniqueSorted(gate.physical_identity.targets.map((entry) => JSON.stringify(entry)));
+  const findings = uniqueSorted(gate.physical_discovery.findings.map((entry) => JSON.stringify(entry)));
+  assert.equal(targets.length, 51, 'The current canonical 51-target inventory cannot silently shrink');
+  assert.deepEqual(findings, targets, 'Every target requires an exact physical finding');
+  const reviews = gate.physical_discovery.searches
+    .filter((entry) => entry.surface.startsWith('GAP-PKG-004 / MADURACION-F'));
+  assert.equal(reviews.length, 9, 'One explicit maturity decision per historical unresolved issue');
+  assert.equal(gate.physical_discovery.unresolved_findings.length, 9,
+    'Historical composite issues cannot be deleted merely for evidence of sub-oracle progress');
+  const acceptedStatuses = new Set([
+    'PARCIAL', 'BLOCKED_E5', 'PENDING_ORACLES', 'BLOCKED_GOVERNANCE',
+  ]);
+  reviews.forEach((entry, index) => {
+    const expectedId = 'F' + String(index + 1).padStart(2, '0');
+    assert.match(entry.surface, new RegExp('^GAP-PKG-004 / MADURACION-' + expectedId + ' '));
+    assert.equal(entry.repository, 'vento-group-sas/vento-shell');
+    const status = entry.method.match(/^ESTADO=([A-Z0-9_]+);/u)?.[1];
+    assert.ok(status && acceptedStatuses.has(status),
+      'A declared partial/blocked state is required for ' + expectedId);
+    assert.match(entry.method, /; ACREDITADO=.{30,}; PENDIENTE=.{30,}; SIGUIENTE=.{35,}/u);
+    assert.ok(entry.evidence.length >= 55, 'Evidence provenance must be specific');
+  });
+  assert.equal(gate.status, 'MATURATION_DRAFT');
+  assert.equal(gate.physical_discovery.status, 'PENDING');
+  assert.equal(gate.authorization.decision, 'PENDING');
+  assert.equal(gate.deployment_environment.production_authorized, false);
 });
 
 test('GAP-PKG-004 applies the prevailing location decision without rewriting protected target identities', () => {

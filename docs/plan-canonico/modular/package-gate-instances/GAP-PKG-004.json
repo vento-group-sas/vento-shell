@@ -1805,6 +1805,60 @@
         "surface": "GAP-PKG-004 / VISO HTTP Next SSR real GoTrue SITE vs GLOBAL permission visibility 2026-10-16",
         "method": "Ampliacion del test existente scripts/quality/viso-consumer-baseline-gate.test.mjs (sin nuevos archivos). En VISO Next.js local via loopback HTTP se usó sesion real GoTrue emitida por @supabase/ssr con cookies válidas, contra Supabase Docker LOCAL: operador humano sintético, trabajador A misma sede, trabajador B otra sede, employee_sites reales, grants temporales SITE/GLOBAL y permiso canónico workforce.employees.view temporal SI estaba ausente. También permiso temporal de gestión y una concesión GLOBAL sintética de targetA identificada por UUID exclusivo para distinguir fila visible de opción disponible. Se verificaron permisos efectivos por RPC Auth, filtrado PostgREST, HTTP Next y que el UUID de concesión aparezca SOLAMENTE en respuesta a operador con GLOBAL. Las pruebas negativas anónimas y JWT falso se conservaron. Limpieza en finally con DELETE por IDs exactos y auth.admin.deleteUser, verificación snapshot pre/post cero residuos. Sin recursos/secretos externos, sin despliegue ni cambios STAGING.",
         "evidence": "RESULTADO FINAL JOB MCP 9166df68-35ea-402a-81e8-be482cf8d5bf: VISO test 45 PASS / 0 FAIL / 0 SKIP, exit_code=0, git_status_unchanged=true. PASA HTTP REAL: SITE operator con GoTrue autentificado consulta /staff/targetA HTTP 200, incluye nombre empleado A y NO incluye UUID único de grant GLOBAL de targetA; intento de ver /staff/targetB sin grant GLOBAL denegado con redirect no-access sin 500 ni fuga de nombre B; al agregar al mismo operador concesiones GLOBAL explícitas de workforce.employees.view y staff.permissions.manage, authClient has_permission(NULL)=true, PostgREST devuelve grant targetA y la respuesta Next incluye UUID exclusivo de esa concesión global; operador accede a targetB HTTP200 con contenido del target legítimo. Las comprobaciones anónimo real y JWT falsificado también PASS. La prueba comparó snapshots para Auth/public.users/employees/employee_sites/employee_settings/employee_permissions/apps-permissions sintéticas/sites antes y después: 0 residuos. LOS FAIL anteriores se conservan: job 5522b0... duplicidad de employee_sites generada por trigger; job e3bff... y 183a... asercion incorrecta sobre HTML <tbody> que no existe como literal en respuesta Next, a pesar de RPC/POSTGREST correctos. El oráculo final evita confundir fila de grant con opción del catálogo mediante UUID propio del registro. Codigo VISO staff detail SHA b3e9c0166d7408b1f1e79f7f6690c5adfb608db0dba87f8f8d61b899f9817512; archivo de pruebas SHA 1ff84ad692add9709bbb520f10f6c9cc45668ca965cbd2fe1d45b25956ffbe9b. ESTE suboráculo HTTP nominal SITE/GLOBAL LOCAL SE CIERRA sin repetición si entradas sin cambios. LIMITES: el permiso workforce.employees.view se aprovisiona TEMPORALMENTE SOLO EN LA PRUEBA si falta; la materialización canónica local/STAGING post-gate sigue PENDING y su SKIP histórico independiente NO se declara PASS. No se hizo smoke post-migración en STAGING ni operación real en producción, no se amplió scope de otros componentes. POST_NOMINAL_HTTP_QUALITY_VALIDATED_20261016: test JS es sintácticamente válido node --check SHA 1ff84ad692add9709bbb520f10f6c9cc45668ca965cbd2fe1d45b25956ffbe9b. VISO lint job 290bf034-d65d-4c1a-ac99-f1b7defae7b5 PASS exit0, 0 errores y 35 warnings de deuda preexistente en otros targets; git_status_unchanged=true. Shell package scope/gate job 3636d772-a3d3-4a0a-9f33-3351f720fda8 PASS ambos exit0: package_scope 1 paquete, 25 traslados sin pérdida; package_gate_check 14 expedientes, git_status_unchanged=true. JSON.parse del dossier PASS SHA 9089cce1eba0637464e0ef485908d579aad5dd60612b507833fbd35cac5a1e85 antes de nota. No se repiten baterías por mero append del registro. No se concede E5, no se aplicó SQL remoto."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F01 VISO_ADMIN_SITE_GLOBAL (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=HTTP GoTrue REAL LOCAL SITE A/B, GLOBAL y anon/JWT falso PASS 45/45; page STAFF en VISO PR #19 HEAD 7a8e7a7f; preview actual 46/46 PASS; PENDIENTE=Huérfanos de foto, selector GLOBAL de manager SITE fuera de target y smoke STAGING aún sin prueba; SIGUIENTE=Autorizar alcance específico de fotos/selector; inspección de propiedad Storage, rollback de objetos y UX; smoke autenticado STAGING tras E5.",
+        "evidence": "VISO job 9166df68-35ea-402a-81e8-be482cf8d5bf; PR #19 7a8e7a7f"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F02 MIG_DIRECT_001 (2026-10-22)",
+        "method": "ESTADO=BLOCKED_E5; ACREDITADO=STAGING apps=10/10, VISO=1, baseline de 22 migraciones presente y preflight por catálogo app superado; PENDIENTE=Dos migrations 20261012173553 y 20261020223916 sin aplicar; documents aún público; validación de dependencias y recuperación pendientes; SIGUIENTE=Certificar snapshot/restauración AUTH-DB-029, preflight ACL/Storage/ORIGO, E5-GATE-008; desplegar ambas migraciones por orden y verificar smoke/reversa.",
+        "evidence": "STAGING SELECT 2026-10-22; manifest 24; AUTH-DB-028/029; candidato a8557ea5"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F03 H_CODE_017_008_009 (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=GoTrue LOCAL documento propio/ajeno y grant SITE JWT + signed URL 200/denegado acreditados, sin residuos; PENDIENTE=En STAGING bucket documents public=true, 4 vistas SECURITY DEFINER, sin smoke ANIMA/VISO tras política privada; SIGUIENTE=Luego de gate: Storage privado + vistas invoker/ACL gobernadas, probar ANIMA propio/ajeno, VISO SITE y vistas 200/403; reversa compatible.",
+        "evidence": "MCP b76362f1-ff1f-4c9e-a723-c76059077474; advisors STAGING 4 ERROR views; H-CODE-017-008/009"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F04 H_CODE_017_010 (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=LOCAL revocación directa 5 RPC, wrapper dispositivo con PIN/turno y positivos service_role de inventario/precio y consumo stock PASS; PENDIENTE=STAGING conserva EXECUTE antiguo; no hubo prueba post-revocación de consumidores vivos bajo GoTrue/SSR y datos sintéticos; SIGUIENTE=Tras E5 probar llamadas anon/auth denegadas, wrapper legítimo autorizado, operaciones inventario/costo/dispositivo, compatibilidad ORIGO y reversa de grants.",
+        "evidence": "E2E local ea523308-bf34-4c2e-b42b-71b625efd28f; dispositivo 748662f3-445b-4d47-8071-c9e11453caec"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F05 TWENTY_TWO_GAP_SIGNALS (2026-10-22)",
+        "method": "ESTADO=PENDING_ORACLES; ACREDITADO=Fixture y evidence_plan conservan 22 gap_signals y 14 TREQ canónicos, batería técnica no reemplaza oráculos empresariales; PENDIENTE=Sin matriz de aceptación positiva/negativa y ambiente SHA específico SATISFIED/N_A aprobado para CADA señal; diferidos no equivalen a PASS; SIGUIENTE=Conciliar las 22 señales E1 con requisitos y propietario/capacidad; exigir predicado, actor, ambiente, QA negativa, reversa y aceptación antes de COMPLETE.",
+        "evidence": "tests/packages/GAP-PKG-004/fixtures.json 22/14; E5 y PROC-COVER-007; 50 pgTAP histórico no E2E"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F06 PUBLICATION_AND_E5_AUTH (2026-10-22)",
+        "method": "ESTADO=BLOCKED_GOVERNANCE; ACREDITADO=Shell #1037 HEAD a8557ea5 CI 3/3 PASS y VISO #19 HEAD 7a8e7a7f gate PASS, ambos DRAFT; scope 51 targets; PENDIENTE=Permiso nuevo reservado no publicado, 0 en STAGING, E5-GATE-008 y authorization.decision PENDING, physical_discovery PENDING; assistant_remote_mutations=false; SIGUIENTE=Consolidar 9 decisiones/riesgos, publicacion versionada AUTH-CAT sin alterar 1.0.0, certificación backup/rollback AUTH-DB-029; solicitar gate E5 formal y operador remoto autorizado.",
+        "evidence": "GitHub Actions 39856475984/39856476032/39856476078 y 39857141962; implementation-control.json"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F07 TECHNICAL_CONSUMERS_EDGE_ORIGO (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=Edge/Auth, Storage SITE, pricing/inventory, dispositivo y VISO HTTP con pruebas LOCAL ya registradas; ORIGO PR #6 DRAFT; PENDIENTE=Pendientes QR/PDF históricos, enlace comprador, cron/secretos y continuidad ANIMA/ORIGO/VISO tras migración; sin smoke STAGING; lint global Shell FAIL 11 errores/13 advertencias en Edge Functions y plantilla fuera de los dos targets de maduración; SIGUIENTE=Construir matriz de consumidores exacta y E2E nominal/negativo por cada ruta en ambiente autorizado, con tracing y rollback; no repetir pruebas locales PASS sin cambios.",
+        "evidence": "GAP-PKG-004 searches historicos Edge/ORIGO; ORIGO PR #6 985eee77; migration 20261012173553"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F08 INVITATION_AUTH_RESEND (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=GoTrue+Edge LOCAL create/accept 200 y mutaciones fallidas/409; CAS resend_claim TTL 90s, carrera cancel/resend y Mailpit LOCAL probados; PENDIENTE=Entrega Resend real, incertidumbre después de envío, exactly-once/outbox, reconciliación y recovery por proveedor aún sin certificar; SIGUIENTE=Diseñar aprobación y target físico separado para outbox transaccional + worker/idempotencia; probar email/GoTrue reales con cuenta QA, reintento, cancelación y recuperación sin duplicado.",
+        "evidence": "Jobs RESEND_CAS_CLAIM_LOCAL_26_PASS y MAILPIT_LOCAL_CAPTURE_PASS_6; no correos externos"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / MADURACION-F09 ANIMA_VISO_INVITE_UI (2026-10-22)",
+        "method": "ESTADO=PARCIAL; ACREDITADO=Typecheck ANIMA/VISO y tests invitaciones LOCAL PASS; VISO build+lint y QA nominal VISO publicadas DRAFT; PENDIENTE=QA visual Android autenticada, confirmación de correo proveedor, flujo real de invitación y placeholder histórico en archivo fuera del target; ANIMA local detrás PR #6 y untracked ajeno; SIGUIENTE=Preservar worktree, aprobar alcance específico del placeholder/visual UI, certificar create-resend-cancel-accept en STAGING después E5 con usuarios sintéticos y sin residuos.",
+        "evidence": "ANIMA PR #6 370463ce; VISO PR #19 7a8e7a7f; targets y QA UI históricos"
       }
     ],
     "findings": [
@@ -2107,6 +2161,12 @@
         "path": "src/components/support/use-support-actions.ts",
         "symbol_or_surface": "ANIMA: persistir ticket attendance idempotente en interfaz frente a fallo posterior del mensaje, sin duplicar caso",
         "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/catalog/candidates/anima-attendance-checkout-review.json",
+        "symbol_or_surface": "VPROC-0008 permiso nuevo ANIMA checkout_review.decide por sede: candidato sin publicacion, grants ni cambio a 1.0.0/1.1.0",
+        "operation": "CREAR"
       }
     ],
     "unresolved_findings": [
