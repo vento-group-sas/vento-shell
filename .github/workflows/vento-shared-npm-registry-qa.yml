@@ -108,6 +108,9 @@ jobs:
           npm run build --workspace @vento/os-context
           npm run build --workspace @vento/supabase
 
+      - name: Probar parsers seguros candidatos fuera de alpha.1 (sin publicacion)
+        run: node --test packages/contracts/authorization/candidates/safe-projections-v1.test.mjs
+
       - name: Verificar las superficies privadas y tarballs npm de las fundaciones
         run: |
           npm run validate --workspace @vento/contracts
