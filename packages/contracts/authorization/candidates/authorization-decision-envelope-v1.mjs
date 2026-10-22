@@ -127,6 +127,28 @@ const REQUEST_CONTROL_KEYS = new Set([
   "expected_outcome", "allow", "can_operate", "bypass", "force_allow",
   "ignore_denies", "skip_resource_resolution", "skip_prerequisites",
 ]);
+// Physical request "mode" values are preserved from AUTH-DB-034. Output
+// request_shape has different EXISTING/DRAFT tokens by canonical contract.
+const REQUEST_MODES = new Map([
+  ["EXISTING_RESOURCE", {
+    output: "EXISTING", required: ["mode", "locator"], optional: ["expected_version"],
+  }],
+  ["RESOURCE_DRAFT", {
+    output: "DRAFT", required: ["mode", "draft"], optional: ["idempotency_key"],
+  }],
+  ["COLLECTION", {
+    output: "COLLECTION", required: ["mode", "server_filter"], optional: [],
+  }],
+  ["AGGREGATE", {
+    output: "AGGREGATE", required: ["mode", "server_filter"], optional: [],
+  }],
+  ["BULK", {
+    output: "BULK", required: ["mode", "items"], optional: ["idempotency_key"],
+  }],
+  ["NON_RESOURCE", {
+    output: "NON_RESOURCE", required: ["mode"], optional: [],
+  }],
+]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -193,6 +215,32 @@ function jsonRecord(value) {
   const snapshot = record(value);
   jsonData(value);
   return snapshot;
+}
+function resourceRequest(input) {
+  // Source-only structure: resolver selection and authoritative business
+  // checks still belong exclusively to the approved backend resource contract.
+  const v = jsonRecord(input);
+  const schema = REQUEST_MODES.get(v.mode);
+  if (!schema) invalid();
+  const permitted = new Set([...schema.required, ...schema.optional]);
+  if (schema.required.some((key) => !Object.hasOwn(v, key))
+    || Object.keys(v).some((key) =>
+      REQUEST_CONTROL_KEYS.has(key) || !permitted.has(key))) invalid();
+  if (Object.hasOwn(v, "locator")) {
+    if (Object.keys(jsonRecord(v.locator)).length === 0) invalid();
+  }
+  if (Object.hasOwn(v, "draft")) jsonRecord(v.draft);
+  if (Object.hasOwn(v, "server_filter")) jsonRecord(v.server_filter);
+  if (Object.hasOwn(v, "items")) {
+    const items = array(v.items);
+    if (items.length === 0) invalid();
+    for (const item of items) {
+      if (Object.keys(jsonRecord(item)).length === 0) invalid();
+    }
+  }
+  if (Object.hasOwn(v, "expected_version") && !text(v.expected_version)) invalid();
+  if (Object.hasOwn(v, "idempotency_key") && !text(v.idempotency_key)) invalid();
+  return schema.output;
 }
 const textList = (v) => array(v, text);
 const laneList = (v) => array(v, (x) => x === "BASE" || x === "OPERATIONAL");
@@ -305,10 +353,8 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     if (!isAppCode(r.app_code) || !isPermissionKey(r.permission_key)
       || PERMISSION_BY_KEY[r.permission_key]?.app_code !== r.app_code
       || !KINDS.has(r.operation_kind) || !SOURCES.has(r.request_source)) invalid();
-    // ResourceRequest subtypes are not yet published: enforce safe JSON only.
-    // Reject root-level attempts to supply authority, decision or bypass state.
-    const resourceRequest = jsonRecord(r.resource_request);
-    if (Object.keys(resourceRequest).some((key) => REQUEST_CONTROL_KEYS.has(key))) invalid();
+    // Six guarded request subtypes; no backend authority is derived here.
+    const requestedShape = resourceRequest(r.resource_request);
     const requestedFields = textList(r.requested_fields);
     if (new Set(requestedFields).size !== requestedFields.length) invalid();
 
@@ -326,6 +372,7 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
 
     const resource = exact(v.resource, RESOURCE);
     if (!text(resource.resource_type) || !RESOURCE_SHAPES.has(resource.request_shape)
+      || resource.request_shape !== requestedShape
       || !RESOURCE_STATUSES.has(resource.resolution_status)
       || !nullableText(resource.resource_version)) invalid();
     const resourceIds = textList(resource.resource_ids);
