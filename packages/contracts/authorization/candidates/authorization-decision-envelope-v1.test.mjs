@@ -773,6 +773,97 @@ test("security: deny IDs and blocked lanes cannot be fabricated or misplaced", (
   fail(borrowedDeny);
 });
 
+test("contractual: opaque resource leaves accept nested JSON without granting authority", () => {
+  const d = denied();
+  const shared = { code: "synthetic", count: 2, enabled: false };
+  d.resource.state_snapshot = {
+    nested: { rows: [shared, shared, null, true, "text", 0.5] },
+  };
+  d.resource.ownership = Object.assign(Object.create(null), {
+    holder: "synthetic-holder", details: { ids: ["site-1"] },
+  });
+  d.resource.subject = { reference: { keys: ["actor-untrusted"] } };
+  d.resource.required_sides = [{ reference: { origins: [{ id: "source" }] } }];
+  d.resource.territory.origin = { reference: { site: "synthetic-site" } };
+  d.resource.territory.destination = { reference: { site: "synthetic-destination" } };
+  assert.equal(inspect(d), undefined);
+});
+
+test("security: nested getters in opaque resource data are never executed", () => {
+  let invoked = 0;
+  for (const target of [
+    (d, child) => { d.request.resource_request = { kind: "NON_RESOURCE", nested: { child } }; },
+    (d, child) => { d.resource.state_snapshot = { nested: { child } }; },
+    (d, child) => { d.resource.ownership = { nested: { child } }; },
+    (d, child) => { d.resource.subject = { nested: { child } }; },
+    (d, child) => { d.resource.required_sides = [{ nested: { child } }]; },
+    (d, child) => { d.resource.territory.origin = { nested: { child } }; },
+    (d, child) => { d.resource.territory.destination = { nested: { child } }; },
+  ]) {
+    const d = denied();
+    const leaf = {};
+    Object.defineProperty(leaf, "spoofed", {
+      enumerable: true,
+      get() { invoked += 1; throw new Error("NESTED_ACCESSOR_EXECUTED"); },
+    });
+    target(d, leaf);
+    fail(d);
+  }
+  assert.equal(invoked, 0);
+});
+
+test("security: opaque nested data reject non-JSON primitives and special objects", () => {
+  for (const value of [undefined, 1n, Symbol("hidden"), () => true,
+    Number.NaN, Infinity, -Infinity, new Date(), new Map()]) {
+    const d = denied();
+    d.resource.state_snapshot = { nested: { value } };
+    fail(d);
+  }
+  const wrongPrototype = denied();
+  wrongPrototype.resource.ownership = { child: Object.create({ inherited: true }) };
+  fail(wrongPrototype);
+  const symbolKey = denied();
+  const child = { value: 1 };
+  child[Symbol("hidden")] = true;
+  symbolKey.resource.state_snapshot = { child };
+  fail(symbolKey);
+});
+
+test("security: nested arrays and circular resource snapshots fail closed", () => {
+  const circular = denied();
+  const loop = { id: "synthetic" };
+  loop.self = loop;
+  circular.resource.state_snapshot = { payload: loop };
+  fail(circular);
+  const mutual = denied();
+  const left = {}, right = {};
+  left.next = right; right.next = left;
+  mutual.resource.state_snapshot = { left };
+  fail(mutual);
+  for (const arrayValue of [
+    new Array(1), [undefined], [Number.NaN], [() => true],
+  ]) {
+    const d = denied();
+    d.resource.state_snapshot = { items: arrayValue };
+    fail(d);
+  }
+  const withExtra = denied();
+  const values = [1, 2];
+  values.bypass = true;
+  withExtra.resource.state_snapshot = { items: values };
+  fail(withExtra);
+  let invoked = 0;
+  const getterArray = denied();
+  const items = [1];
+  Object.defineProperty(items, "0", {
+    enumerable: true,
+    get() { invoked++; throw new Error("ARRAY_ACCESSOR_EXECUTED"); },
+  });
+  getterArray.resource.state_snapshot = { items };
+  fail(getterArray);
+  assert.equal(invoked, 0);
+});
+
 test("security: getter-backed DTO properties cannot execute", () => {
   let invoked = 0;
   const d = denied();
