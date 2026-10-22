@@ -17,6 +17,7 @@ import {
   normalizeSyntheticState,
   packageSlug,
   parseSemver,
+  parseRemoteAnnotatedTag,
   privateReleaseCreateArgs,
   privateReleaseNotes,
   releasePreviewManifest,
@@ -866,4 +867,42 @@ test('release preview rejects symlink entries even when regular dist hashes appe
     buildEvidence: scenario.buildEvidence,
   });
   assert(errors.includes('PRIVATE_PREVIEW_ARCHIVE_INVALID'));
+});
+
+
+test('remote annotated Git tag resolves peeled commit and requires annotation', () => {
+  const tag = tagForPackageVersion('@vento/contracts', '1.0.0-alpha.1');
+  const ref = 'refs/tags/' + tag;
+  const tip = 'a'.repeat(40);
+  const annotatedObject = 'b'.repeat(40);
+  const actual = parseRemoteAnnotatedTag(
+    annotatedObject + '\t' + ref + '\n'
+    + tip + '\t' + ref + '^{}\n',
+    tag,
+  );
+  assert.deepEqual(actual, { sha: tip, annotated: true });
+  assert.deepEqual(parseRemoteAnnotatedTag(tip + '\t' + ref + '\n', tag),
+    { sha: tip, annotated: false });
+  assert.equal(parseRemoteAnnotatedTag('', tag), null);
+});
+
+test('remote tag parser fails closed on unexpected refs or forged output', () => {
+  const tag = tagForPackageVersion('@vento/contracts', '1.0.0-alpha.1');
+  const sha = 'a'.repeat(40);
+  assert.throws(() => parseRemoteAnnotatedTag(
+    sha + '\trefs/tags/unrelated\n', tag,
+  ), /REMOTE_TAG_REFERENCE_MISMATCH/u);
+  assert.throws(() => parseRemoteAnnotatedTag(
+    'not-a-sha\trefs/tags/' + tag, tag,
+  ), /REMOTE_TAG_RESPONSE_INVALID/u);
+});
+
+test('lightweight remote tag cannot be treated as verified annotated provenance', () => {
+  const scenario = baseScenario();
+  const state = exactPublishedState(scenario);
+  state.tags[tagForPackageVersion('@vento/contracts', '1.2.3')].annotated = false;
+  scenario.observedState = normalizeSyntheticState(state);
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.includes('TAG_NOT_ANNOTATED'));
 });

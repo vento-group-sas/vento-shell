@@ -13,6 +13,9 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
   push:
     branches:
       - main
@@ -27,6 +30,9 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
 
 permissions:
   contents: read

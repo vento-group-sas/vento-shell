@@ -8,7 +8,7 @@ import {
   detectSecretsInTarball, parseSemver, readTarEntries,
   releasePreviewManifest, tagForPackageVersion,
 } from './shared-package-release-gate.mjs';
-import { NPM_REGISTRY_URL, PACKAGE_LOCATIONS } from './shared-package-registry-preflight.mjs';
+import { NPM_REGISTRY_URL, PACKAGE_LOCATIONS, queryGitLabPackages } from './shared-package-registry-preflight.mjs';
 
 const ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const PROTECTION_URL = 'https://gitlab.com/api/v4/projects/87892751/packages/protection/rules';
@@ -89,6 +89,54 @@ export function verifyPreview({ bytes, metadata, preview, targets }) {
     source_private_unchanged: true, preview_private: false, preview_pack: 'PASS',
     publication_executed: false, release_certified: false,
   };
+}
+
+
+export function packPilotPrivatePreview({
+  root = ROOT, temporaryRoot, packageName = PILOT_PACKAGE,
+} = {}) {
+  check(packageName === PILOT_PACKAGE, 'ONLY_CONTRACTS_PILOT_AUTHORIZED');
+  check(path.isAbsolute(temporaryRoot ?? ''), 'ABSOLUTE_TEMP_DIRECTORY_REQUIRED');
+  const target = PACKAGE_LOCATIONS.find((item) => item.name === packageName);
+  check(Boolean(target), 'PILOT_NOT_CANONICAL');
+  const tempStat = fs.lstatSync(temporaryRoot);
+  check(tempStat.isDirectory() && !tempStat.isSymbolicLink()
+    && fs.readdirSync(temporaryRoot).length === 0,
+  'TEMP_DIRECTORY_NOT_EMPTY_OR_UNSAFE');
+  fs.chmodSync(temporaryRoot, 0o700);
+  const pkg = path.join(root, 'packages', target.directory);
+  const sourcePath = path.join(pkg, 'package.json');
+  const original = fs.readFileSync(sourcePath);
+  const originalHash = createHash('sha256').update(original).digest('hex');
+  const { preview, targets } = releasePreviewManifest(JSON.parse(original.toString('utf8')));
+  check(preview.name === packageName && preview.version === PILOT_VERSION,
+    'PILOT_VERSION_MISMATCH');
+  safeDist(path.join(pkg, 'dist'));
+  const stage = path.join(temporaryRoot, 'staged-preview');
+  const archives = path.join(temporaryRoot, 'archives');
+  fs.mkdirSync(stage, { mode: 0o700 });
+  fs.mkdirSync(archives, { mode: 0o700 });
+  fs.cpSync(path.join(pkg, 'dist'), path.join(stage, 'dist'), { recursive: true });
+  const readme = path.join(pkg, 'README.md');
+  if (fs.existsSync(readme)) {
+    check(fs.lstatSync(readme).isFile()
+      && !fs.lstatSync(readme).isSymbolicLink(), 'README_UNSAFE');
+    fs.copyFileSync(readme, path.join(stage, 'README.md'));
+  }
+  fs.writeFileSync(path.join(stage, 'package.json'),
+    JSON.stringify(preview, null, 2) + '\n', { mode: 0o600 });
+  const userconfig = path.join(temporaryRoot, 'empty.npmrc');
+  fs.writeFileSync(userconfig, '', { mode: 0o600 });
+  const metadata = npmPack(stage, archives, userconfig);
+  const tarballPath = path.resolve(archives, String(metadata.filename ?? ''));
+  check(path.dirname(tarballPath) === archives
+    && fs.lstatSync(tarballPath).isFile()
+    && !fs.lstatSync(tarballPath).isSymbolicLink(), 'TARBALL_PATH_UNSAFE');
+  const bytes = fs.readFileSync(tarballPath);
+  const report = verifyPreview({ bytes, metadata, preview, targets });
+  check(createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex')
+    === originalHash, 'PRIVATE_MANIFEST_MUTATED');
+  return { tarballPath, report };
 }
 
 export function stagePreviews({ root = ROOT, sourceCommit = process.env.GITHUB_SHA } = {}) {
@@ -179,6 +227,102 @@ export async function auditProtectionRules({
   try { rules = await response.json(); } catch { check(false, 'PROTECTION_JSON_INVALID'); }
   return assessProtectionRules(rules);
 }
+
+const PRIVATE_GITLAB_PROJECT = 'https://gitlab.com/api/v4/projects/87892751';
+const GITLAB_API = 'https://gitlab.com/api/v4/';
+const PILOT_PACKAGE = '@vento/contracts';
+const PILOT_VERSION = '1.0.0-alpha.1';
+
+async function readGitLabJson(endpoint, token, fetchImpl, errorPrefix) {
+  check(endpoint.startsWith(GITLAB_API) && !endpoint.includes('?')
+    && !endpoint.includes('#'), 'UNSAFE_GITLAB_ENDPOINT');
+  let response;
+  try {
+    response = await fetchImpl(endpoint, {
+      method: 'GET', redirect: 'error',
+      headers: { 'PRIVATE-TOKEN': token, Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch {
+    check(false, errorPrefix + '_UNAVAILABLE');
+  }
+  check(response?.ok === true,
+    errorPrefix + '_HTTP_' + String(response?.status ?? 'UNKNOWN'));
+  let data;
+  try { data = await response.json(); } catch { check(false, errorPrefix + '_JSON_INVALID'); }
+  check(data && typeof data === 'object' && !Array.isArray(data),
+    errorPrefix + '_RESPONSE_INVALID');
+  return data;
+}
+
+// Read-only authority audit. GET rights alone do NOT prove npm publish worked;
+// they prove the principal satisfies project visibility, role and token scope
+// preconditions for a controlled first publication.
+export async function auditPrivatePublicationAuthority({
+  token = process.env.GITLAB_NPM_PUBLISH_TOKEN,
+  registryUrl = process.env.GITLAB_NPM_REGISTRY_URL,
+  packageName = PILOT_PACKAGE,
+  version = PILOT_VERSION,
+  fetchImpl = fetch,
+} = {}) {
+  check(registryUrl === NPM_REGISTRY_URL, 'REGISTRY_ENDPOINT_MISMATCH');
+  check(typeof token === 'string' && token.trim(), 'TOKEN_MISSING');
+  check(packageName === PILOT_PACKAGE && version === PILOT_VERSION,
+    'PILOT_IDENTITY_NOT_AUTHORIZED');
+  const project = await readGitLabJson(PRIVATE_GITLAB_PROJECT, token, fetchImpl,
+    'PROJECT');
+  check(project.id === 87892751 && project.visibility === 'private'
+    && project.archived === false && project.packages_enabled === true,
+  'PROJECT_PRIVACY_OR_PACKAGE_ACCESS_INVALID');
+  const identity = await readGitLabJson(GITLAB_API + 'user', token, fetchImpl,
+    'TOKEN_USER');
+  check(Number.isSafeInteger(identity.id) && identity.id > 0
+    && identity.state === 'active', 'TOKEN_USER_INACTIVE');
+  const tokenInfo = await readGitLabJson(
+    GITLAB_API + 'personal_access_tokens/self', token, fetchImpl, 'TOKEN_SELF');
+  check(tokenInfo.user_id === identity.id && tokenInfo.active === true
+    && tokenInfo.revoked === false && Array.isArray(tokenInfo.scopes)
+    && tokenInfo.scopes.includes('api'), 'TOKEN_SCOPE_OR_STATE_INSUFFICIENT');
+  if (typeof tokenInfo.expires_at === 'string') {
+    check(/^\d{4}-\d{2}-\d{2}$/u.test(tokenInfo.expires_at)
+      && tokenInfo.expires_at >= new Date().toISOString().slice(0, 10),
+    'TOKEN_EXPIRED_OR_DATE_INVALID');
+  }
+  const membership = await readGitLabJson(
+    PRIVATE_GITLAB_PROJECT + '/members/all/' + String(identity.id),
+    token, fetchImpl, 'PROJECT_MEMBER');
+  check(membership.id === identity.id && membership.state === 'active'
+    && Number.isInteger(membership.access_level)
+    && membership.access_level >= 40,
+  'PROJECT_MAINTAINER_ROLE_REQUIRED');
+  if (typeof membership.expires_at === 'string') {
+    check(/^\d{4}-\d{2}-\d{2}$/u.test(membership.expires_at)
+      && membership.expires_at >= new Date().toISOString().slice(0, 10),
+    'PROJECT_MEMBERSHIP_EXPIRED');
+  }
+  const protection = await auditProtectionRules({ token, registryUrl, fetchImpl });
+  check(protection.packages.some((item) => item.name === packageName
+    && item.protected === true), 'PILOT_PROTECTION_INVALID');
+  const rows = await queryGitLabPackages({ token, registryUrl, fetchImpl });
+  check(!rows.some((item) => item.name === packageName && item.version === version),
+    'EXACT_PACKAGE_VERSION_COLLISION');
+  return {
+    phase: 'PRIVATE_PUBLICATION_AUTHORITY_READ_ONLY',
+    source_registry: NPM_REGISTRY_URL,
+    project_private: true,
+    package_registry_enabled: true,
+    token_scope_api: true,
+    token_active: true,
+    principal_has_maintainer_or_higher: true,
+    npm_protection_pass: true,
+    exact_version_collision: false,
+    version,
+    package_name: packageName,
+    publication_executed: false,
+    token_publish_permission: 'PRECONDITIONS_VERIFIED_NOT_WRITE_TESTED',
+  };
+}
+
 async function main() {
   const [mode, extra] = process.argv.slice(2);
   check(!extra, 'EXTRA_CLI_ARGUMENT');

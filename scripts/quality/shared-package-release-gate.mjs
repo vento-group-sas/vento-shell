@@ -537,6 +537,7 @@ export function inspectObservedState(candidate, state) {
   const registry = normalized.registry[registryKey(candidate.package_name, candidate.release_version)] ?? null;
   const conflicts = [];
   if (tag && !exactRecord(tag, expected)) conflicts.push('TAG_IDENTITY_CONFLICT');
+  if (tag && tag.annotated !== true) conflicts.push('TAG_NOT_ANNOTATED');
   if (release && !exactRecord(release, expected)) conflicts.push('REMOTE_RELEASE_IDENTITY_CONFLICT');
   if (registry && !exactRecord(registry, expected)) conflicts.push('REGISTRY_VERSION_IDENTITY_CONFLICT');
   return {
@@ -695,15 +696,31 @@ function loadSyntheticState(statePath) {
   return normalizeSyntheticState(readJson(statePath, 'synthetic release state').value);
 }
 
+export function parseRemoteAnnotatedTag(source, tagName) {
+  if (!source?.trim()) return null;
+  const entries = source.trim().split(/\r?\n/u).map((line) => {
+    const match = line.match(/^([a-f0-9]{40})\s+(refs\/tags\/[^\s]+)$/u);
+    if (!match) throw new Error('REMOTE_TAG_RESPONSE_INVALID');
+    return { sha: match[1], ref: match[2] };
+  });
+  const exact = 'refs/tags/' + tagName;
+  if (entries.some((entry) => entry.ref !== exact && entry.ref !== exact + '^{}')) {
+    throw new Error('REMOTE_TAG_REFERENCE_MISMATCH');
+  }
+  const ref = entries.find((entry) => entry.ref === exact);
+  if (!ref) throw new Error('REMOTE_TAG_NOT_LISTED');
+  const peeled = entries.find((entry) => entry.ref === exact + '^{}');
+  return { sha: peeled?.sha ?? ref.sha, annotated: Boolean(peeled) };
+}
+
 function realTagCommit(repositoryRoot, tagName) {
   const result = run('git', ['ls-remote', 'origin', `refs/tags/${tagName}`, `refs/tags/${tagName}^{}`], {
     cwd: repositoryRoot,
   });
-  if (result.error || result.status !== 0 || !result.stdout.trim()) return null;
-  const lines = result.stdout.trim().split(/\r?\n/u);
-  const peeled = lines.find((line) => line.endsWith(`refs/tags/${tagName}^{}`));
-  const chosen = peeled ?? lines[0];
-  return chosen.split(/\s+/u)[0] ?? null;
+  if (result.error || result.status !== 0) {
+    throw new Error('REMOTE_TAG_READ_FAILED');
+  }
+  return parseRemoteAnnotatedTag(result.stdout, tagName);
 }
 
 export function privateReleaseNotes(candidate) {
@@ -774,9 +791,9 @@ function realObservedState(repositoryRoot, contract, candidate) {
   const synthetic = emptySyntheticState();
   const expected = expectedPublishedIdentity(candidate);
   if (tagCommit) {
-    synthetic.tags[candidate.tag_name] = tagCommit === candidate.source_commit
-      ? { ...expected, annotated: true }
-      : { ...expected, source_commit: tagCommit, annotated: true };
+    synthetic.tags[candidate.tag_name] = tagCommit.sha === candidate.source_commit
+      ? { ...expected, annotated: tagCommit.annotated }
+      : { ...expected, source_commit: tagCommit.sha, annotated: tagCommit.annotated };
   }
   if (release) {
     if (release.ambiguous) synthetic.releases[candidate.tag_name] = { ambiguous: true };
@@ -1042,16 +1059,27 @@ export function runGate({
         ? { ...preliminary, outcome: 'PASS', reasons: [] }
         : { ...preliminary, outcome: 'FAIL', reasons: ['SYNTHETIC_POST_READ_FAILED'] };
     } else {
-      const result = applyRealRelease({
-        repositoryRoot,
-        contract,
-        candidate: preliminary.candidate,
-        tarballPath: absoluteTarballPath,
-        observed: preliminary.observed,
-        allowRealRelease,
-      });
-      phases = result.phases;
-      finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      try {
+        const result = applyRealRelease({
+          repositoryRoot,
+          contract,
+          candidate: preliminary.candidate,
+          tarballPath: absoluteTarballPath,
+          observed: preliminary.observed,
+          allowRealRelease,
+        });
+        phases = result.phases;
+        finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      } catch {
+        // After the first remote write, failure might mean a PARTIAL release.
+        // Persist fail-closed evidence without echoing tokens or subprocess logs.
+        // Never report PASS until the tag, release and GitLab registry reconcile.
+        phases = ['REAL_RELEASE_INTERRUPTED_REMOTE_RECONCILIATION_REQUIRED'];
+        finalEvaluation = {
+          ...preliminary, outcome: 'BLOCKED',
+          reasons: ['REAL_RELEASE_NOT_CERTIFIED', 'REMOTE_STATE_RECONCILIATION_REQUIRED'],
+        };
+      }
     }
   } else if (preliminary.outcome === 'PASS' && preliminary.idempotent) {
     phases = ['IDEMPOTENT_NO_MUTATION'];
