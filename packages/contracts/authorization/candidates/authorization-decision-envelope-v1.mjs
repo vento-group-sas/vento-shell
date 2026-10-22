@@ -68,6 +68,11 @@ const KINDS = new Set(["READ", "CREATE", "UPDATE", "DELETE", "EXECUTE", "TRANSIT
 const SOURCES = new Set(["SERVER_ACTION", "RPC", "RLS", "API", "UI_GUARD", "JOB"]);
 const RESOURCE_SHAPES = new Set(["EXISTING", "DRAFT", "COLLECTION", "AGGREGATE", "BULK", "NON_RESOURCE"]);
 const RESOURCE_STATUSES = new Set(["RESOLVED", "MULTI_RESOLVED", "NOT_APPLICABLE", "UNRESOLVED", "CONFLICT", "ISOLATED"]);
+// AUTH-CTX-018 section 30: these are the only canonical field categories.
+const FIELD_CLASSES = new Set([
+  "PUBLIC", "INTERNAL", "SENSITIVE", "RESTRICTED",
+  "IMMUTABLE", "SYSTEM_MANAGED",
+]);
 const LANE_OUTCOMES = new Set(["ALLOW", "DENY", "NOT_APPLICABLE"]);
 const READINESS = new Set(["READY", "UNAVAILABLE", "INVALID", "NOT_APPLICABLE"]);
 const CONSTRAINT_STATUS = new Set(["PASS", "FAIL", "NOT_APPLICABLE"]);
@@ -367,7 +372,9 @@ function territory(input) {
   if (!nullableText(v.organization_id)
     || typeof v.isolated_environment !== "boolean"
     || !text(v.source) || typeof v.coherent !== "boolean") invalid();
-  for (const key of TERRITORY_ID_FIELDS) textList(v[key]);
+  for (const key of TERRITORY_ID_FIELDS) {
+    if (!sortedUnique(textList(v[key]))) invalid();
+  }
   // TerritorySide fields and nullability are fixed in AUTH-CTX-018.
   if (v.origin !== null) territorySide(v.origin);
   if (v.destination !== null) territorySide(v.destination);
@@ -418,7 +425,8 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     // Six guarded request subtypes; no backend authority is derived here.
     const requestedShape = resourceRequest(r.resource_request);
     const requestedFields = textList(r.requested_fields);
-    if (new Set(requestedFields).size !== requestedFields.length) invalid();
+    if (new Set(requestedFields).size !== requestedFields.length
+      || requestedFields.some((field) => field.includes("*"))) invalid();
 
     const p = exact(v.permission_contract, PERMISSION);
     if (!text(p.catalog_id) || !text(p.catalog_version) || !text(p.catalog_hash)
@@ -438,10 +446,14 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || !RESOURCE_STATUSES.has(resource.resolution_status)
       || !nullableText(resource.resource_version)) invalid();
     const resourceIds = textList(resource.resource_ids);
+    if (!sortedUnique(resourceIds)) invalid();
     territory(resource.territory); resourceOwnership(resource.ownership);
-    jsonRecord(resource.state_snapshot);
+    const snapshot = jsonRecord(resource.state_snapshot);
+    if (!sortedUnique(Object.keys(snapshot))) invalid();
     const classifications = record(resource.field_classification);
-    if (!Object.values(classifications).every(text)) invalid();
+    if (!sortedUnique(Object.keys(classifications))
+      || Object.entries(classifications).some(([field, category]) =>
+        !text(field) || field.includes("*") || !FIELD_CLASSES.has(category))) invalid();
     const sides = array(resource.required_sides).map(resolvedSide);
     if (!sortedUnique(sides.map((x) => x.side_code))) invalid();
     if (resource.subject !== null) resolvedSubject(resource.subject);
@@ -461,8 +473,13 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     ]);
     if (!["PASS","PARTIAL","FAIL"].includes(fields.status)) invalid();
     for (const key of ["visible_fields","masked_fields","mutable_fields","blocked_fields","reason_codes"]) {
-      textList(fields[key]);
+      const values = textList(fields[key]);
+      if (new Set(values).size !== values.length
+        || (key !== "reason_codes" && values.some((field) => field.includes("*")))) invalid();
     }
+    // One output field cannot be both exposed and masked, or mutable and blocked.
+    if (fields.visible_fields.some((field) => fields.masked_fields.includes(field))
+      || fields.mutable_fields.some((field) => fields.blocked_fields.includes(field))) invalid();
     const allows = array(v.matched_allows).map((x) => grant(x, r.permission_key));
     if (new Set(allows.map((x) => x.grant_id)).size !== allows.length
       || !sameMembers(textList(base.matched_allow_ids),
@@ -548,6 +565,22 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
         || blocked[3].some((x) =>
           x.severity === "BLOCKING" && !isDeniedAlternative(x.lane))
         || !["RESOLVED","MULTI_RESOLVED","NOT_APPLICABLE"].includes(resource.resolution_status)
+        // AUTH-CTX-018: inconsistent/isolated resources and mandatory
+        // unresolved sides cannot produce a valid ALLOW envelope.
+        || !resource.territory.coherent || resource.territory.isolated_environment
+        || (resource.subject !== null && !resource.subject.coherent)
+        || [resource.territory.origin, resource.territory.destination]
+          .some((side) => side !== null && !side.coherent)
+        || sides.some((side) => side.required
+          && (!["RESOLVED", "MULTI_RESOLVED"].includes(side.resolution_status)
+            || (side.territory !== null && !side.territory.coherent)))
+        || (resource.concurrency !== null
+          && resource.concurrency.policy !== "NONE" && !resource.concurrency.validated)
+        // Unknown requested fields may be preserved in a DENY audit, but
+        // must not be represented as safely authorized in an ALLOW result.
+        || requestedFields.some((field) => !Object.hasOwn(classifications, field))
+        || ["visible_fields", "masked_fields", "mutable_fields"].some((key) =>
+          fields[key].some((field) => !Object.hasOwn(classifications, field)))
         || p.permission_status !== "ACTIVE"
         || prerequisites.some((x) => x.status === "FAIL")
         || device.status === "FAIL" || sensitivity.status === "FAIL"
