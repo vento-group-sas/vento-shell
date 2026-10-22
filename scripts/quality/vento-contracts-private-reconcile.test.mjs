@@ -6,6 +6,7 @@ import test from 'node:test';
 import {
   SOURCE_SHA, PILOT, TAG, REGISTRY, TAR_SHA, TAR_SRI,
   verifyRecoveryContext, verifyMetadata, verifyExistingRegistryMetadata,
+  verifyCurrentPilotCompatibility,
 } from './vento-contracts-private-reconcile.mjs';
 
 const repository = path.resolve(import.meta.dirname, '../..');
@@ -87,6 +88,32 @@ test('a listed GitLab npm version must have the exact original SRI', () => {
   }
   assert.throws(() => verifyExistingRegistryMetadata(null),
     /EXISTING_REGISTRY_INTEGRITY_MISMATCH/u);
+});
+
+test('current-run CI005 identity is accepted; stale or unrelated evidence is rejected', () => {
+  const idA = 'sha256:' + 'a'.repeat(64);
+  const idB = 'sha256:' + 'b'.repeat(64);
+  const valid = {
+    compatibility_evidence_identity: idB,
+    required_relation_ids: ['PKG-COMP-MX-002'],
+    relation_evaluations: [
+      { relation_identity: 'PKG-COMP-MX-002', state: 'COMPATIBLE_CON_RESTRICCIONES' },
+    ],
+  };
+  // A new valid hash from today's run is not required to match an older run.
+  assert.doesNotThrow(() => verifyCurrentPilotCompatibility(idB, valid));
+  for (const [id, changes] of [
+    [idA, {}], // stale digest from a previous independent execution
+    ['invalid', {}],
+    [idB, { required_relation_ids: ['PKG-COMP-MX-001'] }],
+    [idB, { required_relation_ids: ['PKG-COMP-MX-002', 'PKG-COMP-MX-003'] }],
+    [idB, { relation_evaluations: [{ relation_identity: 'PKG-COMP-MX-001', state: 'COMPATIBLE_CON_RESTRICCIONES' }] }],
+    [idB, { relation_evaluations: [{ relation_identity: 'PKG-COMP-MX-002', state: 'BLOQUEADA' }] }],
+    [idB, { relation_evaluations: [] }],
+  ]) {
+    assert.throws(() => verifyCurrentPilotCompatibility(id, { ...valid, ...changes }),
+      /VENTO_CI003_RECOVERY:CI005_CURRENT_EVIDENCE_OR_RELATION_MISMATCH/u);
+  }
 });
 
 test('recovery reads original source and guards protected npm mutation', () => {
