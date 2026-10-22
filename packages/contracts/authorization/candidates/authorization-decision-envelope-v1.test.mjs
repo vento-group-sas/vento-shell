@@ -305,6 +305,47 @@ test("contractual: no actor, role, bypass, or outcome in request", () => {
   }
 });
 
+test("security: opaque resource request rejects root-level authority and outcome hints", () => {
+  for (const key of [
+    "access_context", "context_id", "authorization_requirement",
+    "grant_ids", "deny_ids", "decision_id", "final_outcome",
+    "catalog_hash", "dataset_hashes", "expected_outcome",
+    "allow", "can_operate", "bypass", "force_allow", "ignore_denies",
+    "skip_resource_resolution", "skip_prerequisites",
+  ]) {
+    const d = denied();
+    d.request.resource_request[key] = key === "force_allow" ? true : "spoofed";
+    fail(d);
+  }
+  // Ordinary domain data is not an authority assertion.
+  const domain = denied();
+  domain.request.resource_request = {
+    kind: "NON_RESOURCE",
+    draft: { employee_id: "target-employee", role: "business-field" },
+  };
+  assert.equal(inspect(domain), undefined);
+});
+
+test("contractual: requested_fields is a unique list, never a capability", () => {
+  const valid = denied();
+  valid.request.requested_fields = ["status", "reference"];
+  assert.equal(inspect(valid), undefined);
+  for (const fields of [
+    ["status", "status"],
+    ["status", "reference", "status"],
+    ["status", 1],
+    [""],
+    new Array(2),
+  ]) {
+    const d = denied();
+    d.request.requested_fields = fields;
+    fail(d);
+  }
+  const empty = denied();
+  empty.request.requested_fields = [];
+  assert.equal(inspect(empty), undefined);
+});
+
 test("contractual: no invalid operation or request source", () => {
   for (const value of ["ADMIN", "GRANT", "read", true, null]) {
     const d = denied(); d.request.operation_kind = value; fail(d);
