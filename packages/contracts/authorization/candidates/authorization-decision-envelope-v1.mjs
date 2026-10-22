@@ -71,6 +71,13 @@ const RESOURCE_STATUSES = new Set(["RESOLVED", "MULTI_RESOLVED", "NOT_APPLICABLE
 const LANE_OUTCOMES = new Set(["ALLOW", "DENY", "NOT_APPLICABLE"]);
 const READINESS = new Set(["READY", "UNAVAILABLE", "INVALID", "NOT_APPLICABLE"]);
 const CONSTRAINT_STATUS = new Set(["PASS", "FAIL", "NOT_APPLICABLE"]);
+const PREREQUISITE_FIELDS = ["prerequisite_type", "applies_to_lane", "status", "reason_code"];
+const PREREQUISITE_TYPES = new Set([
+  "PERMISSION_DEPENDENCY", "SHIFT", "CHECKIN", "ACTIVE_AREA", "DEVICE",
+  "REAUTHENTICATION", "RESOURCE_STATE", "OWNERSHIP", "REQUIRED_SIDE",
+  "CONCURRENCY", "IDEMPOTENCY",
+]);
+const PREREQUISITE_LANES = new Set(["BASE", "OPERATIONAL", "BOTH", "REQUEST"]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -128,6 +135,15 @@ function lane(input, laneName) {
     || v.matched_allow_ids.length === 0 || v.matched_deny_ids.length !== 0)) invalid();
   if (v.outcome === "NOT_APPLICABLE"
     && (v.evaluated || v.readiness !== "NOT_APPLICABLE")) invalid();
+  return v;
+}
+function prerequisite(input) {
+  // Snapshot each canonical field without invoking untrusted accessors.
+  const v = exact(input, PREREQUISITE_FIELDS);
+  if (!PREREQUISITE_TYPES.has(v.prerequisite_type)
+    || !PREREQUISITE_LANES.has(v.applies_to_lane)
+    || !CONSTRAINT_STATUS.has(v.status)
+    || !nullableText(v.reason_code)) invalid();
   return v;
 }
 function constraint(input) {
@@ -196,8 +212,7 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     const operational = lane(v.operational_decision, "OPERATIONAL");
     if (!required.includes("BASE") && base.outcome !== "NOT_APPLICABLE") invalid();
     if (!required.includes("OPERATIONAL") && operational.outcome !== "NOT_APPLICABLE") invalid();
-    const prerequisites = array(v.prerequisite_decisions, (x) =>
-      x !== null && typeof x === "object" && !Array.isArray(x));
+    const prerequisites = array(v.prerequisite_decisions).map(prerequisite);
     const device = constraint(v.device_decision);
     const sensitivity = constraint(v.sensitivity_decision);
     const fields = exact(v.field_policy_decision, [
