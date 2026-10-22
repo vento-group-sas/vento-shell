@@ -2,8 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  classifyCompilerErrors, compareFrozenDependencyTrees, evaluateProbe, runtimeProgram,
+  buildRealCi005PilotInput, classifyCompilerErrors,
+  compareFrozenDependencyTrees, evaluateProbe, runtimeProgram,
 } from './vento-contracts-viso-consumer-probe.mjs';
+
+import { asSha256Identity } from './shared-package-release-gate.mjs';
+import { prepareCompatibilityEvidence } from './shared-package-compatibility-gate.mjs';
 
 const STEPS = ['npm-ci', 'npm-install-tarball', 'runtime-first', 'runtime-repeat',
   'viso-baseline', 'viso-typecheck', 'viso-next-build'];
@@ -100,4 +104,82 @@ test('npm install must preserve all VISO locked dependencies besides the candida
   const removed = { ...identical };
   delete removed['node_modules/react'];
   assert.equal(compareFrozenDependencyTrees(prior, removed).frozen, false);
+});
+
+
+function syntheticPilotWitness() {
+  const source = 'a'.repeat(40);
+  const manifestBytes = Buffer.from('{}', 'utf8');
+  const manifestHash = asSha256Identity(manifestBytes);
+  const art = asSha256Identity('artifact');
+  const tests = asSha256Identity('tests');
+  const build = asSha256Identity('build');
+  const snapshots = ['vento-shell', 'vento-viso', 'vento-nexo', 'vento-fogo',
+    'vento-origo', 'vento-pulso', 'vento-numera'].map(name => ({
+    consumer_repository: name,
+    consumer_commit: 'b'.repeat(40),
+    consumer_manifest_identity: asSha256Identity('manifest:' + name),
+    consumer_lockfile_identity: asSha256Identity('lock:' + name),
+  }));
+  return {
+    observed: {
+      status: 'PASS', candidate: '@vento/contracts',
+      candidate_version: '1.0.0-alpha.1',
+      consumer: 'vento-viso',
+      consumer_sha: 'b'.repeat(40), package_sha: source,
+      candidate_manifest_identity: manifestHash,
+      artifact_content_identity: art,
+      test_evidence_identity: tests, build_evidence_identity: build,
+      preexisting_typecheck_debt: false,
+      consumer_manifest_unchanged: true,
+      dependency_tree: { frozen: true },
+      steps: structuredClone(PASS), snapshots,
+    },
+    testEvidence: { outcome: 'PASS', source_commit: source,
+      manifest_identity: manifestHash, material_identity_sha256: tests },
+    buildEvidence: { build_status: 'PASS', source_commit: source,
+      package_manifest_hash: manifestHash, artifact_content_hash: art,
+      material_identity_sha256: build, pack_integrity: 'sha512-synthetic-only' },
+    manifestBytes,
+    consumerManifest: {
+      dependencies: { next: '16.4.2', react: '19.2.3', 'react-dom': '19.2.3' },
+      devDependencies: { typescript: '^5.0.0' },
+    },
+    effectiveVersions: {
+      node: '24.19.0', next: '16.4.2', react: '19.2.3',
+      react_dom: '19.2.3', typescript: '5.9.3',
+    },
+    npmVersion: '11.17.0',
+  };
+}
+
+test('CI005 prerelease binds exactly the real VISO pilot and seven consumer snapshots', () => {
+  const input = buildRealCi005PilotInput(syntheticPilotWitness());
+  assert.deepEqual(input.pilot_relation_ids, ['PKG-COMP-MX-002']);
+  assert.equal(input.release_channel_type, 'PRERELEASE');
+  assert.equal(input.consumer_snapshots.length, 7);
+  assert.equal(input.relations.length, 1);
+  assert.equal(input.relations[0].candidate_bands.next.minimum, '16.4.2');
+  assert.equal(input.relations[0].coverage_evaluations.length, 5);
+  assert.equal(input.relations[0].axes.length, 12);
+  assert(input.relations[0].restrictions.length > 0);
+  assert(input.relations[0].axes.some(x => x.status === 'NOT_APPLICABLE'));
+  // A structurally plausible fake is never enough to satisfy CI001/CI002.
+  assert.equal(prepareCompatibilityEvidence(input).result, 'BLOCKED');
+});
+
+test('CI005 rejects synthetic drift, stale evidence, missing consumer and unresolved versions', () => {
+  const base = syntheticPilotWitness();
+  for (const mutate of [
+    x => { x.observed.status = 'PASS_WITH_RESTRICTIONS'; },
+    x => { x.observed.dependency_tree.frozen = false; },
+    x => { x.observed.steps[5].status = 'FAIL'; },
+    x => { x.observed.snapshots.pop(); },
+    x => { x.buildEvidence.artifact_content_hash = asSha256Identity('changed'); },
+    x => { x.effectiveVersions.next = ''; },
+  ]) {
+    const fixture = structuredClone(base);
+    mutate(fixture);
+    assert.throws(() => buildRealCi005PilotInput(fixture), /^|CI005_VISO:/u);
+  }
 });
