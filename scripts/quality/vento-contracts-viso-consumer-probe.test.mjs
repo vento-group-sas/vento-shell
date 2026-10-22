@@ -55,3 +55,25 @@ test('compiler failures report only diagnostic codes, never consumer source or c
   assert(!JSON.stringify(diagnostic).includes('sensitive-value'));
   assert.deepEqual(classifyCompilerErrors('npm exited 1').codes, []);
 });
+
+
+test('preexisting VISO typecheck debt is a named restriction, not a clean PASS or publication', () => {
+  const same = structuredClone(PASS);
+  same[5].status = 'BASELINE_DEBT_UNCHANGED';
+  const observed = evaluateProbe(same, 'a', 'a', 'b', 'b');
+  assert.equal(observed.status, 'PASS_WITH_RESTRICTIONS');
+  assert.equal(observed.preexisting_typecheck_debt, true);
+  assert.equal(observed.release_eligibility, 'PENDING_CI005_RELATION_ATTESTATION');
+  const bad = structuredClone(PASS);
+  bad[5].status = 'FAIL';
+  assert.equal(evaluateProbe(bad, 'a', 'a', 'b', 'b').status, 'BLOCKED');
+});
+
+test('baseline TypeScript diagnostics have stable cryptographic fingerprints, not source text', () => {
+  const left = classifyCompilerErrors("src/foo.ts(1,2): error TS2345: sensitive diagnostic A");
+  const right = classifyCompilerErrors("src/foo.ts(1,2): error TS2345: sensitive diagnostic B");
+  assert.notDeepEqual(left.identities, right.identities);
+  assert.equal(left.identities.length, 1);
+  assert(/^sha256:[a-f0-9]{64}$/u.test(left.identities[0]));
+  assert(!JSON.stringify(left).includes('sensitive'));
+});
