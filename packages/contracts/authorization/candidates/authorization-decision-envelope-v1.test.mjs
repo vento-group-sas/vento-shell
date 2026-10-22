@@ -1538,6 +1538,26 @@ test("security: sparse arrays, extra symbols, inherited objects and array getter
   fail(d);
 });
 
+test("contractual: AuthorizationDecisionV1 draft types compile with adversarial negatives", async () => {
+  const ts = await import("typescript");
+  const { fileURLToPath } = await import("node:url");
+  const file = fileURLToPath(new URL("./authorization-decision-v1.typecheck.ts", import.meta.url));
+  const program = ts.default.createProgram([file], {
+    noEmit: true, strict: true, skipLibCheck: true, types: [],
+    module: ts.default.ModuleKind.NodeNext,
+    moduleResolution: ts.default.ModuleResolutionKind.NodeNext,
+    target: ts.default.ScriptTarget.ES2022,
+  });
+  const errors = ts.default.getPreEmitDiagnostics(program)
+    .filter((error) => error.category === ts.default.DiagnosticCategory.Error);
+  assert.deepEqual(errors.map((error) => ts.default.flattenDiagnosticMessageText(
+    error.messageText, "\\n")),
+  []);
+  const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
+  assert.equal(Object.hasOwn(pkg.exports, "./authorization/decision/v1"), false);
+  assert.equal(pkg.version, "1.0.0-alpha.1");
+});
+
 test("security: no runtime/backend/registry import and no authority-returning surface", async () => {
   const src = readFileSync(new URL("./authorization-decision-envelope-v1.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(src, /from\s+["'](?:@supabase|react|next|expo)|\bfetch\s*\(|\bXMLHttpRequest\b|globalThis\./u);
