@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  classifyCompilerErrors, evaluateProbe, runtimeProgram,
+  classifyCompilerErrors, compareFrozenDependencyTrees, evaluateProbe, runtimeProgram,
 } from './vento-contracts-viso-consumer-probe.mjs';
 
 const STEPS = ['npm-ci', 'npm-install-tarball', 'runtime-first', 'runtime-repeat',
@@ -76,4 +76,28 @@ test('baseline TypeScript diagnostics have stable cryptographic fingerprints, no
   assert.equal(left.identities.length, 1);
   assert(/^sha256:[a-f0-9]{64}$/u.test(left.identities[0]));
   assert(!JSON.stringify(left).includes('sensitive'));
+});
+
+
+test('npm install must preserve all VISO locked dependencies besides the candidate tarball', () => {
+  const prior = {
+    'node_modules/next': '16.4.2',
+    'node_modules/react': '19.2.3',
+    'node_modules/@types/react': '19.2.6',
+    'node_modules/typescript': '5.9.3',
+  };
+  const identical = { ...prior, 'node_modules/@vento/contracts': '1.0.0-alpha.1' };
+  assert.deepEqual(compareFrozenDependencyTrees(prior, identical), {
+    frozen: true, changed_count: 0, changed_packages: [],
+  });
+  const changed = { ...identical, 'node_modules/@types/react': '19.3.0' };
+  const result = compareFrozenDependencyTrees(prior, changed);
+  assert.equal(result.frozen, false);
+  assert.equal(result.changed_count, 1);
+  assert.deepEqual(result.changed_packages, [{
+    name: 'node_modules/@types/react', before: '19.2.6', after: '19.3.0',
+  }]);
+  const removed = { ...identical };
+  delete removed['node_modules/react'];
+  assert.equal(compareFrozenDependencyTrees(prior, removed).frozen, false);
 });
