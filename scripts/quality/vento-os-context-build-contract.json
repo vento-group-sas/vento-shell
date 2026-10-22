@@ -2,7 +2,7 @@
   "schema_version": 1,
   "package": "@vento/os-context",
   "candidate_version": "0.1.0",
-  "release_channel": "stable",
+  "release_channel": "workspace-transitional",
   "build": {
     "command": "$NODE",
     "args": [
