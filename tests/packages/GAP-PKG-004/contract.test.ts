@@ -22,7 +22,7 @@ type Gate = {
   implementation_units: Array<{ unit_id: string }>;
   physical_identity: { targets: Target[] };
   physical_discovery: { findings: Target[]; status: string; unresolved_findings: string[] };
-  evidence_plan: { observability: Array<{ signal: string }> };
+  evidence_plan: { observability: Array<{ signal: string }>; acceptance_criteria: string[] };
   deployment_environment: { production_authorized: boolean };
 };
 const fixtures = JSON.parse(read('tests/packages/GAP-PKG-004/fixtures.json')) as {
@@ -96,6 +96,33 @@ test('GAP-PKG-004 preserves physical target and finding integrity during discove
       assert.equal(fs.existsSync(path.join(root, target.path)), true, target.path);
     }
   }
+});
+
+test('GAP-PKG-004 applies the prevailing location decision without rewriting protected target identities', () => {
+  const current = gate.evidence_plan.acceptance_criteria.find((entry) =>
+    entry.startsWith('DECISION FINAL PREVALENTE — GEOLOCALIZACION ANIMA / 2026-10-19'));
+  assert.ok(current, 'The approved geolocation decision must remain explicit');
+  assert.match(current, /ubicacion PRECISA y el permiso de segundo plano son REQUISITOS para registrar check-in/u);
+  assert.match(current, /seguimiento continuo foreground\/background solo puede ejecutarse durante un turno ABIERTO/u);
+  assert.match(current, /NO debe impedir disponer de una via de finalizacion manual/u);
+  assert.match(current, /PRECEDENCIA CANONICA/u);
+  assert.match(current, /SUPERADAS/u);
+  for (const path of [
+    'src/hooks/use-attendance.ts',
+    'src/hooks/attendance/background-location-task.ts',
+    'app.config.js',
+    'app/account-settings.tsx',
+  ]) {
+    const target = gate.physical_identity.targets.find((entry) =>
+      entry.repository === 'vento-group-sas/vento-anima' && entry.path === path);
+    const finding = gate.physical_discovery.findings.find((entry) =>
+      entry.repository === 'vento-group-sas/vento-anima' && entry.path === path);
+    assert.ok(target, 'Protected target must remain in the physical scope: ' + path);
+    assert.deepEqual(finding, target, 'Findings must preserve its canonical physical identity: ' + path);
+  }
+  // Protected legacy labels are historical, not permission to restore optional check-in.
+  assert.equal(gate.authorization.decision, 'PENDING');
+  assert.equal(gate.deployment_environment.production_authorized, false);
 });
 
 test('GAP-PKG-004 retains authorized ANIMA/VISO UI and staff-detail targets', () => {
