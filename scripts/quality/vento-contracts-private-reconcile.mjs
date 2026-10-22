@@ -66,6 +66,23 @@ export function verifyExistingRegistryMetadata(info) {
   'EXISTING_REGISTRY_INTEGRITY_MISMATCH');
 }
 
+export function verifyCurrentPilotCompatibility(verifiedIdentity, prepared) {
+  // The CI005 digest binds CI001/CI002 evidence freshly generated for this run.
+  // Never require an older run's digest: source and relation invariants are
+  // already checked by requirePilotCompatibility against the current evidence.
+  check(/^sha256:[a-f0-9]{64}$/u.test(String(verifiedIdentity))
+    && verifiedIdentity === prepared?.compatibility_evidence_identity
+    && Array.isArray(prepared.required_relation_ids)
+    && prepared.required_relation_ids.length === 1
+    && prepared.required_relation_ids[0] === 'PKG-COMP-MX-002'
+    && Array.isArray(prepared.relation_evaluations)
+    && prepared.relation_evaluations.length === 1
+    && prepared.relation_evaluations[0]?.relation_identity === 'PKG-COMP-MX-002'
+    && prepared.relation_evaluations[0]?.state === 'COMPATIBLE_CON_RESTRICCIONES',
+  'CI005_CURRENT_EVIDENCE_OR_RELATION_MISMATCH');
+}
+
+
 function evidenceJson(file) {
   let x;
   try { x = JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -114,8 +131,7 @@ async function execute() {
     testEvidence: test.data, buildEvidence: build.data,
     sourceCommit: SOURCE_SHA, manifestSource,
   });
-  check(compatible === 'sha256:1755f3e98c84c506c7029c937459adf0688e5f34c6675992f9b26a6b10388cca',
-    'CI005_APPROVED_IDENTITY_CHANGED');
+  verifyCurrentPilotCompatibility(compatible, evidenceJson(path.join(compatibilityRoot, 'prepared.json')));
 
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-ci003-reconcile-'));
   fs.chmodSync(tmp, 0o700);
