@@ -23,8 +23,7 @@
         "evaluateAuthorization",
         "requireAuthorization",
         "getSafeContextProjection",
-        "getSafeDecisionProjection",
-        "createAuthorizationScope"
+        "getSafeDecisionProjection"
       ]
     },
     {
