@@ -12,10 +12,12 @@ function unavailable(): Error {
 
 /** @deprecated NOT IMPLEMENTED. Rejects unverified projection payloads. */
 export function parseSafeContextProjection(_payload: never): never {
+  void _payload;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Rejects unverified authorization outcomes. */
 export function parseSafeDecisionProjection(_payload: never): never {
+  void _payload;
   throw unavailable();
 }
