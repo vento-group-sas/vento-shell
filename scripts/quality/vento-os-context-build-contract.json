@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "package": "@vento/os-context",
+  "candidate_version": "0.1.0",
+  "release_channel": "workspace-transitional",
+  "build": {
+    "command": "$NODE",
+    "args": [
+      "../../node_modules/typescript/bin/tsc",
+      "-p",
+      "tsconfig.build.json"
+    ],
+    "timeout_ms": 180000
+  },
+  "output_root": "dist",
+  "public_surface": [
+    {
+      "subpath": ".",
+      "runtime": "dist/index.js",
+      "types": "dist/index.d.ts",
+      "expected_exports": [
+        "getEffectiveContext",
+        "hasEffectivePermission",
+        "startContextSimulation",
+        "stopContextSimulation"
+      ]
+    }
+  ],
+  "assets": [],
+  "internal_dependencies": [],
+  "external_peers": {
+    "@supabase/supabase-js": ">=2.90.0 <3"
+  },
+  "runtime": {
+    "node_major": 24
+  },
+  "generated_inputs": [],
+  "exclusions": [
+    "src"
+  ],
+  "reproducibility_ignore": [],
+  "allow_source_files": false,
+  "contract_checks": [
+    "entrypoints",
+    "declarations",
+    "runtime_types_coherence",
+    "no_private_source_imports",
+    "no_absolute_paths",
+    "no_local_dependencies",
+    "peer_runtime_coherence",
+    "isolated_pack",
+    "isolated_import",
+    "public_surface_snapshot"
+  ]
+}

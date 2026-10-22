@@ -26,7 +26,7 @@ export async function hasEffectivePermission(
   });
 
   if (error) throw error;
-  return Boolean(data);
+  return data === true;
 }
 
 export async function startContextSimulation(
@@ -43,7 +43,10 @@ export async function startContextSimulation(
   });
 
   if (error) throw error;
-  return String(data);
+  if (typeof data !== "string" || !/^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$/u.test(data)) {
+    throw new Error("VENTO_OS_CONTEXT:SIMULATION_ID_INVALID");
+  }
+  return data;
 }
 
 export async function stopContextSimulation(
@@ -51,5 +54,5 @@ export async function stopContextSimulation(
 ): Promise<boolean> {
   const { data, error } = await supabase.rpc("stop_context_simulation_v1");
   if (error) throw error;
-  return Boolean(data);
+  return data === true;
 }

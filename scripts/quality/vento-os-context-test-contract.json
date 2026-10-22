@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "package": "@vento/os-context",
+  "runner": {
+    "command": "$NODE",
+    "args": [
+      "scripts/ci001-runner.mjs"
+    ],
+    "timeout_ms": 180000
+  },
+  "required_groups": [
+    {
+      "id": "unit",
+      "applicability": "REQUIRED"
+    },
+    {
+      "id": "contractual",
+      "applicability": "REQUIRED"
+    },
+    {
+      "id": "security",
+      "applicability": "REQUIRED"
+    }
+  ],
+  "fixtures": [
+    "scripts/client.test.mjs"
+  ]
+}
