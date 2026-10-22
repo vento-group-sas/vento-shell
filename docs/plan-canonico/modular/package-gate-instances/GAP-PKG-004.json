@@ -2088,6 +2088,18 @@
         "path": "docs/ANIMA-SHIFT-POLICY-CONFIG-SIN-BUILD.md",
         "symbol_or_surface": "ANIMA: guia operativa del cierre por geocerca y ausencia de autocierre por calendario",
         "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "app/(app)/support.tsx",
+        "symbol_or_surface": "Soporte ANIMA: checkout_review abre solicitud editable sin registrar check_out; evidencia PR #6 en ANIMA, SHA 370463ce, CI PASS.",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "src/components/support/use-support-actions.ts",
+        "symbol_or_surface": "Soporte ANIMA: ticket persistido confirmado aun si chat inicial falla; no registra asistencia; evidencia PR #6 en ANIMA, SHA 370463ce, CI PASS.",
+        "operation": "MODIFICAR"
       }
     ],
     "unresolved_findings": [
