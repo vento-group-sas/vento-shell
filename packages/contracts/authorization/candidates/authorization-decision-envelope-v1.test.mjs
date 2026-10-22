@@ -149,6 +149,14 @@ function allowed() {
   d.audit.authorizing_lanes = ["BASE"];
   return d;
 }
+function failedPrerequisite() {
+  return {
+    prerequisite_type: "RESOURCE_STATE",
+    applies_to_lane: "REQUEST",
+    status: "FAIL",
+    reason_code: "AUTH_DENIED",
+  };
+}
 function fail(input) {
   assert.throws(() => inspect(input), {
     name: "TypeError", message: "VENTO_AUTH_DECISION:ENVELOPE_INVALID",
@@ -254,7 +262,7 @@ test("contractual: combination ALLOW can finish DENY when a downstream constrain
     ["SENSITIVITY_DENY", (d) => { d.sensitivity_decision.status = "FAIL"; }],
     ["FIELD_POLICY_DENY", (d) => { d.field_policy_decision.status = "FAIL"; }],
     ["RESOURCE_DENY", (d) => { d.resource.resolution_status = "CONFLICT"; }],
-    ["PREREQUISITE_DENY", (d) => { d.prerequisite_decisions = [{ status: "FAIL" }]; }],
+    ["PREREQUISITE_DENY", (d) => { d.prerequisite_decisions = [failedPrerequisite()]; }],
   ]) {
     const d = allowed();
     block(d);
@@ -298,7 +306,7 @@ test("security: failed device, sensitivity, field policy or prereq cannot pass a
     const d = allowed(); d[field].status = "FAIL"; fail(d);
   }
   const d = allowed(); d.field_policy_decision.status = "FAIL"; fail(d);
-  const d2 = allowed(); d2.prerequisite_decisions = [{ status: "FAIL" }]; fail(d2);
+  const d2 = allowed(); d2.prerequisite_decisions = [failedPrerequisite()]; fail(d2);
 });
 
 test("security: a partial field projection cannot silently grant a mutation", () => {
@@ -324,6 +332,43 @@ test("security: correlation is an audit handle, not authority", () => {
   assert.equal(inspect(d), undefined);
   const d2 = allowed(); d2.correlation_id = "untrusted";
   fail(d2);
+});
+
+test("contractual: prerequisites require four canonical fields and closed codes", () => {
+  const valid = denied();
+  valid.prerequisite_decisions = [failedPrerequisite()];
+  assert.equal(inspect(valid), undefined);
+  const nullProto = denied();
+  nullProto.prerequisite_decisions = [Object.assign(Object.create(null), failedPrerequisite())];
+  assert.equal(inspect(nullProto), undefined);
+  for (const bad of [
+    { status: "FAIL" },
+    { ...failedPrerequisite(), prerequisite_type: "UNKNOWN" },
+    { ...failedPrerequisite(), applies_to_lane: "ALL" },
+    { ...failedPrerequisite(), status: "ALLOW" },
+    { ...failedPrerequisite(), reason_code: 1 },
+    { ...failedPrerequisite(), can_operate: true },
+    { ...failedPrerequisite(), reason_code: undefined },
+  ]) {
+    const d = denied();
+    d.prerequisite_decisions = [bad];
+    fail(d);
+  }
+});
+
+test("security: prerequisite getters cannot run even for status", () => {
+  let invoked = 0;
+  for (const field of ["prerequisite_type", "applies_to_lane", "status", "reason_code"]) {
+    const d = denied();
+    const payload = failedPrerequisite();
+    Object.defineProperty(payload, field, {
+      enumerable: true,
+      get() { invoked += 1; throw new Error("GETTER_MUST_NOT_RUN"); },
+    });
+    d.prerequisite_decisions = [payload];
+    fail(d);
+  }
+  assert.equal(invoked, 0);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
