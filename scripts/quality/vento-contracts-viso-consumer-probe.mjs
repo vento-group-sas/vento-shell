@@ -21,6 +21,20 @@ function block(code) {
   throw new Error('CI005_VISO:' + code);
 }
 
+export function classifyCompilerErrors(output) {
+  const raw = String(output ?? '');
+  const codes = [...new Set([...raw.matchAll(/\berror (TS\d{4})\b/gu)]
+    .map(entry => entry[1]))].slice(0, 12);
+  const diagnosticLines = raw.split(/\r?\n/u)
+    .filter(line => /\berror TS\d{4}\b/u.test(line));
+  return {
+    codes,
+    diagnostic_count: diagnosticLines.length,
+    probe_related: diagnosticLines.some(line => /ci005|@vento\/contracts/iu.test(line)),
+    // Never publish arbitrary compiler output or secrets from consumer env.
+  };
+}
+
 function command(binary, args, cwd, timeout = 300000) {
   const p = spawnSync(binary, args, {
     cwd, encoding: 'utf8', windowsHide: true, timeout,
@@ -32,7 +46,9 @@ function command(binary, args, cwd, timeout = 300000) {
     },
   });
   return { ok: p.status === 0 && !p.error, code: p.status ?? -1,
-    output: String(p.stdout ?? '').trim().slice(-450) };
+    output: String(p.stdout ?? '').trim().slice(-450),
+    compiler: classifyCompilerErrors(String(p.stdout ?? '') + '\n' + String(p.stderr ?? '')),
+  };
 }
 
 function verified(binary, args, cwd, code, timeout) {
@@ -210,8 +226,21 @@ async function execute() {
       ['viso-next-build', 'npm', ['run', 'build:ci011'], 600000],
     ]) {
       const done = command(binary, args, viso, timeout);
-      steps.push({ name, status: done.ok ? 'PASS' : 'FAIL' });
-      if (!done.ok) block('FAILED_' + name.replaceAll('-', '_').toUpperCase());
+      steps.push({ name, status: done.ok ? 'PASS' : 'FAIL',
+        ...(done.ok ? {} : { diagnostic: done.compiler }) });
+      if (!done.ok) {
+        fs.mkdirSync(OUT, { recursive: true });
+        fs.writeFileSync(path.join(OUT, 'blocked.json'),
+          JSON.stringify({
+            status: 'BLOCKED', failed_step: name,
+            exit_code: done.code, compiler: done.compiler,
+            candidate: CANDIDATE, candidate_version: VERSION,
+            package_sha: sha, consumer_sha: visoSnapshot.consumer_commit,
+            publication_executed: false, relation_certified: false,
+          }, null, 2) + '\n');
+        const code = done.compiler.codes[0] ?? 'NON_TYPESCRIPT';
+        block('FAILED_' + name.replaceAll('-', '_').toUpperCase() + '_' + code);
+      }
     }
     const outcome = evaluateProbe(steps, hash(manifestOriginal),
       hash(fs.readFileSync(path.join(viso, 'package.json'))), hash(lockOriginal),
