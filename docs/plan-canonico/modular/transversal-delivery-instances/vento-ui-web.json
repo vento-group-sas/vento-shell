@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "package_name": "@vento/ui-web",
+  "status": "DRAFT",
+  "source_task_ids": [
+    "SHELL-PKG-001",
+    "SHELL-PKG-002",
+    "SHELL-PKG-003",
+    "SHELL-PKG-004",
+    "SHELL-PKG-005",
+    "SHELL-PKG-006",
+    "SHELL-PKG-007",
+    "SHELL-PKG-008",
+    "SHELL-UI-001",
+    "SHELL-UI-002",
+    "SHELL-UI-003",
+    "SHELL-UI-004",
+    "SHELL-UI-005",
+    "SHELL-UI-006",
+    "SHELL-UI-007",
+    "SHELL-UI-008",
+    "SHELL-UI-009",
+    "SHELL-UI-010",
+    "SHELL-UI-011",
+    "SHELL-UI-012",
+    "SHELL-UI-013",
+    "SHELL-UI-014",
+    "SHELL-UI-015",
+    "SHELL-UI-016",
+    "SHELL-UI-017",
+    "SHELL-UI-018",
+    "SHELL-UI-019",
+    "SHELL-UI-020",
+    "SHELL-CI-001",
+    "SHELL-CI-002",
+    "SHELL-CI-003",
+    "SHELL-CI-004",
+    "SHELL-CI-005",
+    "SHELL-CI-006",
+    "SHELL-MIG-001",
+    "SHELL-MIG-002",
+    "SHELL-MIG-003",
+    "SHELL-MIG-004",
+    "SHELL-MIG-005",
+    "SHELL-MIG-006",
+    "SHELL-MIG-007",
+    "SHELL-MIG-008"
+  ],
+  "physical_discovery": {
+    "status": "PENDING",
+    "searches": [
+      {
+        "surface": "PACKAGE_TREE",
+        "authority": "VS_CODE_MCP",
+        "observation": "61 current package files: 19 TSX, 19 CSS, 19 component validators, harness and README/manifest"
+      },
+      {
+        "surface": "CANONICAL_RELEASE",
+        "authority": "SHELL-PKG-001..008",
+        "observation": "Private immutable npm package and exact-version consumer lockfiles are required"
+      },
+      {
+        "surface": "BUILD_AND_RELEASE_GATES",
+        "authority": "SHELL-CI-001..006",
+        "observation": "Global test, build, release and compatibility enablers exist; previous VERIFIED is synthetic, not a real publish"
+      },
+      {
+        "surface": "CONSUMER_OWNERSHIP",
+        "authority": "SHELL-MIG-001..008",
+        "observation": "Seven consumers require separate post-E5 reversible adoption; not in first release scope"
+      },
+      {
+        "surface": "WORKTREE_RESOURCE_CONFLICT",
+        "authority": "VS_CODE_MCP",
+        "observation": "A separate GAP-PKG-004 worktree has 22 pending paths, including root package.json; worktrees must remain isolated"
+      },
+      {
+        "surface": "PHYSICAL_COMPONENT_API",
+        "authority": "VS_CODE_MCP / packages/ui-web/src/*.tsx (19 files)",
+        "observation": "19 named TSX modules; exactly AppShell.tsx, AreaSelector.tsx and SiteSelector.tsx declare 'use client'. AppShell uses React hooks. Package still has no public ESM/types entrypoint; the three client directives must survive the emitted leaf modules."
+      },
+      {
+        "surface": "PHYSICAL_COMPONENT_CSS",
+        "authority": "VS_CODE_MCP / packages/ui-web/src/*.tsx and *.css",
+        "observation": "19/19 TSX modules import one matching local CSS; 19 CSS files exist. A separate aggregated public stylesheet plus unchanged emitted JS CSS imports can duplicate styles unless the build adopts a single explicit distribution strategy."
+      },
+      {
+        "surface": "HISTORICAL_VALIDATOR_GUARDS",
+        "authority": "GitHub main / packages/ui-web/scripts/validate-*.mjs, 19 files",
+        "observation": "19/19 validators reject a distributable manifest with private=true assertions and/or missing version/main/types/exports assertions. Preserve their component and task contract checks; only publication-state assertions may change under the approved physical delivery."
+      },
+      {
+        "surface": "CANONICAL_COMPATIBILITY_BAND",
+        "authority": "COMP-PKG-004 / SHELL-PKG-004 / SHELL-CI-005",
+        "observation": "Approved candidate bands: TypeScript >=5 <6; Next >=16.1.1 <17; React and React DOM >=19.2.3 <20; Tailwind >=4 <5. These ranges are design inputs, not yet certified package compatibility."
+      },
+      {
+        "surface": "SEVEN_WEB_CONSUMER_MANIFESTS",
+        "authority": "GitHub default branches / vento-shell, vento-viso, vento-nexo, vento-fogo, vento-origo, vento-pulso, vento-numera",
+        "observation": "All seven declare react=19.2.3 and react-dom=19.2.3, tailwindcss=^4 and typescript=^5. Next: Shell and Pulso=16.1.1; Viso=^16.1.6; Origo and Numera=^16.2.1; Nexo=^16.2.3; Fogo=^16.2.4. No compatible-runtime certification was run."
+      },
+      {
+        "surface": "EXISTING_BUILD_RELEASE_GATES",
+        "authority": "scripts/quality/shared-package-build-gate.mjs, shared-package-release-gate.mjs and SHELL-CI-001..006",
+        "observation": "Pre-existing gates check manifest distribution surfaces, declared peers, source import boundaries, npm pack integrity, checksum/provenance and immutable registry identities. Historical GLOBAL VERIFIED evidence is synthetic, not a published ui-web artifact."
+      },
+      {
+        "surface": "PARALLEL_RESOURCE_SNAPSHOT",
+        "authority": "VS_CODE_MCP / workspaces 6 and 11 / git_status",
+        "observation": "At the inspected snapshot, 28 candidate ui-web physical paths had zero exact collisions with the 22 changed paths in GAP-PKG-004. GAP-PKG-004 modifies root package.json; ui-web dossier includes root package-lock.json. Admission must still recheck locks and latest main before any physical implementation."
+      },
+      {
+        "surface": "REGISTRY_OWNER_CONSTRAINT",
+        "authority": "SHELL-PKG-001 PKG-DIST-015 and GitHub Docs / Working with the npm registry",
+        "observation": "GitHub Packages npm requires the package scope to correspond to its GitHub user/organization namespace. Current code owner vento-group-sas differs from canonical @vento; no verified @vento publishing owner or private registry credentials observed. Provider and publication are separate release-gate work."
+      },
+      {
+        "surface": "CSS_GLOBAL_DIRECTIVES",
+        "authority": "VS_CODE_MCP / packages/ui-web/src/*.css",
+        "observation": "19 existing component styles have no @import directives, @tailwind directives or :root blocks in the inspected source; build still must validate emitted order, scope, global leakage and duplicate application."
+      },
+      {
+        "surface": "TRANSVERSAL_LIFECYCLE_BOOTSTRAP",
+        "authority": "VS_CODE_MCP / scripts/docs/transversal-delivery-control.mjs, transversal-delivery-policy.json, task-branch-lifecycle.mjs, commit-scope.mjs, implementation-control.json",
+        "observation": "Read-only composition: policy execution_mode=READ_ONLY_SCOPE_PREPARATION, coordinator CLI only status/check, source record status DRAFT/READY_FOR_APPROVAL with human_authorization=null, and no registered physical transversal authorization identity. Direct reviewed edit of coordinator was rejected CANONICAL_INSTANCE_REQUIRED. MCP canonical script docs:transversal:check rejected CANONICAL_QUALITY_SCRIPT_TOOLCHAIN_NOT_ALLOWED. Existing infra publisher classifies transversal-delivery-instances dossier path as OTHER; commit-scope classifies it as CANONICAL_TASK rather than TRANSVERSAL. GAP-PKG-004 session cannot authorize this scope."
+      },
+      {
+        "surface": "TRANSVERSAL_INFRA_REGRESSION_VERIFIED",
+        "authority": "VS Code MCP 0.13.10 ::INFRA / scripts/docs/transversal-delivery-control.mjs, commit-scope.mjs, task-branch-lifecycle.mjs and suites",
+        "observation": "Direct reviewed changes on separate infra/transversal-delivery-control branch classified the exact vento-ui-web.json dossier as infrastructure. Non-authorizing preflight rejects DRAFT, missing dossiers, unresolved resource conflicts and silently requested authorize operations. MCP tests: transversal 17/17, commit-scope 10/10 and task branch lifecycle 30/30 PASS. This evidence does not certify physical admission, SSR, tarball, migration or registry."
+      },
+      {
+        "surface": "PHASE_ORDER_DISCOVERY_ADMISSION_BUILD_RELEASE",
+        "authority": "SHELL-PKG-001 distribution provider acceptance; SHELL-CI-001 own component tests; SHELL-CI-002 independent build; docs/plan-canonico/modular/transversal-delivery-policy.json; local confirmed 19 TSX, 19 CSS, 19 validators; lock comparison with GAP-PKG-004",
+        "observation": "Independent package build, Next SSR/hydration, CSS injection checks, migration of historical private-manifest assertions, tarball provenance and registry publication are future governed execution/release obligations. They cannot honestly be marked PASS before physical authorization. Separate phase obligations from unresolved pre-authorization discovery, preserving exact source assertions. Current Shell root has Node 24.19.0/npm 11.17.0, noEmit=true, @vento/ui-web private=true without exports/version/build; six candidate CREATE outputs absent."
+      },
+      {
+        "surface": "EXACT_LOCAL_TARGET_INVENTORY",
+        "authority": "VS Code MCP / workspace 11; GitHub Shell main source tree; workspace 6 GAP-PKG-004 package.json scoped diff",
+        "observation": "At Shell infra/transversal-delivery-control commit 885fd1c1e7b4c74d2ec6c48f38d9478a46bfbad8, 22 MODIFY candidate paths exist (manifest, README, root lockfile and 19 validators), six CREATE candidate paths are absent; 19 TSX source modules and 19 CSS files exist and each TSX imports local CSS. None of 19 CSS sources contains @import, @font-face, url(), html/body/:root global reset, and only AppShell, AreaSelector and SiteSelector declare use client. GAP-PKG-004 currently changes root package.json only by adding six isolated QA script entries; its current working tree has 22 modifications and no root lockfile change. Current zero exact target overlap does not certify future shared-resource admission."
+      },
+      {
+        "surface": "FRESH_ISOLATED_RESOURCE_RECHECK_20261018",
+        "authority": "VS Code MCP git_preview/git_diff_scoped, GitHub main",
+        "observation": "Independent workspaces: ui-web infra/transversal-delivery-control HEAD fd48da0e2ceb32e55d95de390a06c4556a6c1f68; GAP-PKG-004 infra/package-gate-gap-pkg-004 HEAD 180db76808acf9b71480f1c73fa23180f164572c; main HEAD 579b3c816db36054700c304ee7e00e84d0282703. The 28 planned ui-web target paths and 22 modified GAP paths intersect on zero exact paths. GAP modifies root package.json with six isolated VISO QA scripts only and has not modified root package-lock.json. These observations do not reserve future locks or grant implementation permission."
+      },
+      {
+        "surface": "BUILD_OUTPUT_GIT_HYGIENE",
+        "authority": "VS_CODE_MCP / git_preview and existing root .gitignore",
+        "observation": "The independent ui-web build emits 41 generated files in packages/ui-web/dist; the root .gitignore does not exclude that directory, leaving 41 untracked outputs. Add package-local .gitignore with exactly dist/ so build artifacts are packable but not added to Git. This is the 29th scoped physical target, not a consumer, registry, or Supabase change."
+      },
+      {
+        "surface": "POST_IMPLEMENTATION_LOCAL_CHECKPOINT_20261018",
+        "authority": "VS Code MCP run_validations/git_commit_scoped/git_preview; GitHub main source contracts",
+        "observation": "Private ESM candidate built in independent infra/transversal-delivery-control and committed locally as ff4ca7a8a1cf41d38db0e358795ba0ca709f3631 (29 scoped paths); 19 component TSX and 19 original CSS remain unchanged; dist contains 41 reproducible outputs ignored by Git. The dossier remains untracked and no remote mutation occurred. GAP-PKG-004 independent checkout remains 180db76808acf9b71480f1c73fa23180f164572c with 22 changes, zero exact overlap."
+      },
+      {
+        "surface": "POST_CHECKPOINT_REAL_PRIVATE_TARBALL_CUT_20261018",
+        "authority": "VS Code MCP run_validations; npm pack --offline --ignore-scripts; GitHub main",
+        "observation": "Local ESM candidate ff4ca7a8a1cf41d38db0e358795ba0ca709f3631 generated and verified an actual ephemeral .tgz with 43 archived entries, 45,894 bytes, npm SHA1/SHA512 SRI and SHA256 ffd3989773b646322c5df011a9519a4605f767066d7d01260003af92d3. All entries matched their source bytes. Tarball removed from OS temp immediately afterward; no package installation, remote publishing or production cutover. 15/15 regression cases passed; post-checkpoint touched-file lint ratchet PASS."
+      },
+      {
+        "surface": "REGISTRY_PROVIDER_SCOPE_AUDIT_20261020",
+        "authority": "SHELL-PKG-001 sections 6.2-6.3; GitHub Packages npm official docs https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry ; npm scopes/private docs https://docs.npmjs.com/about-scopes/ and https://docs.npmjs.com/creating-and-publishing-private-packages/ ; current GitHub owner and @vento/ui-web manifest",
+        "observation": "Verified: the publishing source repo is vento-group-sas/vento-shell, while the canonical package is @vento/ui-web. GitHub Packages binds the npm namespace to a GitHub account/organization; publishing as vento-group-sas would use @vento-group-sas, not unchanged @vento. No ownership or publishing authorization for a GitHub account named vento was demonstrated; GitHub Packages remains conditional, not selected. npmjs private packages preserve @vento only if the npm user/organization controlling the vento scope grants publishing rights and the required paid private plan. Neither ownership nor billing/credential access was verified. A separately administered npm-compatible private registry can also route @vento through per-scope registry mapping, subject to independent operational/security approval. No package published and no namespace changed."
+      },
+      {
+        "surface": "PUBLIC_NPM_NAMESPACE_PROBE_20261020",
+        "authority": "Unauthenticated public page fetch: https://www.npmjs.com/org/vento , https://www.npmjs.com/~vento and https://registry.npmjs.org/@vento%2Fui-web ; npm package manifest rule https://docs.npmjs.com/cli/configuring-npm/package-json/ ; npm Trusted Publishers https://docs.npmjs.com/trusted-publishers/",
+        "observation": "The public npm organization URL /org/vento redirected to the public profile URL /~vento; the profile page did not provide verifiable account ownership or access rights. The unauthenticated registry metadata request for @vento/ui-web returned HTTP 404; this cannot establish whether a private package exists or whether the scope is available. Current candidate manifest has private=true, which npm explicitly refuses to publish to any registry. npmjs supports OIDC trusted publishing from eligible GitHub Actions workflows, but permissions, publish configuration, exact repository association and private-package read access remain unverified; no authentication or publish attempt was made."
+      },
+      {
+        "surface": "INDEPENDENT_PRIVATE_NPM_SCOPE_FEASIBILITY_20261020",
+        "authority": "npm scoped registry mapping https://docs.npmjs.com/cli/v11/commands/npm-login/ ; Cloudsmith npm documentation https://docs.cloudsmith.com/formats/npm-registry ; Verdaccio package ACL https://www.verdaccio.org/docs/packages/ and registry routing https://www.verdaccio.org/docs/cli-registry/",
+        "observation": "External npm-compatible registries support @vento scoped packages independently from ownership of the public npmjs or GitHub Packages vento namespace: the npm client resolves the scope by an explicit @vento registry mapping. The publishing source remains vento-group-sas/vento-shell and the canonical name remains @vento/ui-web. Cloudsmith documents independent OWNER/REPOSITORY endpoints and @SCOPE package names; Verdaccio documents @scope/* ACLs and scope-based routing. This is TECHNICAL FEASIBILITY, not proof that a private registry, credentials, immutable package, seven-consumer access or rollback exists."
+      },
+      {
+        "surface": "MANAGED_PILOT_OPTION_CLOUDSMITH_20261020",
+        "authority": "Cloudsmith pricing https://cloudsmith.com/pricing ; npm publish and scoped registry https://docs.cloudsmith.com/formats/npm-registry ; entitlement tokens https://docs.cloudsmith.com/software-distribution/entitlement-tokens ; repository privileges https://docs.cloudsmith.com/workspaces/privileges",
+        "observation": "Cloudsmith is PREFERRED FOR A FUTURE ISOLATED PILOT ONLY, not an accepted production provider. Current public pricing advertises Core $0/month with 500 MB storage, 1 GB delivery and ONE read-only entitlement token; suitable for an account-authorized first-consumer technical trial but not independently revocable tokens for seven consumers. Pro advertises $149/month and 100 entitlement tokens; costs/features/ownership must be rechecked at account setup. Private repository creation, publisher isolation, package immutability/republish policy, CI auth, seven independent read credentials, exact npm ci, audit and rollback have NOT been proven in a VENTO account. No account was created and no package uploaded."
+      },
+      {
+        "surface": "SELF_HOSTED_OPTION_VERDACCIO_20261020",
+        "authority": "Verdaccio package security https://www.verdaccio.org/docs/packages/ ; authentication https://www.verdaccio.org/docs/authentication/ ; npm routing https://www.verdaccio.org/docs/setup-npm/",
+        "observation": "Verdaccio is an independent fallback compatible with @vento without external scope ownership, but its DEFAULT ACL permits unauthenticated package reads and any authenticated user to publish; those defaults are NOT eligible for VENTO. Production requires custom publisher/read groups, no anonymous access, disabled unpublish, per-consumer revocable identity, protected TLS networking, resilient backing storage/backup/restore and an immutability/replace policy test. Hosting, hardening and availability are new operational obligations; no Verdaccio instance exists or was configured by this audit."
+      },
+      {
+        "surface": "AZURE_ARTIFACTS_FREE_MULTI_PACKAGE_CANDIDATE_20261020",
+        "authority": "Microsoft Learn https://learn.microsoft.com/en-us/azure/devops/artifacts/reference/limits?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/artifacts/npm/scopes?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/artifacts/concepts/feeds?view=azure-devops ; SHELL-PKG-001",
+        "observation": "Azure Artifacts is the current PREFERRED CANDIDATE FOR FEASIBILITY VALIDATION of the single private npm-compatible feed required by VENTO, superseding the earlier Cloudsmith pilot preference but not selecting a production provider. Microsoft documents 2 GiB free storage PER Azure DevOps organization, unlimited package identities PER feed, and a 5000-version cap per package identity. Scope mapping through npm supports unchanged @vento/ui-web, @vento/contracts, @vento/os-context and @vento/supabase across seven planned web consumer repositories without owning public @vento on npmjs or GitHub Packages. Storage is shared and finite; published versions and upstream cached dependencies count against quota where applicable. No real VENTO feed, namespace mapping or package installation verified."
+      },
+      {
+        "surface": "AZURE_DEVOPS_ORG_ONBOARDING_BILLING_GATE_20261020",
+        "authority": "Microsoft Learn https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/organizations/billing/billing-faq?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/artifacts/reference/limits?view=azure-devops",
+        "observation": "As currently documented, creation of NEW Azure DevOps organizations requires an ACTIVE Azure subscription and manual action through the web portal; existing organizations are unaffected. Free tier includes first five Basic users and 2 GiB Artifacts storage; adding paid Basic identities or activating consumption above quota can generate charges. With no existing signed-in Azure DevOps organization, linked Azure subscription or account budget verified, cannot truthfully claim a production seven-consumer configuration is cost-free. The no-cost plan must validate tenant/org ownership, actual subscription/billing settings, whether separate publisher and seven revocable read credentials fit free licensing, and hard refusal of any paid upgrade before creating Azure resources."
+      },
+      {
+        "surface": "AZURE_ARTIFACTS_FEED_SECURITY_DESIGN_DRAFT_20261020",
+        "authority": "Microsoft Learn https://learn.microsoft.com/en-us/azure/devops/artifacts/feeds/feed-permissions?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/artifacts/feeds/project-scoped-feeds?view=azure-devops ; https://learn.microsoft.com/en-us/azure/devops/artifacts/get-started-npm ; https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity?view=azure-devops",
+        "observation": "Preparatory design ONLY: one private feed scoped to the Azure DevOps organization is favored for shared @vento/* packages across seven GitHub consumer repositories; project-scoped feed remains possible but adds project membership controls. Access should be Specific people and verified against both feed and view visibility, never anonymous or automatically all org. Disable public upstream caching unless expressly needed to conserve 2 GiB; leave ordinary public npm dependencies on their existing source while directing @vento via scoped npm registry mapping. VENTO Shell publisher: Feed Publisher only, no owner/billing credentials; each consumer: Feed Reader only, separately revocable, with auth secrets held outside Git. Recheck the actual Basic/Stakeholder/service-principal licensing model before assuming seven separate CI readers cost zero. No exact Azure organization, project, feed ID or URL has been observed and none is fabricated."
+      }
+    ],
+    "findings": [
+      "Current @vento/ui-web manifest has private=true and no npm version, exports, types or distribution CSS entrypoints.",
+      "All 19 historical component validators enforce a private authoring manifest and must be reconciled, not disabled.",
+      "The 19 TSX components import matching CSS and three components are explicitly client-boundary components.",
+      "Root package-lock.json has workspace @vento/ui-web but no public distribution metadata.",
+      "Existing shared package build/release/compatibility gates should be reused rather than cloned.",
+      "The first physical packaging delivery must not modify consumers, Supabase, root package.json or unrelated application code.",
+      "INSPECTED: the source API has 19 TSX components and 19 CSS imports; exactly 3 declared client leaves (AppShell, AreaSelector and SiteSelector). Source existence is not a public export or hydrated runtime proof.",
+      "INSPECTED: the 19 historical validators enforce private-manifest assumptions; all 19 require targeted publication-state reconciliation without removing component/source contract assertions.",
+      "DERIVED (not certified): COMP-PKG-004 provides the candidate TypeScript, Next, React, React DOM and Tailwind ranges; 7/7 current consumer manifests declare compatible candidate versions but runtime and lockfile endpoints have not been tested.",
+      "INSPECTED: 28 candidate paths and 22 changed GAP-PKG-004 paths have 0 exact overlap in the current snapshot; root package.json remains dirty on GAP-PKG-004 and implementation resource locks must be checked again at admission.",
+      "INSPECTED: source TSX imports each matching CSS; publishing an aggregate stylesheet without coordinating emitted JS imports risks duplication; this is a build/SSR gate, not a draft-certified result.",
+      "INSPECTED: GitHub Packages cannot be selected without a publishing namespace compatible with @vento; the source org name alone is insufficient evidence of @vento ownership or registry access.",
+      "INSPECTED: existing shared-package build/release/compatibility gates exist and must be reused for real tarball, SSR and consumer proofs; no npm publication or runtime test was executed.",
+      "CANDIDATE DISTRIBUTION DESIGN (not executed): expose the 19 approved modules by explicit ESM/types exports, retain three independent 'use client' leaf JS entrypoints, emit exactly one public styles.css compiled from 19 component styles, and omit compiled JS CSS side-effect imports. Preserve historical TSX source and selectors pending physical gate.",
+      "BLOCKED_GATE_BOOTSTRAP: a human approval of the transversal phase does not automatically create a canonical physical instance. Authorization gate, source/canonical record lifecycle, commit-scope and infra-publish classification require a governed infrastructure change before physical ui-web files can be edited. No remote mutations, no GAP-004 scope reuse and no fabricated instance permitted.",
+      "TRANSVERSAL_INFRA_LOCAL_GATE: 57/57 focused tests PASS for documented scope/classification/preflight. Dossier remains DRAFT with 7 unresolved physical-admission and distribution gates; status READY_FOR_APPROVAL or authorization is not inferred from passing infrastructure tests.",
+      "POST_PHYSICAL_AUTHORIZATION_VALIDATION: PHYSICAL EXPORT AND SSR VERIFICATION: implement the documented explicit ESM/types public component API; prove exports and declarations resolve from installed tarball and all three 'use client' leaf directives survive the build; verify real Next App Router SSR/hydration before approval.",
+      "POST_PHYSICAL_AUTHORIZATION_VALIDATION: PHYSICAL CSS VERIFICATION: implement the documented single @vento/ui-web/styles.css aggregate of all 19 component CSS sources with no compiled JS CSS imports; test CSS integrity, cascade, deduplication and supported Next layouts on a built tarball.",
+      "POST_PHYSICAL_AUTHORIZATION_VALIDATION: PHYSICAL VALIDATOR MIGRATION: update exactly the 19 historical validators' private-manifest assumptions only after package authorization; keep every original component behavior, task-contract hash and immutable source assertion.",
+      "POST_PHYSICAL_AUTHORIZATION_VALIDATION: BUILD/PROVENANCE GATE: generate and inspect real dist outputs, exports/types, npm-pack file list, immutable artifact SHA/integrity and isolated downstream imports; no publish or deploy in this DRAFT.",
+      "POST_BUILD_RELEASE_AUTHORIZATION: PRIVATE REGISTRY GATE: certify a provider that can publish @vento/ui-web under its unchanged @vento scope with immutable SemVer tag, separated CI write and seven-consumer read rights; GitHub Packages preferred only if owner compatibility is demonstrated, otherwise apply the canonical alternative.",
+      "PHASE_GATE_DISTINCTION: the five listed pending obligations remain REQUIRED after their own authorization; their removal from pre-admission unresolved_findings is classification only, NOT implementation, build, packaging, SSR, CSS, consumer QA or registry PASS. Two pre-admission blockers remain outstanding and the present DRAFT cannot authorize implementation.",
+      "2026-10-18: fresh parallel checkout and GitHub main verification confirms zero exact file collisions (28 ui-web planned targets / 22 GAP-PKG-004 changes). Independent physical authorization and exclusive dependency/lockfile writer controls are still required before any implementation, build, release or merge.",
+      "USER_OPERATIONAL_CONTINUATION_APPROVAL (2026-10-18): the user expressly approved continuing the independent @vento/ui-web parallel work and all its necessary dependencies. This records progression intent only; human_authorization remains null because the separate physical MCP authorization gate has not been issued.",
+      "MCP_PHYSICAL_ADMISSION_GAP (2026-10-18): the controlled VS Code tool rejected ::INFRA dossier writes with TRANSVERSAL_INFRA_PATH_OUTSIDE_SCOPE and rejected DRAFT-to-READY writes with TRANSVERSAL_DRAFT_PHYSICAL_AUTHORIZATION_FORBIDDEN. The ::INFRA permission is limited to eight infrastructure files; its validation allowlist rejected physical ui-web harness/build/release tests. All denials were nonmutating. The missing dependency is an independent, reviewed physical authorization capability for this registered transversal package identity.",
+      "INFRA REGRESSION RECHECK (2026-10-18): two consecutive full focused runs returned 18/18 transversal-delivery, 10/10 commit-scope and 30/30 task-branch-lifecycle PASS; each reported unchanged Git state. Dossier JSON syntax PASS. These results do not certify runtime package exports, CSS, SSR, tarball or registry.",
+      "CANDIDATE_SCOPE_ADJUSTMENT: 29 exact physical paths now include packages/ui-web/.gitignore for build artifact hygiene. The prior 28-path resource snapshot remains a dated historical observation; the new target does not overlap GAP-PKG-004's 22 current changed paths. This DRAFT update does not grant package release authorization.",
+      "2026-10-18 BUILD_OUTPUT_LINT_RATCHET: after successful physical build, ESLint flagged generated dist/AppShell.js (2 react-hooks/refs against baseline zero). Add an exact generated-only ignore to the existing flat ESLint config, without suppressing rules for source or validators. Current physical scope becomes 30 exact paths including this necessary build-tool integration.",
+      "PRIVATE_PHYSICAL_IMPLEMENTATION_LOCAL_CHECKPOINT: 29 scoped implementation/configuration changes committed on infra/transversal-delivery-control as ff4ca7a8a1cf41d38db0e358795ba0ca709f3631. @vento/ui-web 0.1.0-alpha.1 remains private=true and unpublished. Public API lists 19 ESM named components/subpaths and 19 type surfaces plus styles.css. No consumers, Supabase or source TSX/CSS altered.",
+      "PHYSICAL_QA_VERIFIED_TWICE: two consecutive package batteries PASS: npm workspace build emits deterministic 41 output files (19 component .js/.d.ts pairs, index pair, CSS aggregate), 3 preserved use-client leaves, 19 CSS sources aggregated once, 21 npm exports, 19 historical validators PASS, 12/12 negative/regression tests PASS, 3 local React SSR smoke cases PASS, npm pack --dry-run lists 43 files with no private source. Both lint-ratchet runs PASS with 30 touched files clean. Root Next 16.1.1 production build and TypeScript PASS once; docs:package:scope:check PASS; docs:transversal:check PASS with 42 approved source tasks and 26 historical VERIFIED instances.",
+      "PENDING_RELEASE_GATES: root package-lock.json synchronization was denied LOCAL_SCOPE_CONCURRENT_DEPENDENCY_LOCK while GAP-PKG-004 has active root package.json QA script changes; this shared lock must be serialized before CI/npm ci/release. Next consumer App Router SSR/hydration, real isolated tarball installation, complete compatibility and private registry/namespace are NOT certified. Repository-wide lint has historical failures although the touched-file lint ratchet is clean. No remote publishing or production approval is implied.",
+      "2026-10-18 CHECKPOINT REAL TARBALL QA: private npm pack succeeded in ephemeral OS storage. 43 files / 45,894 bytes with byte-for-byte archive validation; npm-reported SHA1 and SHA512 SRI verified against actual archive; SHA256 ffd3989773b646322c5df011a9519a4605f767066d7d01260003af92d3. No install, deploy, publish, registry or consumer migration occurred. This augments but does not certify Next hydration.",
+      "2026-10-18 DYNAMIC_SCOPE_STATE_CORRECTION: seven source paths recorded as CREATE before implementation now exist and are tracked by local commit ff4ca7a8; physical_targets.operation updated to MODIFY for future exact-state local authorizations. Historical CREATE discovery is preserved in prior evidence. 30 total targets still include root package-lock.json, whose writer remains blocked under current GAP-PKG-004 concurrency.",
+      "2026-10-18 CANONICAL_STATUS_BOUNDARY: transient independent reviewed LOCAL-SCOPE allowed code edits/tests; it neither modified canonical human_authorization=null nor granted immutable registry release, cross-repo consumer adoption or remote push. Earlier admission-gap findings are historical, not currently operative, and do not negate the private checkpoint.",
+      "2026-10-18 INSTALLED_PRIVATE_TARBALL_QA: from commit 37f0960a5c8a140fa35add23440a08524ba437cb, a real @vento/ui-web 0.1.0-alpha.1 tarball was installed offline via npm into a temporary consumer directory without scripts or lockfile. The 43 installed files matched the package bytes, four public TypeScript entries resolved with NodeNext, ESM index/subpaths imported and React SSR smoke passed. React and React DOM runtime peers were copied from the local test toolchain only into temporary QA storage. npm pack SHA-256 stayed ffd3989773b646322c5df011a9519a4605f767066d7d01260003af92d3b2134e; temporary storage was removed. A post-checkpoint run of the extended validation was PASS; repeated final lint/build pending concurrent MCP operation. No Next App Router hydration, registry or seven-consumer approval inferred.",
+      "2026-10-18 PRIVATE_OFFLINE_CONSUMER_QA_RECHECK: source build, 15/15 distribution tests, 19 historical validators, temporary npm archive installation with four NodeNext type entrypoints, ESM/React SSR smoke, quality:lint:ratchet and package_scope all PASS twice. The README change generated a new reproducible tarball SHA-256 9d2e8e4977201be47656c00f1eb752ca802c2f0e6b7858238f4aefebc091269f. Refinement committed locally as a41e0d523719fa013cb67deb4290a5236da813ea; no remote mutations or consumer migration.",
+      "2026-10-18 NEXT_APP_ROUTER_QA_ATTEMPT: isolated Next 16 test file packages/ui-web/scripts/validate-next-app-router.test.mjs created but remains UNTRACKED and not approved by PASS. First Turbopack run failed due Next package resolution from OS temp. Webpack attempt failed with duplicate Next module resolution/case diagnostic. Third fixture with Next local junction and explicit turbopack root is pending a separate VS Code approval; do not infer App Router SSR/CSS/hydration PASS until actual successful validation. Existing 30 physical targets were extended to 31 for this exact test file.",
+      "2026-10-18 NEXT_APP_ROUTER_ISOLATED_BUILD_VERIFIED_TWICE: after relocating disposable QA fixture inside the isolated vento-shell-paralelo checkout (removed on completion), Next.js 16.1.1 Turbopack production build PASS twice. RSC/client ESM imports of AppShell and Alert compiled, Next emitted static HTML containing NEXT_APP_ROUTER_QA_OK and emitted CSS containing ui-alert and ui-app-shell selectors. Both runs reported git_status_unchanged:true. This replaces the previously pending third-fixture status for build+static SSR+CSS only. Browser hydration and real consumer migration remain open. QA file is untracked until final lint/commit gate.",
+      "2026-10-18 NEXT_APP_ROUTER_THREE_CLIENT_LEAVES_LOCAL_COMMIT: checkpoint 8de53c91f043c66425556ef2b626e916d4d0ff68 committed two exact QA paths (packages/ui-web/package.json and packages/ui-web/scripts/validate-next-app-router.test.mjs). Isolated Next 16.1.1 App Router compiled AppShell, AreaSelector and SiteSelector client boundaries; prerender marker assertions and single emitted CSS asset per selector PASS twice. Distribution regression 15/15, lint ratchet, package scope and root production build PASS twice in workspace 11; Git status unchanged during tests. A real headed/headless browser event/hydration run was NOT executed. Root lockfile conflict, registry and consumer gates remain unresolved; no remote mutation or canonical release authorization.",
+      "2026-10-18 REAL_CHROMIUM_HYDRATION_VERIFIED_TWICE: local checkpoint f317ec475b2156694105737edca5d301fdb135af adds real headless Google Chrome browser QA to the isolated Next.js 16.1.1 App Router fixture, using Node built-in WebSocket/CDP and no npm dependencies or shared lockfile writes. Synthetic test-local middleware prevents inheritance of vento-shell corporate SSO without altering the real middleware. Both browser runs PASS (navigation toggle, Escape, AreaSelector and SiteSelector React state changes). Distribution regression 15/15, touched-file lint ratchet, package scope and root Next production build PASS in two successive batteries, with git_status_unchanged:true; JS syntax and DRAFT JSON syntax PASS. Browser QAs are checkout-local only, not a certified seven-consumer matrix, immutable registry release, npm ci or production deployment. Dossier remains DRAFT with human_authorization=null and GAP-PKG-004's 22 paths unchanged.",
+      "2026-10-18 CONSUMER_LOCK_COMP_PKG_004_REAL_SNAPSHOT: local checkpoint ea1aaa801e1799778f28f2db3c68a1141ca1b71d. Seven read-only consumer manifest+lockfile/HEAD pairings (repository@HEAD, locked Next version, lockfile SHA-256): vento-shell@180db768=16.1.1/0f312bf19247a393d07bc81516f8bdc434514866c98a9f29aeac34044c5de189; vento-viso@df3f2865=16.2.9/4b0aba007a124620ff8974ec85dea018a1a0c5457ca5d367e0b09a36b870dbf5; vento-nexo@f0a12557=16.2.10/cc9ff5e107324569a205de1e00adc7c68799b4628131bca86556f97563110a94; vento-fogo@d5f722d3=16.2.4/3b25ce8b26e9b3dbe996cad64d11f067ac997ab3e8b40cddd9d4482841f41d6f; vento-origo@9742afd5=16.2.1/75f63a7d96ef89eec53671c05d75072bdd3777d31490013b4c7a74e7dbe88c69; vento-pulso@715b5683=16.1.1/081102d8542f5f83f6d2b983b399105b7e498f4314f40d7c16e7262bc05116b0; vento-numera@87fdd0ff=16.2.1/a41db787f3da06efba56b19282fde0ae332ff90f70f20efb8174feddb6e57309. Test diagnostics also record all seven exact 40-hex commit SHAs, manifest SHA-256s, locked React/React DOM=19.2.3, Tailwind=4.1.18 and TypeScript=5.9.3. Candidate bands 7/7 compliant; none has an @vento/ui-web manifest dependency.",
+      "2026-10-18 SIX_CONSUMER_NEXT_TOOLCHAIN_SYNTHETIC_QA_VERIFIED_TWICE: real locally installed Next versions match consumer locks for VISO 16.2.9, NEXO 16.2.10, FOGO 16.2.4, ORIGO 16.2.1, PULSO 16.1.1 and NUMERA 16.2.1. Each compiled a disposable, isolated Next App Router fixture consuming the private @vento/ui-web dist; static SSR HTML marker and exact-once component CSS in emitted assets PASS twice. Per battery: 16 Node test cases, 15 PASS, 1 SKIP, 0 FAIL; Shell skipped because installed Tailwind=4.3.3 differs from lockfile=4.1.18. Two consecutive complete batteries PASS: compatibility test, touched-file lint ratchet (historical lint debt remains), package scope, root Next 16.1.1 build/TS, transversal tests 18/18 and transversal policy check. No actual consumer application build, independent consumer browser hydration, clean npm ci, install of npm .tgz into all consumers, registry publish, merge, release or remote mutation. Temporary fixtures cleaned and all consumer Git state counts preserved. Package manifest restored exactly to pre-QA SHA-256 f30a31b26fcda362760954803eea1a3df7c97ab8fec95862e83862d65593f18b; only test source committed, DRAFT remains untracked with human_authorization=null.",
+      "2026-10-18 SIX_CONSUMER_REAL_CHROMIUM_HYDRATION_VERIFIED_TWICE: local checkpoint 878a711ec7599095468c08138999dc984d7dbfa2 extends the single registered packages/ui-web/scripts/validate-consumer-compatibility.test.mjs QA to real Chrome headless CDP with actual local Next/React consumer toolchains. Six separate disposable Next fixtures (VISO Next 16.2.9, NEXO 16.2.10, FOGO 16.2.4, ORIGO 16.2.1, PULSO 16.1.1, NUMERA 16.2.1; React 19.2.3) each pass production build, SSR marker, exactly-one component CSS asset selectors, React hydration and actual browser interactions (AppShell nav toggle, Escape, AreaSelector and SiteSelector callbacks). Shell is explicitly SKIPPED due local installed Tailwind 4.3.3 versus locked 4.1.18, not certified. Two independent full validation batteries PASS 6/6 checks each: test 22 cases/21 PASS/1 SKIP/0 FAIL, touched-file lint ratchet, package scope, Shell production build, 18/18 transversal tests, transversal policy check. Distribution tests 15/15 PASS twice. All validations report git_status_unchanged:true; browser profile and Next fixture ephemeral; seven consumer Git states preserved. Only the source test is committed; no consumer application actual integration, consumer install, clean npm ci, app-level visual/a11y/screenshot approval, release certification, remote push, registry, merge or publish. Private package manifest remains unchanged. DRAFT human_authorization=null.",
+      "POST_MERGE_MAIN_20261021_UTC: PR #1017 MERGED, merge commit 1e3ca011dcf05e2cb48193ddd5e2bf41596e2a9c confirmed at vento-shell main. P1 and P2 review threads resolved; package governance rollback correction 471f89506af52a307d06250da8bbd9ecb411345e included. Required Gate #39522781874 and canonical plan #39522781871 PASS on the PR head 9107306c42378647358b9dd8a348e01e114b16f7. Post-merge plan run #39523467456 PASS on main. This is PRIVATE CANDIDATE CODE IN MAIN, not a package release or physical package gate.",
+      "CURRENT_CONSUMER_MANIFEST_BASELINE_20261021_UTC: GitHub main package.json in vento-shell declares Next 16.1.1; vento-numera, vento-fogo, vento-origo, vento-viso, vento-pulso and vento-nexo each declare Next 16.4.2. All seven declare React and React DOM 19.2.3 and none declares a @vento/ui-web dependency. Historical six-consumer isolated Chromium/SSR/CSS PASS used earlier checkout toolchains and is not current remote app-level certification, clean npm ci or rollout acceptance. Canonical consumer order remains SHELL, NUMERA, FOGO, ORIGO, VISO, PULSO, NEXO.",
+      "CURRENT_LOCKFILE_CONCILIATION_20261021_UTC: main packages/ui-web/package.json declares @vento/ui-web@0.1.0-alpha.1 private=true, 21 public export entries and React/React DOM peers >=19.2.3 <20, but main package-lock.json blob 88a57df295331c28ea45dcafc5b762c1fe77695d retains only name in packages[packages/ui-web]. Reconcile through the sole authorized dependency writer with a coherent npm-generated lockfile, not by hand or from the concurrent GAP worktree. No registry, publication or consumer adoption is authorized.",
+      "ROLLBACK_AND_RELEASE_GATE_20261021_UTC: rollback.status stays PENDING because no published immutable @vento/ui-web version, certified prior deployed consumer snapshot, provider namespace authorization, per-consumer restoration exercise or production rollback evidence exists. DRAFT/human_authorization=null and unresolved resource conflicts remain; earlier distribution tests cannot upgrade status by inference.",
+      "REGISTRY_PROVIDER_AUDIT_20261020: canonical SHELL-PKG-001 requires unchanged @vento scope, private npm-compatible registry, immutable exact package versions, separately authorized publisher and read-only consumer access. GitHub Packages is not admissible under the observed vento-group-sas account alone because @vento requires a verified GitHub vento namespace owner. npmjs private packages are a conditional alternative if VENTO controls the npm vento scope and private organization billing/roles; no such rights were demonstrated. Public npm /org/vento redirected to /~vento and unauthenticated package lookup returned 404, neither proving ownership nor package availability. A third-party/private registry with explicit @vento:registry routing remains a possible fallback subject to new security/operational approval. No provider selected or publishing credentials tested.",
+      "REGISTRY_PUBLICATION_GUARDS_20261020: npm refuses to publish when package.json private=true, including to a private registry. The main candidate manifest at 1e3ca011dcf05e2cb48193ddd5e2bf41596e2a9c also lacks both repository and publishConfig fields; npm trusted publishing requires correct source repository association. Changing this safeguard or adding registry-specific metadata is a separate release-scoped authorized operation; this audit preserved the manifest. npmjs OIDC trusted publishing may support a protected GitHub Actions publisher, with independent private read credentials and approved package/source association, but current owner, workflow identity, permission split and artifact release gate are unverified. No npm publish, namespace migration, GitHub package creation or registry configuration was performed."
+    ],
+    "unresolved_findings": [
+      "SHARED_DEPENDENCY_LOCK: reconcile root package-lock.json in a separately exclusive dependency-writer window; GAP-PKG-004 has pending root package.json changes and MCP returned LOCAL_SCOPE_CONCURRENT_DEPENDENCY_LOCK. Do not modify the GAP-PKG-004 checkout or run concurrent installs.",
+      "SHELL_LOCAL_LOCK_TOOLCHAIN_DRIFT: consumer vento-shell package-lock.json resolves Tailwind 4.1.18, but its node_modules/tailwindcss package.json is 4.3.3. Both are within candidate major 4, but the checkout is not lock-reproducible. Shell's locked-runtime synthetic build is explicitly SKIPPED (not PASS). Do not run npm install/ci or rewrite package-lock.json while GAP-PKG-004 owns the shared package.json/dependency window.",
+      "CONSUMER_BROWSER_QA_AND_CSS_RELEASE_GATES: seven real consumer manifest/lock/commit snapshots satisfy candidate COMP-PKG-004 bands. Six locked Next/React toolchain synthetic fixtures for VISO, NEXO, FOGO, ORIGO, PULSO and NUMERA PASS twice with production build, SSR, CSS, real headless Chrome React hydration and AppShell/AreaSelector/SiteSelector browser interactions (checkpoint 878a711e). Shell remains SKIPPED because installed Tailwind 4.3.3 differs from locked 4.1.18. These tests DO NOT exercise actual consumer app components, app-level CSS cascade, layouts, visual/a11y checks, full consumer typecheck/build/e2e, certified clean npm ci or seven-way release eligibility. Immutable registry publish, adoption, rollback and approvals remain unresolved; the private package is unadopted and unpublished.",
+      "COMPATIBILITY_REGISTRY_RELEASE_QA: 7 consumer lockfiles/bands, verified @vento registry publishing owner, credential boundaries, immutability, remote artifact provenance and rollback require independent release gates before publish.",
+      "REGISTRY_PUBLIC_OWNER_NOT_VERIFIED_FOR_GITHUB_OR_NPMJS: the source owner vento-group-sas does not demonstrate GitHub ownership of vento for @vento in GitHub Packages, nor does public npm data show VENTO administration of npmjs scope vento. This blocks selection of THOSE TWO registry routes only, not independently controlled npm-compatible registries that route @vento by scope mapping. No production provider has passed its owner/access gate.",
+      "MANAGED_PROVIDER_PILOT_NOT_AUTHORIZED: Cloudsmith is the recommended lowest-infrastructure first-consumer pilot candidate for @vento/ui-web, not a VENTO-authorized registry. Account/repository creation and private package publish require separate human approval and admin access, and package.json private=true must remain unchanged in this DRAFT. No real Cloudsmith repo, publisher account, read token or pilot package was tested.",
+      "SEVEN_CONSUMER_TOKEN_ISOLATION_UNPROVEN: Cloudsmith Core public pricing offers one entitlement token, insufficient to demonstrate seven separately revocable consumer-read identities. Pro advertises 100 entitlements at $149/month, but plan selection, billing and effective permissions remain unapproved. Do not share one unrestricted token across all consumer repositories; verify provider configuration, scope mapping and exact-version npm ci per consumer before full adoption.",
+      "REGISTRY_PRIVATE_DELIVERY_GATE_PENDING: before release, approve a provider that preserves unchanged @vento identity; verify immutable same-version overwrite rejection, private repository, owner plus write/read separation, independently revocable credentials for seven consumer repositories, protected publisher workflow, authenticated exact npm ci, artifact hashes/provenance, access-revocation test and consumer-independent rollback. Preserve package.json private=true until separately approved release gate; no tokens in tracked files and no publication in this DRAFT.",
+      "AZURE_DEVOPS_ACCOUNT_CREATION_DEPENDENCY: no signed-in Azure DevOps organization or Azure subscription was available to verify in the connected browser profile. Microsoft requires an active Azure subscription for NEW organizations and manual creation in its portal; actual existence/ownership, billing authorization, region, project, feed name and role policy are all UNKNOWN, not placeholder identities. Do not create a billable resource or assume the free tier has been activated.",
+      "AZURE_FREE_SEVEN_CONSUMER_ACCESS_UNCERTIFIED: a 2 GiB free Artifacts quota and unlimited package identities do not guarantee seven separately revocable CI consumer readers fit the first five Basic-license users. Evaluate Stakeholder, PAT and service principal entitlements against real Azure DevOps account rules before onboarding seven repositories. Keep publisher identity distinct from all readers, and all read credentials separately revocable; don't grant open org-wide access to bypass licensing.",
+      "AZURE_PILOT_PREFERS_ONE_PRIVATE_FEED: Azure Artifacts is now the preferred feasibility candidate for all four canonical @vento/* families; the earlier Cloudsmith pilot note is historical, not operative as a provider selection. No Azure org, project, feed, package, PAT, service principal or GitHub secret has been created. Release remains separately authorized and requires scope mapping, private feed/view access, immutability, identity/permission separation, npm ci, audit and rollback certification.",
+      "CANONICAL_APPROVAL_UNISSUED: record remains DRAFT, human_authorization=null. Reviewed temporary MCP scope is not approval for a published package; fresh main/worktree conflict check required at merge or release."
+    ]
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "physical_targets": [
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/package.json",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Release identity, immutable version, exports, peerDependencies and publish files"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/README.md",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Document supported public API, SSR/CSR, CSS, upgrade and compatibility contract"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "package-lock.json",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Deterministic lockfile only if the reviewed build toolchain adds dependencies"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/src/index.ts",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Explicit named ESM public component exports and public prop/type exports for the 19 verified UI modules; no wildcard exposure of private sources; preserve three client directives in compiled leaf modules."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/src/styles.css",
+      "operation": "MODIFY",
+      "symbol_or_surface": "One supported public CSS entrypoint, @vento/ui-web/styles.css, aggregating 19 existing component styles exactly once; no additional JavaScript-side CSS injection in distributed modules."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/tsconfig.build.json",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Isolated declaration and compiler contract for publishable package"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/build.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Independent ESM runtime/declaration outputs that preserve AppShell, AreaSelector and SiteSelector client directives; emit one deterministic CSS aggregate from 19 sources, without CSS side-effect imports in the distributed JS and without rewriting verified TSX sources."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-distribution.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Independent fail-closed real package distribution validator"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-distribution.test.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Regression tests for package exports, tarball, SSR, CSS and private baseline transition"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-alert.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-app-shell.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-area-selector.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-button.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-card.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-context-diagnostic.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-context-indicator.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-cross-app-handoff.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-empty-state.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-interrupted-process-state.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-kiosk-task-surface.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-primary-action-panel.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-process-status-line.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-recoverable-error-state.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-sensitive-action-confirmation.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-simulated-role-notice.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-site-selector.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-tablet-task-surface.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-task-navigation.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Preserve historical component assertions while replacing only private-manifest immutability checks"
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/.gitignore",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Version-controlled build-output exclusion for ui-web dist/; keep 41 deterministic ESM/types/CSS outputs outside Git while retaining npm pack files."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "eslint.config.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Narrow globalIgnore of only packages/ui-web/dist/** generated ESM/type artifacts, preserving lint for every original source and the existing lint-ratchet baseline."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-next-app-router.test.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Isolated Next 16.1.1 App Router ESM, browser hydration and CSS QA; tracked and twice verified in local commits 8de53c91 and f317ec47."
+    },
+    {
+      "repository": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-consumer-compatibility.test.mjs",
+      "operation": "MODIFY",
+      "symbol_or_surface": "Seven consumer manifest/npm lock and installed toolchain read-only inventory; six consumer Next/React synthetic builds with SSR/CSS and real headless Chrome hydration, navigation/keyboard/selectors, twice-verified 6/6 batteries; Shell Tailwind lock drift explicitly skipped. Test tracked in commits ea1aaa801e1799778f28f2db3c68a1141ca1b71d and 878a711ec7599095468c08138999dc984d7dbfa2. This remains a synthetic pre-release compatibility pilot, NOT actual consumer application or seven-way release certification."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:transversal:check",
+    "npm run docs:transversal:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run docs:work-topology:check",
+    "node --test scripts/quality/shared-package-build-gate.test.mjs scripts/quality/shared-package-release-gate.test.mjs scripts/quality/shared-package-compatibility-gate.test.mjs scripts/quality/shared-package-consumer-update-gate.test.mjs",
+    "npm run --workspace @vento/ui-web build",
+    "node --test packages/ui-web/scripts/validate-distribution.test.mjs",
+    "node --test packages/ui-web/scripts/validate-consumer-compatibility.test.mjs",
+    "npm pack --workspace @vento/ui-web --dry-run --json",
+    "git diff --check",
+    "npm run validate --workspace @vento/ui-web",
+    "npm run quality:lint:ratchet",
+    "npm run build"
+  ],
+  "rollback": {
+    "status": "PENDING",
+    "current_phase": "PRIVATE_ESM_CANDIDATE_MERGED_MAIN_NOT_RELEASED",
+    "candidate_merge_commit_sha": "1e3ca011dcf05e2cb48193ddd5e2bf41596e2a9c",
+    "current_runtime_impact": "NONE_IN_PRODUCTION; private package candidate merged via PR #1017; zero consumer repositories declare @vento/ui-web as an installed dependency",
+    "package_policy": "Do not move or overwrite an immutable published tag or tarball; fail closed on version conflicts.",
+    "consumer_policy": "Each later consumer adoption requires an independently certified pre-migration lockfile/commit snapshot.",
+    "readiness_requirements": [
+      "Verify the owner and exact baseline repository/commit of every authorized adopting consumer; do not reuse synthetic QA checkouts.",
+      "Capture the previously certified manifest and lockfile, exact package versions, immutable artifact identity and integrity for each consumer.",
+      "Define tested restore actions, validation commands and stop conditions for each authorized consumer without modifying other applications.",
+      "Demonstrate prior-snapshot compatibility, recovery and approval in the applicable consumer gate; no cross-repository rollout by inference."
+    ],
+    "operational_gate": "Rollback is not certified: no published package version or real consumer adoption exists, no certified prior deployed consumer snapshot was supplied, and no runtime rollback was exercised. Do not claim READY_FOR_APPROVAL or physical cutover."
+  },
+  "human_authorization": null,
+  "resource_conflict_evidence": [
+    {
+      "status": "UNRESOLVED_RECHECK_REQUIRED",
+      "owner": "vento-group-sas/vento-shell",
+      "issue": "Historical 2026-10-18 snapshot found zero exact path overlaps for 32 registered ui-web targets versus 22 GAP-PKG-004 changes, but a fresh exclusive root package-lock.json writer is still not authorized or verified. Do not assume the historical overlap count represents the current GAP worktree.",
+      "isolation": "PR #1017 merged the private package candidate into main at 1e3ca011dcf05e2cb48193ddd5e2bf41596e2a9c. The separate infra/transversal-delivery-control checkout is at 9107306c42378647358b9dd8a348e01e114b16f7 with no staged modifications; only this DRAFT dossier is untracked. No dependency-lock write, consumer migration, registry publication or deployment was performed during this preparation.",
+      "latest_checked_local_parallel_head": "9107306c42378647358b9dd8a348e01e114b16f7",
+      "latest_checked_concurrent_head": "180db76808acf9b71480f1c73fa23180f164572c",
+      "latest_checked_remote_main_head": "1e3ca011dcf05e2cb48193ddd5e2bf41596e2a9c",
+      "latest_checked_exact_overlaps": 0,
+      "latest_check_note": "2026-10-21 UTC: local parallel HEAD and GitHub main were freshly verified. Concurrent GAP HEAD and exact zero-overlap count are retained as 2026-10-18 HISTORICAL observations, not freshly rechecked; no access to or modification of that worktree in this preparation. Independent lock-writer ownership and registry/release authorization remain UNRESOLVED."
+    },
+    {
+      "status": "UNRESOLVED_RECHECK_REQUIRED",
+      "owner": "vento-group-sas/vento-shell",
+      "issue": "Shared root dependency-lock writer previously rejected package-lock.json update with LOCAL_SCOPE_CONCURRENT_DEPENDENCY_LOCK during GAP-PKG-004 root package.json work. Current main package-lock.json still lacks ui-web version and peer metadata; the dependency writer has not been reauthorized or exercised.",
+      "isolation": "The candidate implementation is merged into main through PR #1017, but the DRAFT dossier remains untracked and the root lockfile was not changed. Preserve concurrent GAP work; require a separate, explicitly authorized exclusive dependency-writer window and npm-generated lockfile reconciliation before certifying distribution. No npm publish, deploy or consumer adoption is inferred."
+    }
+  ]
+}
