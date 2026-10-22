@@ -5,7 +5,7 @@ import test from 'node:test';
 
 import {
   SOURCE_SHA, PILOT, TAG, REGISTRY, TAR_SHA, TAR_SRI,
-  verifyRecoveryContext, verifyMetadata,
+  verifyRecoveryContext, verifyMetadata, verifyExistingRegistryMetadata,
 } from './vento-contracts-private-reconcile.mjs';
 
 const repository = path.resolve(import.meta.dirname, '../..');
@@ -69,6 +69,24 @@ test('existing GitHub Release must match and have zero public assets', () => {
     assert.throws(() => verifyMetadata({ ...expected, ...modification },
       'exact canonical notes'), /EXISTING_RELEASE_MISMATCH/u);
   }
+});
+
+test('a listed GitLab npm version must have the exact original SRI', () => {
+  const base = {
+    name: '@vento/contracts', version: '1.0.0-alpha.1',
+    'dist.integrity': TAR_SRI,
+  };
+  assert.doesNotThrow(() => verifyExistingRegistryMetadata(base));
+  for (const wrong of [
+    { name: '@vento/ui-web' },
+    { version: '1.0.0-alpha.2' },
+    { 'dist.integrity': 'sha512-somethingelse' },
+  ]) {
+    assert.throws(() => verifyExistingRegistryMetadata({ ...base, ...wrong }),
+      /EXISTING_REGISTRY_INTEGRITY_MISMATCH/u);
+  }
+  assert.throws(() => verifyExistingRegistryMetadata(null),
+    /EXISTING_REGISTRY_INTEGRITY_MISMATCH/u);
 });
 
 test('recovery reads original source and guards protected npm mutation', () => {
