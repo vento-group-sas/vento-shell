@@ -2052,6 +2052,30 @@
         "path": "src/app/staff/shared-devices/new/page.tsx",
         "symbol_or_surface": "VISO /staff/shared-devices/new: consumidor autenticado de plantillas administrativas, QA RLS positivo y negativo para viso.staff.manage, sin cambios funcionales en UI",
         "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "src/components/home/AttendanceActionCard.tsx",
+        "symbol_or_surface": "Geofence blocked top attendance CTA: enable explicit location revalidation without triggering an attendance write.",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "app/(app)/home.tsx",
+        "symbol_or_surface": "Home attendance callsite: route blocked geofence CTA to forced location revalidation, keep check-in guarded.",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "src/hooks/use-shift-policy.ts",
+        "symbol_or_surface": "ANIMA: politica de turnos que impide anunciar autocierre horario mientras no exista implementacion servidor",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "docs/ANIMA-SHIFT-POLICY-CONFIG-SIN-BUILD.md",
+        "symbol_or_surface": "ANIMA: guia operativa del cierre por geocerca y ausencia de autocierre por calendario",
+        "operation": "MODIFICAR"
       }
     ],
     "unresolved_findings": [
