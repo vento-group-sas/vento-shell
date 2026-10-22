@@ -180,6 +180,6 @@ test('CI005 rejects synthetic drift, stale evidence, missing consumer and unreso
   ]) {
     const fixture = structuredClone(base);
     mutate(fixture);
-    assert.throws(() => buildRealCi005PilotInput(fixture), /^|CI005_VISO:/u);
+    assert.throws(() => buildRealCi005PilotInput(fixture), /CI005_VISO:/u);
   }
 });
