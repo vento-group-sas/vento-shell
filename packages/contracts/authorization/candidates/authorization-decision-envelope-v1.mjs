@@ -328,6 +328,22 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
         allows.filter((x) => x.lane === "OPERATIONAL").map((x) => x.grant_id))) invalid();
     const denies = array(v.matched_denies).map((x) => matchedDeny(x, r.permission_key));
     if (new Set(denies.map((x) => x.deny_id)).size !== denies.length) invalid();
+    // Lane references must resolve to real, appropriately scoped evidence.
+    // Global denies may apply to both lanes but cannot be invented locally.
+    const denyById = new Map(denies.map((x) => [x.deny_id, x]));
+    for (const [name, decision] of [["BASE", base], ["OPERATIONAL", operational]]) {
+      const ids = textList(decision.matched_deny_ids);
+      if (new Set(ids).size !== ids.length) invalid();
+      for (const id of ids) {
+        const evidence = denyById.get(id);
+        if (!evidence || (evidence.lane !== name
+          && evidence.lane !== "ALL" && evidence.lane !== null)) invalid();
+      }
+    }
+    if (denies.some((x) =>
+      (x.deny_class === "BASE_LANE" && !base.matched_deny_ids.includes(x.deny_id))
+      || (x.deny_class === "OPERATIONAL_LANE"
+        && !operational.matched_deny_ids.includes(x.deny_id)))) invalid();
     const blocked = ["structural_denies","actor_wide_denies","lane_denies","blocked_reasons"]
       .map((k) => array(v[k]).map(decisionReason));
 
@@ -346,6 +362,9 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       : p.authorization_requirement;
     if (combination.combination_rule !== expectedRule) invalid();
     if (new Set(authorizing).size !== authorizing.length || new Set(blockedLanes).size !== blockedLanes.length) invalid();
+    const expectedBlocked = required.filter((name) =>
+      (name === "BASE" ? base : operational).outcome === "DENY");
+    if (!sameMembers(blockedLanes, expectedBlocked)) invalid();
     const baseAllow = base.outcome === "ALLOW";
     const opAllow = operational.outcome === "ALLOW";
     const modeAllow = p.authorization_requirement === "BASE_ONLY" ? baseAllow
@@ -369,9 +388,22 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || !text(final.primary_reason_code) || !text(final.safe_message_code)
       || !same(finalLanes, authorizing)) invalid();
     if (final.outcome === "ALLOW") {
+      // A complete BASE_OR_OPERATIONAL lane can win even when its alternative
+      // is denied. Structural/actor-wide and request-global denies still win.
+      const isOr = p.authorization_requirement === "BASE_OR_OPERATIONAL";
+      const deniedLanes = required.filter((name) =>
+        (name === "BASE" ? base : operational).outcome === "DENY");
+      const isDeniedAlternative = (name) =>
+        isOr && deniedLanes.includes(name) && !authorizing.includes(name);
+      const foreignLaneDeny = denies.some((x) =>
+        !["BASE_LANE", "OPERATIONAL_LANE"].includes(x.deny_class)
+        || !isDeniedAlternative(x.lane));
       if (final.reason_category !== "AUTHORIZED" || authorizing.length === 0
-        || allows.length === 0 || denies.length !== 0
-        || blocked.some((x) => x.length !== 0)
+        || allows.length === 0 || blocked[0].length !== 0
+        || blocked[1].length !== 0 || foreignLaneDeny
+        || blocked[2].some((x) => !isDeniedAlternative(x.lane))
+        || blocked[3].some((x) =>
+          x.severity === "BLOCKING" && !isDeniedAlternative(x.lane))
         || !["RESOLVED","MULTI_RESOLVED","NOT_APPLICABLE"].includes(resource.resolution_status)
         || p.permission_status !== "ACTIVE"
         || prerequisites.some((x) => x.status === "FAIL")
