@@ -71,7 +71,10 @@ function denied() {
         source: "synthetic-non-resource",
         coherent: true,
       },
-      ownership: {},
+      ownership: {
+        owner_type: "NONE", owner_id: null,
+        actor_relation: "NOT_APPLICABLE", coherent: true,
+      },
       required_sides: [],
       state_snapshot: {},
       field_classification: {},
@@ -143,6 +146,31 @@ function denied() {
       evaluator_name: "synthetic-fixture",
       evaluator_version: "1.0.0",
     },
+  };
+}
+function syntheticTerritorySide(changes = {}) {
+  return {
+    site_id: null, area_id: null, area_kind: null,
+    route_id: null, vehicle_id: null, coherent: true, ...changes,
+  };
+}
+function syntheticSubject(changes = {}) {
+  return {
+    subject_type: "employee", subject_id: "synthetic-employee",
+    relationship_to_actor: "RELATED", coherent: true, ...changes,
+  };
+}
+function syntheticOwnership(changes = {}) {
+  return {
+    owner_type: "NONE", owner_id: null,
+    actor_relation: "NOT_APPLICABLE", coherent: true, ...changes,
+  };
+}
+function syntheticResolvedSide(changes = {}) {
+  return {
+    side_code: "ORIGIN", required: true, resource_type: "transfer",
+    resource_ids: ["item-1"], territory: syntheticTerritorySide(),
+    resolution_status: "RESOLVED", ...changes,
   };
 }
 function allowed() {
@@ -643,8 +671,9 @@ test("security: deny and reason getters are rejected without invocation", () => 
 test("contractual: resource territory uses exact canonical envelope and typed lists", () => {
   assert.equal(inspect(allowed()), undefined);
   const origin = denied();
-  origin.resource.territory.origin = { label: "synthetic-origin" };
-  origin.resource.territory.destination = Object.assign(Object.create(null), { label: "synthetic-destination" });
+  origin.resource.territory.origin = syntheticTerritorySide({ site_id: "synthetic-origin" });
+  origin.resource.territory.destination = Object.assign(Object.create(null),
+    syntheticTerritorySide({ site_id: "synthetic-destination" }));
   assert.equal(inspect(origin), undefined);
   for (const field of Object.keys(denied().resource.territory)) {
     const d = denied();
@@ -734,7 +763,7 @@ test("contractual: concurrency policy and typed fields match canonical schema", 
 test("security: field classification and side arrays are strictly data-only", () => {
   const valid = denied();
   valid.resource.field_classification = { status: "PUBLIC" };
-  valid.resource.required_sides = [{ label: "synthetic-side" }];
+  valid.resource.required_sides = [syntheticResolvedSide()];
   assert.equal(inspect(valid), undefined);
   const wrong = denied();
   wrong.resource.field_classification = { status: { allow: true } };
@@ -815,19 +844,22 @@ test("security: deny IDs and blocked lanes cannot be fabricated or misplaced", (
   fail(borrowedDeny);
 });
 
-test("contractual: opaque resource leaves accept nested JSON without granting authority", () => {
+test("contractual: state snapshots remain JSON and resolved subtypes follow exact contracts", () => {
   const d = denied();
   const shared = { code: "synthetic", count: 2, enabled: false };
   d.resource.state_snapshot = {
     nested: { rows: [shared, shared, null, true, "text", 0.5] },
   };
-  d.resource.ownership = Object.assign(Object.create(null), {
-    holder: "synthetic-holder", details: { ids: ["site-1"] },
-  });
-  d.resource.subject = { reference: { keys: ["actor-untrusted"] } };
-  d.resource.required_sides = [{ reference: { origins: [{ id: "source" }] } }];
-  d.resource.territory.origin = { reference: { site: "synthetic-site" } };
-  d.resource.territory.destination = { reference: { site: "synthetic-destination" } };
+  d.resource.ownership = Object.assign(Object.create(null),
+    syntheticOwnership({
+      owner_type: "SITE", owner_id: "site-1", actor_relation: "RELATED",
+    }));
+  d.resource.subject = syntheticSubject();
+  d.resource.required_sides = [
+    syntheticResolvedSide({ territory: syntheticTerritorySide({ site_id: "site-1" }) }),
+  ];
+  d.resource.territory.origin = syntheticTerritorySide({ site_id: "site-1" });
+  d.resource.territory.destination = syntheticTerritorySide({ site_id: "site-2" });
   assert.equal(inspect(d), undefined);
 });
 
@@ -1036,6 +1068,182 @@ test("security: a different resolved request_shape cannot be reused for the requ
   const extra = denied();
   extra.request.resource_request = { mode: "NON_RESOURCE", resolver_name: "caller-chosen" };
   fail(extra);
+});
+
+test("contractual: canonical subordinate DTOs accept all documented fields and enums", () => {
+  const d = denied();
+  d.resource.subject = syntheticSubject({
+    subject_type: "customer", subject_id: "customer-1",
+    relationship_to_actor: "THIRD_PARTY",
+  });
+  d.resource.ownership = syntheticOwnership({
+    owner_type: "CUSTOMER", owner_id: "customer-1", actor_relation: "ASSIGNED",
+  });
+  d.resource.territory.origin = syntheticTerritorySide({
+    site_id: "site-1", area_id: "area-1", area_kind: "STORAGE",
+    route_id: "route-1", vehicle_id: "vehicle-1",
+  });
+  d.resource.territory.destination = syntheticTerritorySide({ site_id: "site-2" });
+  d.resource.required_sides = [
+    syntheticResolvedSide({
+      side_code: "DESTINATION", territory: syntheticTerritorySide({ site_id: "site-2" }),
+      resource_ids: [],
+    }),
+    syntheticResolvedSide({
+      side_code: "ORIGIN", territory: syntheticTerritorySide({ site_id: "site-1" }),
+      resource_ids: ["item-1", "item-2"],
+    }),
+  ];
+  assert.equal(inspect(d), undefined);
+  const nullPrototype = denied();
+  nullPrototype.resource.subject = Object.assign(Object.create(null), syntheticSubject());
+  nullPrototype.resource.ownership = Object.assign(Object.create(null), syntheticOwnership());
+  nullPrototype.resource.territory.origin =
+    Object.assign(Object.create(null), syntheticTerritorySide());
+  nullPrototype.resource.required_sides = [
+    Object.assign(Object.create(null), syntheticResolvedSide()),
+  ];
+  assert.equal(inspect(nullPrototype), undefined);
+});
+
+test("security: subordinate records reject every missing field and extra authority flag", () => {
+  const cases = [
+    [syntheticSubject(), (d, v) => { d.resource.subject = v; }],
+    [syntheticOwnership(), (d, v) => { d.resource.ownership = v; }],
+    [syntheticTerritorySide(), (d, v) => { d.resource.territory.origin = v; }],
+    [syntheticResolvedSide(), (d, v) => { d.resource.required_sides = [v]; }],
+  ];
+  for (const [shape, set] of cases) {
+    for (const key of Object.keys(shape)) {
+      const d = denied();
+      const v = { ...shape };
+      delete v[key];
+      set(d, v);
+      fail(d);
+    }
+    for (const forbidden of ["allow", "bypass_applied"]) {
+      const d = denied();
+      set(d, { ...shape, [forbidden]: true });
+      fail(d);
+    }
+  }
+});
+
+test("security: subordinate enumerations and primitives must match AUTH-CTX-018", () => {
+  for (const [make, set, field, value] of [
+    [syntheticSubject, (d, v) => { d.resource.subject = v; },
+      "subject_type", ""],
+    [syntheticSubject, (d, v) => { d.resource.subject = v; },
+      "subject_id", null],
+    [syntheticSubject, (d, v) => { d.resource.subject = v; },
+      "relationship_to_actor", "FORCE_ALLOW"],
+    [syntheticSubject, (d, v) => { d.resource.subject = v; },
+      "coherent", "true"],
+    [syntheticOwnership, (d, v) => { d.resource.ownership = v; },
+      "owner_type", "ANY"],
+    [syntheticOwnership, (d, v) => { d.resource.ownership = v; },
+      "owner_id", 7],
+    [syntheticOwnership, (d, v) => { d.resource.ownership = v; },
+      "actor_relation", "GLOBAL"],
+    [syntheticOwnership, (d, v) => { d.resource.ownership = v; },
+      "coherent", null],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.origin = v; },
+      "site_id", 0],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.destination = v; },
+      "area_id", false],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.origin = v; },
+      "route_id", {}],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.origin = v; },
+      "vehicle_id", []],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.origin = v; },
+      "coherent", "false"],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "side_code", ""],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "required", 1],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "resource_type", ""],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "resource_ids", [null]],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "territory", "site-1"],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; },
+      "resolution_status", "AUTOMATIC_ALLOW"],
+  ]) {
+    const d = denied();
+    set(d, make({ [field]: value }));
+    fail(d);
+  }
+});
+
+test("security: nested subordinate getters are rejected without execution", () => {
+  let invoked = 0;
+  for (const [make, set, key] of [
+    [syntheticSubject, (d, v) => { d.resource.subject = v; }, "relationship_to_actor"],
+    [syntheticOwnership, (d, v) => { d.resource.ownership = v; }, "owner_id"],
+    [syntheticTerritorySide, (d, v) => { d.resource.territory.destination = v; }, "site_id"],
+    [syntheticResolvedSide, (d, v) => { d.resource.required_sides = [v]; }, "resolution_status"],
+  ]) {
+    const d = denied();
+    const v = make();
+    Object.defineProperty(v, key, {
+      enumerable: true, get() {
+        invoked++;
+        throw new Error("SUBORDINATE_GETTER_MUST_NOT_RUN");
+      },
+    });
+    set(d, v);
+    fail(d);
+  }
+  const nested = denied();
+  const side = syntheticTerritorySide();
+  Object.defineProperty(side, "coherent", {
+    enumerable: true, get() {
+      invoked++;
+      throw new Error("NESTED_TERRITORY_GETTER_MUST_NOT_RUN");
+    },
+  });
+  nested.resource.required_sides = [syntheticResolvedSide({ territory: side })];
+  fail(nested);
+  assert.equal(invoked, 0);
+});
+
+test("contractual: required sides preserve deterministic order and unique identifiers", () => {
+  const valid = denied();
+  valid.resource.required_sides = [
+    syntheticResolvedSide({ side_code: "DESTINATION", resource_ids: ["a", "b"] }),
+    syntheticResolvedSide({ side_code: "ORIGIN", resource_ids: [] }),
+  ];
+  assert.equal(inspect(valid), undefined);
+  for (const sides of [
+    [syntheticResolvedSide(), syntheticResolvedSide()],
+    [
+      syntheticResolvedSide({ side_code: "ORIGIN" }),
+      syntheticResolvedSide({ side_code: "DESTINATION" }),
+    ],
+    [syntheticResolvedSide({ resource_ids: ["a", "a"] })],
+    [syntheticResolvedSide({ resource_ids: ["z", "a"] })],
+  ]) {
+    const d = denied();
+    d.resource.required_sides = sides;
+    fail(d);
+  }
+});
+
+test("contractual: DENY preserves incoherent or unresolved resource evidence without granting authority", () => {
+  const d = denied();
+  d.resource.subject = syntheticSubject({ coherent: false });
+  d.resource.ownership = syntheticOwnership({
+    owner_type: "UNKNOWN", actor_relation: "UNRESOLVED", coherent: false,
+  });
+  d.resource.territory.origin = syntheticTerritorySide({ coherent: false });
+  d.resource.required_sides = [
+    syntheticResolvedSide({
+      resolution_status: "UNRESOLVED", territory: null, resource_ids: [],
+    }),
+  ];
+  assert.equal(inspect(d), undefined);
+  assert.equal(inspect(d) === true, false);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
