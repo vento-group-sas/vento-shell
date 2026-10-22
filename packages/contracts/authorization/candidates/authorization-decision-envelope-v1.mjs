@@ -90,6 +90,19 @@ const GRANT_SOURCE_LANES = new Map([
   ["INDIVIDUAL_BASE", "BASE"],
   ["INDIVIDUAL_OPERATIONAL", "OPERATIONAL"],
 ]);
+const DENY_FIELDS = [
+  "deny_id", "deny_class", "lane", "permission_key", "source_kind",
+  "matched_actor", "matched_resource", "matched_territory",
+  "matched_validity", "reason_code",
+];
+const DENY_CLASSES = new Set([
+  "STRUCTURAL", "ACTOR_WIDE", "BASE_LANE", "OPERATIONAL_LANE", "DEFAULT",
+]);
+const REASON_FIELDS = [
+  "reason_code", "category", "severity", "lane", "source", "safe_to_expose",
+];
+const REASON_SEVERITIES = new Set(["BLOCKING", "INFORMATIONAL"]);
+const REASON_LANES = new Set(["BASE", "OPERATIONAL", "ALL", null]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -170,6 +183,26 @@ function grant(input, permissionKey) {
     || v.matched_territory !== true || v.matched_resource !== true
     || v.validity_status !== "ACTIVE" || !text(v.source_dataset_id)
     || !text(v.source_dataset_version)) invalid();
+  return v;
+}
+function matchedDeny(input, permissionKey) {
+  const v = exact(input, DENY_FIELDS);
+  if (!text(v.deny_id) || !DENY_CLASSES.has(v.deny_class)
+    || !REASON_LANES.has(v.lane) || v.permission_key !== permissionKey
+    || !text(v.source_kind) || typeof v.matched_actor !== "boolean"
+    || typeof v.matched_resource !== "boolean"
+    || typeof v.matched_territory !== "boolean"
+    || typeof v.matched_validity !== "boolean"
+    || !text(v.reason_code)
+    || (v.deny_class === "BASE_LANE" && v.lane !== "BASE")
+    || (v.deny_class === "OPERATIONAL_LANE" && v.lane !== "OPERATIONAL")) invalid();
+  return v;
+}
+function decisionReason(input) {
+  const v = exact(input, REASON_FIELDS);
+  if (!text(v.reason_code) || !text(v.category)
+    || !REASON_SEVERITIES.has(v.severity) || !REASON_LANES.has(v.lane)
+    || !text(v.source) || typeof v.safe_to_expose !== "boolean") invalid();
   return v;
 }
 function constraint(input) {
@@ -254,11 +287,10 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
         allows.filter((x) => x.lane === "BASE").map((x) => x.grant_id))
       || !sameMembers(textList(operational.matched_allow_ids),
         allows.filter((x) => x.lane === "OPERATIONAL").map((x) => x.grant_id))) invalid();
-    const denies = array(v.matched_denies, (x) =>
-      x !== null && typeof x === "object" && !Array.isArray(x));
+    const denies = array(v.matched_denies).map((x) => matchedDeny(x, r.permission_key));
+    if (new Set(denies.map((x) => x.deny_id)).size !== denies.length) invalid();
     const blocked = ["structural_denies","actor_wide_denies","lane_denies","blocked_reasons"]
-      .map((k) => array(v[k], (x) =>
-        x !== null && typeof x === "object" && !Array.isArray(x)));
+      .map((k) => array(v[k]).map(decisionReason));
 
     const combination = exact(v.combination, COMBINATION);
     const authorizing = laneList(combination.authorizing_lanes);
