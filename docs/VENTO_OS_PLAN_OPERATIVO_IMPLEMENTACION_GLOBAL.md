@@ -61,7 +61,7 @@ El plan considera SHELL (hub), ANIMA, VISO, NEXO, FOGO, ORIGO, PULSO, NUMERA y P
 
 **Precedencia ante texto antiguo:** aplicar las correcciones posteriores `CORR-012`, `CORR-017` y `CORR-018` de la parte final de `90_ORDEN_DE_IMPLEMENTACION.md`, junto con las políticas ejecutables vigentes. Una fila histórica que afirma que un package bloqueado paraliza toda la línea no sustituye la *governed eligible frontier* posterior. Una ruta documental prioritaria concluida puede volver a flujo normal por su `return_policy`, sin alterar la frontera física de paquetes.
 
-## 3. Estado inicial verificado y límites de ese inventario
+## 3. Estado inicial HISTÓRICO verificado y límites de ese inventario
 
 - VENTO Shell local: rama `infra/package-gate-gap-pkg-004`, HEAD `180db76808acf9b71480f1c73fa23180f164572c`, 19 archivos con cambios existentes. VISO local: `main`, HEAD `df3f28654188e4c8a4dd64e057c1f01ef602a2ba`, 6 archivos con cambios. No asumir que todo esto este publicado en `origin/main`.
 - `GAP-PKG-004`: `MATURATION_DRAFT`, autorización del gate `PENDING`, physical discovery `PENDING`, una unidad SQL forward candidata. No es un package cerrado ni autorizado para producción.
@@ -71,6 +71,8 @@ El plan considera SHELL (hub), ANIMA, VISO, NEXO, FOGO, ORIGO, PULSO, NUMERA y P
 - VENTO Shell tiene `packages/contracts`, `packages/os-context`, `packages/supabase`, `packages/data-normalization` y `packages/ui-web` (no equivalentes a releases publicadas).
 - `@vento/ui-web` contiene componentes internos `Alert`, `Button`, `Card`, `AppShell`, `TaskNavigation`, `SiteSelector`, `AreaSelector`, `CrossAppHandoff`, etc.; el README indica `0/7` consumidores web migrados. El package declara `private: true`, por lo que existencia de archivos no demuestra distribución pública versionada.
 - GAP-PKG-004: última prueba real VISO `44/44 PASS`, typecheck PASS, lint PASS (0 errores, 35 advertencias), build PASS; pruebas Shell contrato `7/7`, seguridad `6/6`, integración `6/6`, pgTAP candidata `50/50`, E2E `32 PASS, 1 SKIP`; 5 controles documentales/manifest PASS. El SKIP corresponde al permiso no registrado de manera persistente. Estos resultados no acreditan HTTP autenticado positivo SITE/GLOBAL ni rollout.
+
+**Corte local 2026-10-21 - GAP-PKG-004 (evidencia de maduración, no VERIFIED):** 44/44 identidades físicas documentadas tras la conciliacion; 59 búsquedas con trazabilidad estructural y 9 unresolved aun abiertos. physical_discovery.status=PENDING, status=MATURATION_DRAFT, autorización de gate PENDING. El Shell local conserva HEAD 8b397b31 con 25 archivos preparados y el plan queda como cambio local separado, sin preparar, para evitar mezclar documental operativo y SQL en un commit. ANIMA tiene prueba local MCP 81/81 PASS y TypeScript PASS tras separar GPS preciso foreground de seguimiento optativo background; la QA física Android/iOS sigue PENDING. VISO/Supabase y el typecheck de tests globales conservan pendientes distintos, sin despliegue ni migración remota.
 
 Este plan exige una *fotografia nueva* antes de cualquier nueva fase; nunca reutilizar un snapshot de estado como prueba fresca.
 
@@ -491,13 +493,13 @@ STOP de mutaciones cuando aparezca: fuente canónica contradictoria no reconcili
 - [x] Escenarios de QA del expediente reconocidos por catálogo local: same_site, cross_site_global, cross_site_site_only.
 - [x] VISO 44/44, typecheck, lint, build y controles Shell PASS en la última bateria ejecutada.
 - [x] SQL candidato con 50/50 pgTAP en `BEGIN/ROLLBACK`; sin persistencia del permiso.
-- [x] Conjunto físico reconciliado a 24 targets y 24 findings tras última auditoría, 56 tareas y 14 TREQ históricos preservados.
-- [ ] `physical_discovery.status=COMPLETE` (actualmente `PENDING`).
+- [x] **Estado histórico 24/24 SUPERADO**: 44 targets y 44 findings fisicos registrados en la fase local actual; 56 tareas y 14 TREQ historicos preservados. Los 9 unresolved siguen abiertos y la cobertura por si sola no es implementacion certificada.
+- [ ] `physical_discovery.status=COMPLETE` (actualmente `PENDING`: 9 asuntos pendientes pese a cobertura 44/44).
 - [ ] `authorization.decision=APPROVED` formal por gate (actualmente `PENDING`).
 
 ### 9.2. Pasos siguientes exactos sin adelantar gates
 
-1. Releer expediente completo y verificar 24/24 targets/findings, sin deltas respecto de los commits y repo roots actuales.
+1. Releer expediente completo y verificar **44/44 targets/findings** y 9 unresolved del corte 2026-10-21, contra commits, archivos y estados reales; no reutilizar como evidencia de cierre.
 2. Reconciliar TODOS los unresolved findings históricos del package; cada uno con prueba, decision o carryover valido, sin descartar amenazas por haber obtenido PASS de sintaxis.
 3. Preparar backend LOCAL descartable compatible con el historial de 23 migraciones aplicables, con versión de Node/Supabase/Postgres y migration history auditados. No ejecutar reset sobre LOCAL de trabajo.
 4. Ejecutar replay limpio seguro del SQL candidato, pgTAP completos y prueba de permiso **persistente solo dentro del entorno de prueba gobernado**, sin grants a empleados ni roles reales.
