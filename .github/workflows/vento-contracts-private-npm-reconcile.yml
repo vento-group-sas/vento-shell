@@ -1,0 +1,171 @@
+name: VENTO - Reconciliacion unica de contracts npm privado (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source_sha:
+        description: "SHA historico exacto del piloto parcialmente publicado"
+        type: string
+        required: true
+      confirmation:
+        description: "Escribir @vento/contracts@1.0.0-alpha.1"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vento-contracts-private-npm-release
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    name: Certificar nuevamente fuente historica y CI005
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'vento-group-sas/vento-shell' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Rechazar cualquier identidad distinta de la aprobada
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$SOURCE_SHA" = "e6fb82c92e9e3b242fea4ec7cc7025774f157622"
+          test "$CONFIRMATION" = "@vento/contracts@1.0.0-alpha.1"
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_REPOSITORY" = "vento-group-sas/vento-shell"
+      - name: Descargar solamente la fuente inmutable aprobada
+        uses: actions/checkout@v7
+        with:
+          ref: e6fb82c92e9e3b242fea4ec7cc7025774f157622
+          path: source
+          persist-credentials: false
+      - name: Verificar SHA real de la fuente
+        working-directory: source
+        run: test "$(git rev-parse HEAD)" = "e6fb82c92e9e3b242fea4ec7cc7025774f157622"
+      - name: Configurar Node canonico
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: source/.node-version
+          package-manager-cache: false
+      - name: Instalar dependencias exactas de la fuente
+        working-directory: source
+        run: npm ci --no-audit --no-fund
+      - name: Compilar los cuatro paquetes para CI001
+        working-directory: source
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+      - name: Certificar CI001 SHA original
+        working-directory: source
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Certificar CI002 SHA original
+        working-directory: source
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: CI005 fisico sobre VISO y SHA original
+        working-directory: source
+        run: |
+          node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+          node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+      - name: Transferir solamente JSON CI005 del mismo run
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci005-recovery-${{ github.run_id }}
+          path: source/.delivery/shared-package-compatibility/contracts-pilot/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+  protected-reconcile:
+    name: Reconciliar solamente version privada faltante
+    needs: certify
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'vento-group-sas/vento-shell' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: npm-packages-publish
+    permissions:
+      contents: read
+    steps:
+      - name: Descargar runner de recuperacion del commit main
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          path: gate
+          persist-credentials: false
+      - name: Descargar fuente original y no cambiarla
+        uses: actions/checkout@v7
+        with:
+          ref: e6fb82c92e9e3b242fea4ec7cc7025774f157622
+          path: source
+          persist-credentials: false
+      - name: Confirmar ambos commits inmoviles
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$SOURCE_SHA" = "e6fb82c92e9e3b242fea4ec7cc7025774f157622"
+          test "$CONFIRMATION" = "@vento/contracts@1.0.0-alpha.1"
+          test "$(git -C gate rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Configurar Node historico
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: source/.node-version
+          package-manager-cache: false
+      - name: Instalar dependencias SHA historico
+        working-directory: source
+        run: npm ci --no-audit --no-fund
+      - name: Compilar los cuatro paquetes sin acceso de registro
+        working-directory: source
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+      - name: Certificar nuevamente CI001
+        working-directory: source
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Certificar nuevamente CI002
+        working-directory: source
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: Recuperar evidencia CI005 solo del run actual
+        uses: actions/download-artifact@v7
+        with:
+          name: vento-contracts-ci005-recovery-${{ github.run_id }}
+          path: source/.delivery/shared-package-compatibility/contracts-pilot
+      - name: Reconciliar tag y Release intactos con registro privado
+        working-directory: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
+          GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
+          VENTO_RECOVERY_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          VENTO_RECOVERY_CONFIRMATION: ${{ inputs.confirmation }}
+        run: node ../gate/scripts/quality/vento-contracts-private-reconcile.mjs
+      - name: Conservar solamente evidencia JSON de reconciliacion
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci003-reconciled-${{ github.run_id }}
+          path: source/.delivery/shared-package-releases/vento__contracts/1.0.0-alpha.1/*.json
+          if-no-files-found: warn
+          retention-days: 14
