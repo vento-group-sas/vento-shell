@@ -196,16 +196,30 @@ jobs:
         with:
           node-version-file: .node-version
           package-manager-cache: false
-      - name: Instalar solo dependencias fijadas y compilar candidato
+      - name: Instalar dependencias y preparar mismas fundaciones que CI001 canonico
         run: |
           npm ci --no-audit --no-fund
           npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
       - name: Generar evidencia CI001 real del mismo SHA
         run: |
           node scripts/quality/shared-package-test-gate.mjs \
             --package-root packages/contracts \
             --contract scripts/quality/vento-contracts-pilot-test-contract.json \
             --evidence-root .delivery/shared-package-tests --json
+      - name: Diagnosticar grupos CI001 solamente si su gate falla
+        if: failure()
+        shell: bash
+        env:
+          VENTO_PACKAGE_TEST_PACKAGE: "@vento/contracts"
+        run: |
+          mkdir -p .delivery/ci005-diag
+          export VENTO_PACKAGE_TEST_RESULT_FILE="$PWD/.delivery/ci005-diag/runner.json"
+          node scripts/quality/vento-contracts-pilot-test-runner.mjs \
+            ../../scripts/quality/vento-contracts-pilot-build-contract.json
+
       - name: Generar evidencia CI002 reproducible del mismo SHA
         run: |
           node scripts/quality/shared-package-build-gate.mjs \
