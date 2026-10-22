@@ -59,6 +59,13 @@ export function verifyMetadata(release, notes) {
   'EXISTING_RELEASE_MISMATCH');
 }
 
+export function verifyExistingRegistryMetadata(info) {
+  const integrity = info?.['dist.integrity'] ?? info?.dist?.integrity ?? null;
+  check(info && !Array.isArray(info) && info.name === '@vento/contracts'
+    && info.version === '1.0.0-alpha.1' && integrity === TAR_SRI,
+  'EXISTING_REGISTRY_INTEGRITY_MISMATCH');
+}
+
 function evidenceJson(file) {
   let x;
   try { x = JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -161,6 +168,16 @@ async function execute() {
     process.env.npm_config_audit = 'false';
     process.env.npm_config_fund = 'false';
     process.env.VENTO_REAL_RELEASE_CONFIRMATION = PILOT;
+    if (alreadyListed) {
+      const metadataJson = run('npm', [
+        'view', PILOT, 'name', 'version', 'dist.integrity',
+        '--json', '--registry', REGISTRY,
+      ], root, 30000);
+      let existing;
+      try { existing = JSON.parse(metadataJson); }
+      catch { check(false, 'EXISTING_REGISTRY_JSON_INVALID'); }
+      verifyExistingRegistryMetadata(existing);
+    }
     const gate = runGate({
       packageRoot: path.join(root, 'packages/contracts'),
       contractPath, testEvidencePath: test.path, buildEvidencePath: build.path,
