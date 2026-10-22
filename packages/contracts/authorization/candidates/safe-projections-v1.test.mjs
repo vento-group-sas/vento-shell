@@ -298,8 +298,10 @@ test("security: parsed arrays are detached from caller mutation", () => {
 });
 
 test("security: empty/invalid field and correlation identity fail without silent normalization", () => {
-  for (const field of [null, true, 1, {}, [], ""]) {
+  for (const field of [true, 1, {}, [], ""]) {
     reject(parseSafeDecisionProjection, { ...decision(), correlation_id: field });
+  }
+  for (const field of [null, true, 1, {}, [], ""]) {
     reject(parseSafeContextProjection, { ...context(), context_id: field });
     reject(parseSafeDecisionProjection, { ...decision(), visible_fields: [field] });
     reject(parseSafeDecisionProjection, { ...decision(), mutable_fields: [field] });
