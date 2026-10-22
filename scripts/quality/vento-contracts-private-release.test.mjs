@@ -147,7 +147,7 @@ test('CI005 consumer evidence is generated without publish credentials and resto
   assert(certify && protectedJob);
   assert.match(certify, /persist-credentials: false/u);
   assert.doesNotMatch(certify, /GITLAB_NPM_PUBLISH_TOKEN:|GH_TOKEN:/u);
-  assert.match(certify, /if: \$\{\{ inputs\.operation == 'publish' \}\}\n        run: \|\n          npm run build --workspace @vento\/os-context/u);
+  assert.match(certify, /if: \$\{\{ inputs\.operation == 'publish' \}\}\n        run: \|\n          node --test scripts\/quality\/vento-contracts-viso-consumer-probe\.test\.mjs/u);
   assert.match(certify, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
   assert.match(certify, /uses: actions\/upload-artifact@v7/u);
   assert.match(protectedJob, /uses: actions\/download-artifact@v7/u);
@@ -162,6 +162,28 @@ test('CI005 consumer evidence is generated without publish credentials and resto
   assert.doesNotMatch(protectedJob, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
 });
 
+
+test('both protected jobs build all four shared packages before CI001', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const workflow = fs.readFileSync(
+    path.join(root, '.github/workflows/vento-contracts-private-npm-release.yml'),
+    'utf8',
+  );
+  const [certify, protectedJob] = workflow.split('  protected-private-registry:\n');
+  assert(certify && protectedJob);
+  for (const [label, job] of [['certify', certify], ['protected', protectedJob]]) {
+    const ci001 = job.indexOf('node scripts/quality/shared-package-test-gate.mjs');
+    assert(ci001 > 0, label + ': CI001 gate missing');
+    for (const name of ['@vento/contracts', '@vento/os-context',
+      '@vento/supabase', '@vento/ui-web']) {
+      const build = 'npm run build --workspace ' + name;
+      assert.equal(job.split(build).length - 1, 1,
+        label + ': shared package must be built exactly once: ' + name);
+      assert(job.indexOf(build) < ci001, label + ': package must be built before CI001: ' + name);
+    }
+  }
+  assert.doesNotMatch(certify, /GITLAB_NPM_PUBLISH_TOKEN:|GH_TOKEN:/u);
+});
 
 test('real private publication requires CI005 pilot identity and refuses uncertified compatibility', () => {
   const release = releaseContract(SHA);

@@ -57,8 +57,12 @@ jobs:
           package-manager-cache: false
       - name: Instalar dependencias exactas
         run: npm ci --no-audit --no-fund
-      - name: Preparar build para pruebas reales
-        run: npm run build --workspace @vento/contracts
+      - name: Compilar los cuatro paquetes compartidos antes de CI001
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
       - name: Certificar CI001 real
         run: |
           node scripts/quality/shared-package-test-gate.mjs \
@@ -76,9 +80,6 @@ jobs:
       - name: Verificar CI005 fisico de VISO sin credenciales de publicacion
         if: ${{ inputs.operation == 'publish' }}
         run: |
-          npm run build --workspace @vento/os-context
-          npm run build --workspace @vento/supabase
-          npm run build --workspace @vento/ui-web
           node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
           node scripts/quality/vento-contracts-viso-consumer-probe.mjs
       - name: Transferir evidencia CI005 certificada del mismo SHA y workflow
@@ -112,8 +113,12 @@ jobs:
           package-manager-cache: false
       - name: Instalar dependencias exactas
         run: npm ci --no-audit --no-fund
-      - name: Generar build sin credenciales GitLab
-        run: npm run build --workspace @vento/contracts
+      - name: Compilar los cuatro paquetes compartidos sin credenciales GitLab
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
       - name: Regenerar CI001 sobre SHA definitivo
         run: |
           node scripts/quality/shared-package-test-gate.mjs \
