@@ -251,6 +251,22 @@ export function buildRealCi005PilotInput({
   };
 }
 
+
+function measuredPinnedVersions(lockBytes) {
+  const lock = JSON.parse(lockBytes.toString('utf8'));
+  const version = name => {
+    const resolved = lock.packages?.['node_modules/' + name]?.version;
+    if (typeof resolved !== 'string') block('PINNED_VERSION_NOT_FOUND_' +
+      name.replace(/[^a-zA-Z0-9]/gu, '_').toUpperCase());
+    return resolved;
+  };
+  return {
+    node: process.versions.node,
+    next: version('next'), react: version('react'),
+    react_dom: version('react-dom'), typescript: version('typescript'),
+  };
+}
+
 export function runtimeProgram(surface) {
   assert.equal(surface.length, 15, 'CI005_PUBLIC_SURFACE_CHANGED');
   assert.equal(surface.filter(x => x.type_only === true).length, 1,
@@ -507,10 +523,56 @@ async function execute() {
     };
     fs.writeFileSync(path.join(OUT, 'observations.json'),
       JSON.stringify(evidence, null, 2) + '\n');
-    console.log(JSON.stringify({ status: outcome.status, package_sha: sha,
-      consumer_sha: visoSnapshot.consumer_commit,
-      verified_steps: steps.length, snapshots: consumerSnapshots.length,
-      relation_certified: false, publication_executed: false }));
+    if (outcome.status !== 'PASS') {
+      console.log(JSON.stringify({ status: outcome.status, package_sha: sha,
+        consumer_sha: visoSnapshot.consumer_commit,
+        relation_certified: false, publication_executed: false }));
+      block('FORMAL_CI005_REQUIRES_CLEAN_CONSUMER_PASS');
+    }
+    const npmVersion = verified('npm', ['--version'], viso,
+      'NPM_VERSION_NOT_MEASURED', 30000);
+    const input = buildRealCi005PilotInput({
+      observed: evidence, testEvidence, buildEvidence, manifestBytes,
+      consumerManifest: JSON.parse(manifestOriginal.toString('utf8')),
+      effectiveVersions: measuredPinnedVersions(lockOriginal),
+      npmVersion,
+    });
+    const prepared = prepareCompatibilityEvidence(input);
+    if (prepared.result !== 'PASS') {
+      fs.writeFileSync(path.join(OUT, 'blocked.json'), JSON.stringify({
+        status: 'BLOCKED', gate: 'SHELL-CI-005::GLOBAL',
+        reason_codes: prepared.reasons, relation_certified: false,
+        publication_executed: false,
+      }, null, 2) + '\n');
+      block('FORMAL_CI005_PREPARE_BLOCKED');
+    }
+    const recheck = comparePreparedEvidence(prepared, input);
+    if (!recheck.current || recheck.outcome !== 'PASS') {
+      block('FORMAL_CI005_EVIDENCE_STALE');
+    }
+    const confirmedIdentity = requirePilotCompatibility({
+      input, prepared, testEvidence, buildEvidence,
+      sourceCommit: sha, manifestSource: manifestBytes.toString('utf8'),
+    });
+    if (confirmedIdentity !== prepared.compatibility_evidence_identity
+      || prepared.required_relation_ids.length !== 1
+      || prepared.required_relation_ids[0] !== 'PKG-COMP-MX-002'
+      || prepared.relation_evaluations[0]?.state !== 'COMPATIBLE_CON_RESTRICCIONES') {
+      block('FORMAL_CI005_RELATION_NOT_CERTIFIED');
+    }
+    fs.writeFileSync(path.join(OUT, 'input.json'),
+      JSON.stringify(input, null, 2) + '\n');
+    fs.writeFileSync(path.join(OUT, 'prepared.json'),
+      JSON.stringify(prepared, null, 2) + '\n');
+    console.log(JSON.stringify({
+      status: 'PASS', ci005_prepared: 'PASS',
+      ci005_relation: prepared.required_relation_ids[0],
+      relation_status: prepared.relation_evaluations[0].state,
+      compatibility_evidence_identity: confirmedIdentity,
+      package_sha: sha, consumer_sha: visoSnapshot.consumer_commit,
+      snapshots: consumerSnapshots.length, verified_steps: steps.length,
+      publication_executed: false,
+    }));
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
   }
