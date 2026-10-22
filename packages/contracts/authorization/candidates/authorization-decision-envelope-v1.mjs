@@ -112,6 +112,32 @@ const TERRITORY_ID_FIELDS = [
   "business_unit_ids", "site_ids", "area_ids", "area_kinds",
   "route_ids", "vehicle_ids",
 ];
+// AUTH-CTX-018, section 5: exact, server-resolved subordinate DTOs.
+// Shape validation does not prove the provenance or effective authority.
+const SUBJECT_FIELDS = [
+  "subject_type", "subject_id", "relationship_to_actor", "coherent",
+];
+const SUBJECT_RELATIONS = new Set([
+  "SELF", "OWNED", "ASSIGNED", "RELATED", "THIRD_PARTY", "SYSTEM",
+]);
+const OWNERSHIP_FIELDS = [
+  "owner_type", "owner_id", "actor_relation", "coherent",
+];
+const OWNER_TYPES = new Set([
+  "ACTOR", "EMPLOYEE", "CUSTOMER", "ORGANIZATION", "SITE", "AREA",
+  "OTHER", "NONE", "UNKNOWN",
+]);
+const OWNER_ACTOR_RELATIONS = new Set([
+  "SELF", "OWNED", "ASSIGNED", "RELATED", "THIRD_PARTY",
+  "NOT_APPLICABLE", "UNRESOLVED",
+]);
+const TERRITORY_SIDE_FIELDS = [
+  "site_id", "area_id", "area_kind", "route_id", "vehicle_id", "coherent",
+];
+const RESOLVED_SIDE_FIELDS = [
+  "side_code", "required", "resource_type", "resource_ids",
+  "territory", "resolution_status",
+];
 const CONCURRENCY_FIELDS = [
   "policy", "expected_version", "idempotency_key", "validated",
 ];
@@ -299,6 +325,42 @@ function decisionReason(input) {
     || !text(v.source) || typeof v.safe_to_expose !== "boolean") invalid();
   return v;
 }
+function resolvedSubject(input) {
+  const v = exact(input, SUBJECT_FIELDS);
+  if (!text(v.subject_type) || !text(v.subject_id)
+    || !SUBJECT_RELATIONS.has(v.relationship_to_actor)
+    || typeof v.coherent !== "boolean") invalid();
+  return v;
+}
+function resourceOwnership(input) {
+  const v = exact(input, OWNERSHIP_FIELDS);
+  if (!OWNER_TYPES.has(v.owner_type) || !nullableText(v.owner_id)
+    || !OWNER_ACTOR_RELATIONS.has(v.actor_relation)
+    || typeof v.coherent !== "boolean") invalid();
+  return v;
+}
+function territorySide(input) {
+  const v = exact(input, TERRITORY_SIDE_FIELDS);
+  for (const key of TERRITORY_SIDE_FIELDS.slice(0, 5)) {
+    if (!nullableText(v[key])) invalid();
+  }
+  if (typeof v.coherent !== "boolean") invalid();
+  return v;
+}
+function sortedUnique(values) {
+  return new Set(values).size === values.length
+    && values.every((x, i) => i === 0 || values[i - 1] < x);
+}
+function resolvedSide(input) {
+  const v = exact(input, RESOLVED_SIDE_FIELDS);
+  if (!text(v.side_code) || typeof v.required !== "boolean"
+    || !text(v.resource_type)
+    || !RESOURCE_STATUSES.has(v.resolution_status)) invalid();
+  const ids = textList(v.resource_ids);
+  if (!sortedUnique(ids)) invalid();
+  if (v.territory !== null) territorySide(v.territory);
+  return v;
+}
 function territory(input) {
   // ResolvedTerritoryContext: validate the stable canonical envelope only.
   const v = exact(input, TERRITORY_FIELDS);
@@ -306,9 +368,9 @@ function territory(input) {
     || typeof v.isolated_environment !== "boolean"
     || !text(v.source) || typeof v.coherent !== "boolean") invalid();
   for (const key of TERRITORY_ID_FIELDS) textList(v[key]);
-  // TerritorySide subtypes need their dedicated resource contracts.
-  if (v.origin !== null) jsonRecord(v.origin);
-  if (v.destination !== null) jsonRecord(v.destination);
+  // TerritorySide fields and nullability are fixed in AUTH-CTX-018.
+  if (v.origin !== null) territorySide(v.origin);
+  if (v.destination !== null) territorySide(v.destination);
   return v;
 }
 function concurrency(input) {
@@ -329,7 +391,7 @@ function constraint(input) {
 /**
  * Fail-closed SOURCE CANDIDATE for the root/identity/consistency ENVELOPE.
  * Returns undefined, never a decision, a boolean permission or a capability.
- * Resource subtypes, grants, denials, audit integrity and backend provenance
+ * Resource-specific resolver semantics, audit integrity and backend provenance
  * still require the full E5-authorized contract validator and real backend.
  * DO NOT use this preflight for requireAuthorization or any mutation.
  */
@@ -376,13 +438,13 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || !RESOURCE_STATUSES.has(resource.resolution_status)
       || !nullableText(resource.resource_version)) invalid();
     const resourceIds = textList(resource.resource_ids);
-    territory(resource.territory); jsonRecord(resource.ownership);
+    territory(resource.territory); resourceOwnership(resource.ownership);
     jsonRecord(resource.state_snapshot);
     const classifications = record(resource.field_classification);
     if (!Object.values(classifications).every(text)) invalid();
-    // Side and subject subtypes remain opaque until their owned schemas exist.
-    array(resource.required_sides).forEach(jsonRecord);
-    if (resource.subject !== null) jsonRecord(resource.subject);
+    const sides = array(resource.required_sides).map(resolvedSide);
+    if (!sortedUnique(sides.map((x) => x.side_code))) invalid();
+    if (resource.subject !== null) resolvedSubject(resource.subject);
     if (resource.concurrency !== null) concurrency(resource.concurrency);
 
     const required = laneList(v.required_lanes);
