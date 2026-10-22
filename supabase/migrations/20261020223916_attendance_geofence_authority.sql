@@ -263,6 +263,7 @@ begin
   select * into v_ticket from public.support_tickets
   where id = p_ticket_id for update;
   if not found or v_ticket.category <> 'attendance'
+     or v_ticket.title <> 'Revisión de salida sin ubicación'
      or v_ticket.site_id is null
      or not exists (
        select 1 from public.support_messages m
@@ -323,6 +324,7 @@ begin
           coalesce(v_ticket.target_employee_id, v_ticket.created_by)
      or v_checkin.site_id is distinct from v_ticket.site_id
      or v_checkin.shift_id is null
+     or v_ticket.created_at < v_checkin.occurred_at
   then
     raise exception 'ATTENDANCE_REVIEW_WRONG_SESSION' using errcode = 'P0001';
   end if;

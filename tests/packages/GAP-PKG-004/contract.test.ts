@@ -225,6 +225,10 @@ test('VPROC-0008 administrative checkout candidate is fail-closed, audited and i
   assert.match(fn, /v_checkin\.employee_id is distinct from[\s\S]*?coalesce\(v_ticket\.target_employee_id, v_ticket\.created_by\)/u);
   assert.match(fn, /ATTENDANCE_REVIEW_SELF_APPROVAL_DENIED/u);
   assert.match(fn, /ATTENDANCE_REVIEW_EVIDENCE_MISSING/u);
+  assert.match(fn, /v_ticket\.title <> 'Revisión de salida sin ubicación'/u,
+    'Only ANIMA checkout review requests, not generic support tickets, may close attendance');
+  assert.match(fn, /v_ticket\.created_at < v_checkin\.occurred_at/u,
+    'An older ticket cannot be applied to a newer attendance session');
   assert.match(fn, /v_existing\.approved_checkout_at is distinct from p_checkout_at/u);
   assert.match(fn, /p_decision = 'approve' then[\s\S]*?insert into public\.attendance_logs/u);
   assert.match(fn, /'system', p_checkout_at/u, 'The manager-approved instant must not become server arrival time');

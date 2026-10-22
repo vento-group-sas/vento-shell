@@ -189,7 +189,8 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
   };
   const container = resolveIsolatedQaDatabaseContainer(dockerRun, profile, root);
   const [worker, reviewer, site, otherSite, shift, checkIn, ticket, newCheckIn, rejectedTicket,
-    catalogApp, catalogPermission] = Array.from({ length: 11 }, () => randomUUID());
+    catalogApp, catalogPermission, genericTicket, staleTicket] =
+      Array.from({ length: 13 }, () => randomUUID());
   const u = (id: string) => "'" + id + "'::uuid";
   const stamp = randomUUID().replace(/-/gu, '').slice(0, 14);
   const migration = fs.readFileSync(path.join(
@@ -243,9 +244,24 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
     'INSERT INTO public.support_tickets' +
       '(id,created_by,site_id,category,title,description,status)' +
       ' VALUES (' + u(ticket) + ',' + u(worker) + ',' + u(site) +
-      ",'attendance','Revisión de salida','Solicitud QA','open');",
+      ",'attendance','Revisión de salida sin ubicación','Solicitud QA','open');",
     'INSERT INTO public.support_messages(ticket_id,author_id,body)' +
       ' VALUES (' + u(ticket) + ',' + u(worker) + ",'Solicito revisar la salida en la sede.');",
+    // Only a purpose-specific ANIMA request created AFTER the open check-in
+    // can be reviewed; generic or stale support tickets must fail closed.
+    'INSERT INTO public.support_tickets' +
+      '(id,created_by,site_id,category,title,description,status)' +
+      ' VALUES (' + u(genericTicket) + ',' + u(worker) + ',' + u(site) +
+      ",'attendance','Consulta administrativa general','QA generic','open');",
+    'INSERT INTO public.support_messages(ticket_id,author_id,body)' +
+      ' VALUES (' + u(genericTicket) + ',' + u(worker) + ",'Conversación general.');",
+    'INSERT INTO public.support_tickets' +
+      '(id,created_by,site_id,category,title,description,status,created_at)' +
+      ' VALUES (' + u(staleTicket) + ',' + u(worker) + ',' + u(site) +
+      ",'attendance','Revisión de salida sin ubicación','QA stale','open'," +
+      "now()-interval '15 minutes');",
+    'INSERT INTO public.support_messages(ticket_id,author_id,body)' +
+      ' VALUES (' + u(staleTicket) + ',' + u(worker) + ",'Caso previo a la nueva entrada.');",
     // All permissions and grants are transaction-bound; never register them remotely.
     'INSERT INTO public.apps(id,code,name) SELECT ' + u(catalogApp) +
       ",'anima','ANIMA QA' WHERE NOT EXISTS (SELECT 1 FROM public.apps WHERE code='anima');",
@@ -277,6 +293,10 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
       '42501','ATTENDANCE_REVIEW_SELF_APPROVAL_DENIED'),
     ...resetClaims,
     ...claims(reviewer),
+    expectedError('generic_ticket',rpc(genericTicket,checkIn,'approve',reason,timestamp),
+      'P0002','ATTENDANCE_REVIEW_EVIDENCE_MISSING'),
+    expectedError('stale_ticket',rpc(staleTicket,checkIn,'approve',reason,timestamp),
+      'P0001','ATTENDANCE_REVIEW_WRONG_SESSION'),
     expectedError('future_time',rpc(ticket,checkIn,'approve',reason,"now()+interval '1 day'"),
       '22023','ATTENDANCE_REVIEW_INVALID'),
     "SELECT set_config('qa.review.applied',result,true) FROM " +
@@ -293,7 +313,7 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
     'INSERT INTO public.support_tickets' +
       '(id,created_by,site_id,category,title,description,status)' +
       ' VALUES (' + u(rejectedTicket) + ',' + u(worker) + ',' + u(site) +
-      ",'attendance','Otra revisión','Caso de prueba','open');",
+      ",'attendance','Revisión de salida sin ubicación','Caso de prueba','open');",
     'INSERT INTO public.support_messages(ticket_id,author_id,body)' +
       ' VALUES (' + u(rejectedTicket) + ',' + u(worker) +
       ",'No tengo evidencia verificable de salida.');",
