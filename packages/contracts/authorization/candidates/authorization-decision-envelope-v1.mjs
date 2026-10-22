@@ -78,6 +78,18 @@ const PREREQUISITE_TYPES = new Set([
   "CONCURRENCY", "IDEMPOTENCY",
 ]);
 const PREREQUISITE_LANES = new Set(["BASE", "OPERATIONAL", "BOTH", "REQUEST"]);
+const GRANT_FIELDS = [
+  "grant_id", "lane", "source_kind", "source_subject_id",
+  "permission_key", "effect", "scope_code", "matched_territory",
+  "matched_resource", "validity_status", "source_dataset_id",
+  "source_dataset_version",
+];
+const GRANT_SOURCE_LANES = new Map([
+  ["BASE_ROLE", "BASE"],
+  ["OPERATIONAL_ROLE", "OPERATIONAL"],
+  ["INDIVIDUAL_BASE", "BASE"],
+  ["INDIVIDUAL_OPERATIONAL", "OPERATIONAL"],
+]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -126,6 +138,9 @@ function array(value, check = () => true) {
 const textList = (v) => array(v, text);
 const laneList = (v) => array(v, (x) => x === "BASE" || x === "OPERATIONAL");
 const same = (a,b) => a.length === b.length && a.every((x,i) => x === b[i]);
+const sameMembers = (a,b) => a.length === b.length
+  && new Set(a).size === a.length && new Set(b).size === b.length
+  && a.every((x) => b.includes(x));
 function lane(input, laneName) {
   const v = exact(input, LANE);
   if (v.lane !== laneName || !LANE_OUTCOMES.has(v.outcome)
@@ -144,6 +159,17 @@ function prerequisite(input) {
     || !PREREQUISITE_LANES.has(v.applies_to_lane)
     || !CONSTRAINT_STATUS.has(v.status)
     || !nullableText(v.reason_code)) invalid();
+  return v;
+}
+function grant(input, permissionKey) {
+  // Canonical MatchedGrant: inspect each data descriptor without invoking accessors.
+  const v = exact(input, GRANT_FIELDS);
+  if (!text(v.grant_id) || GRANT_SOURCE_LANES.get(v.source_kind) !== v.lane
+    || !text(v.source_subject_id) || v.permission_key !== permissionKey
+    || v.effect !== "ALLOW" || !text(v.scope_code)
+    || v.matched_territory !== true || v.matched_resource !== true
+    || v.validity_status !== "ACTIVE" || !text(v.source_dataset_id)
+    || !text(v.source_dataset_version)) invalid();
   return v;
 }
 function constraint(input) {
@@ -222,8 +248,12 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     for (const key of ["visible_fields","masked_fields","mutable_fields","blocked_fields","reason_codes"]) {
       textList(fields[key]);
     }
-    const allows = array(v.matched_allows, (x) =>
-      x !== null && typeof x === "object" && !Array.isArray(x));
+    const allows = array(v.matched_allows).map((x) => grant(x, r.permission_key));
+    if (new Set(allows.map((x) => x.grant_id)).size !== allows.length
+      || !sameMembers(textList(base.matched_allow_ids),
+        allows.filter((x) => x.lane === "BASE").map((x) => x.grant_id))
+      || !sameMembers(textList(operational.matched_allow_ids),
+        allows.filter((x) => x.lane === "OPERATIONAL").map((x) => x.grant_id))) invalid();
     const denies = array(v.matched_denies, (x) =>
       x !== null && typeof x === "object" && !Array.isArray(x));
     const blocked = ["structural_denies","actor_wide_denies","lane_denies","blocked_reasons"]
@@ -253,6 +283,10 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       : (baseAllow && opAllow);
     if ((combination.combination_result === "ALLOW") !== modeAllow) invalid();
     if (authorizing.some((x) => (x === "BASE" ? !baseAllow : !opAllow))) invalid();
+    if (combination.combination_result === "ALLOW"
+      && (authorizing.length === 0
+        || (p.authorization_requirement === "BASE_AND_OPERATIONAL"
+          && !sameMembers(authorizing, ["BASE", "OPERATIONAL"])))) invalid();
 
     const final = exact(v.final_decision, FINAL);
     const finalLanes = laneList(final.authorizing_lanes);
