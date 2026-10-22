@@ -136,6 +136,113 @@ test('GitHub publication is manual, main-only, SHA-pinned and credential-isolate
 });
 
 
+
+test('CI005 consumer evidence is generated without publish credentials and restored in the same run', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const workflow = fs.readFileSync(
+    path.join(root, '.github/workflows/vento-contracts-private-npm-release.yml'),
+    'utf8',
+  );
+  const [certify, protectedJob] = workflow.split('  protected-private-registry:\n');
+  assert(certify && protectedJob);
+  assert.match(certify, /persist-credentials: false/u);
+  assert.doesNotMatch(certify, /GITLAB_NPM_PUBLISH_TOKEN:|GH_TOKEN:/u);
+  assert.match(certify, /if: \$\{\{ inputs\.operation == 'publish' \}\}\n        run: \|\n          npm run build --workspace @vento\/os-context/u);
+  assert.match(certify, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
+  assert.match(certify, /uses: actions\/upload-artifact@v7/u);
+  assert.match(protectedJob, /uses: actions\/download-artifact@v7/u);
+  const identity = ['vento-contracts-ci005-protected-', '
+  const release = releaseContract(SHA);
+  assert.equal(release.compatibility_required, false);
+  const ready = releaseContract(SHA, 'sha256:' + 'f'.repeat(64));
+  assert.equal(ready.compatibility_required, true);
+  assert.equal(ready.compatibility_evidence_identity, 'sha256:' + 'f'.repeat(64));
+  assert.throws(() => requirePilotCompatibility({}), /CI005_REAL_PILOT_EVIDENCE_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: [] },
+    prepared: {},
+  }), /CI005_APPROVED_PILOT_CONSUMER_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'BLOCKED', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'STABLE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+});
+
+test('synthetic CI005 PREPARE identity alone does not qualify as real pilot compatibility', () => {
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+      invalidation_reason: null,
+      compatibility_evidence_identity: 'sha256:' + '1'.repeat(64),
+    },
+    testEvidence: {}, buildEvidence: {}, sourceCommit: SHA,
+    manifestSource: '{}',
+  }), /CI005_EVIDENCE_STALE_OR_INCOMPATIBLE/u);
+});
+, '{{ github.sha }}-', '
+  const release = releaseContract(SHA);
+  assert.equal(release.compatibility_required, false);
+  const ready = releaseContract(SHA, 'sha256:' + 'f'.repeat(64));
+  assert.equal(ready.compatibility_required, true);
+  assert.equal(ready.compatibility_evidence_identity, 'sha256:' + 'f'.repeat(64));
+  assert.throws(() => requirePilotCompatibility({}), /CI005_REAL_PILOT_EVIDENCE_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: [] },
+    prepared: {},
+  }), /CI005_APPROVED_PILOT_CONSUMER_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'BLOCKED', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'STABLE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+});
+
+test('synthetic CI005 PREPARE identity alone does not qualify as real pilot compatibility', () => {
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+      invalidation_reason: null,
+      compatibility_evidence_identity: 'sha256:' + '1'.repeat(64),
+    },
+    testEvidence: {}, buildEvidence: {}, sourceCommit: SHA,
+    manifestSource: '{}',
+  }), /CI005_EVIDENCE_STALE_OR_INCOMPATIBLE/u);
+});
+, '{{ github.run_id }}'].join('');
+  assert.equal(workflow.split('name: ' + identity).length - 1, 2);
+  assert.equal(workflow.split('path: .delivery/shared-package-compatibility/contracts-pilot').length - 1, 2);
+  assert.match(certify, /if-no-files-found: error/u);
+  assert(certify.indexOf('vento-contracts-viso-consumer-probe.mjs')
+    < certify.indexOf('uses: actions/upload-artifact@v7'));
+  assert(protectedJob.indexOf('uses: actions/download-artifact@v7')
+    < protectedJob.indexOf('GITLAB_NPM_PUBLISH_TOKEN:'));
+  assert.doesNotMatch(protectedJob, /node scripts\/quality\/vento-contracts-viso-consumer-probe\.mjs/u);
+});
+
+
 test('real private publication requires CI005 pilot identity and refuses uncertified compatibility', () => {
   const release = releaseContract(SHA);
   assert.equal(release.compatibility_required, false);
