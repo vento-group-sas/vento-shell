@@ -3,7 +3,8 @@ import test from 'node:test';
 
 import {
   buildRealCi005PilotInput, classifyCompilerErrors,
-  compareFrozenDependencyTrees, evaluateProbe, runtimeProgram,
+  assertContractSemanticBehavior, compareFrozenDependencyTrees,
+  evaluateProbe, runtimeProgram,
 } from './vento-contracts-viso-consumer-probe.mjs';
 
 import { asSha256Identity } from './shared-package-release-gate.mjs';
@@ -46,6 +47,41 @@ test('runtime probe verifies all fourteen ESM entrypoints and the empty type-onl
   assert(code.includes('assert.deepEqual(Object.keys(onlyTypes), [])'));
   assert.throws(() => runtimeProgram(surface.slice(0, 14)),
     /CI005_PUBLIC_SURFACE_CHANGED/u);
+});
+
+
+
+test('real runtime contract assertions reject catalog corruption and resolver behavior changes', async () => {
+  const root = JSON.parse((await import('node:fs')).readFileSync(
+    new URL('./vento-contracts-pilot-build-contract.json', import.meta.url), 'utf8'));
+  const entries = root.public_surface.filter(entry => entry.type_only !== true);
+  const modules = Object.fromEntries(await Promise.all(entries.map(async entry => [
+    entry.subpath, await import('@vento/contracts/' + entry.subpath.slice(2)),
+  ])));
+  assert.equal(assertContractSemanticBehavior(modules), 14);
+  const base = modules['./authorization/base-roles/v1'];
+  assert.throws(() => assertContractSemanticBehavior({
+    ...modules,
+    './authorization/base-roles/v1': {
+      ...base, BASE_ROLE_CODES: [...base.BASE_ROLE_CODES.slice(0, -1), 'role_forged'],
+    },
+  }));
+  const processes = modules['./processes'];
+  assert.throws(() => assertContractSemanticBehavior({
+    ...modules,
+    './processes': { ...processes, isProcessId: () => true },
+  }));
+  const ownership = modules['./ownership'];
+  assert.throws(() => assertContractSemanticBehavior({
+    ...modules,
+    './ownership': { ...ownership, resolveProcessOwner: () => undefined },
+  }));
+  assert.throws(() => assertContractSemanticBehavior({
+    ...modules, './authorization/catalog/v1': {
+      ...modules['./authorization/catalog/v1'],
+      APPLICATION_CODES: ['shell', 'anima'],
+    },
+  }));
 });
 
 
@@ -111,7 +147,7 @@ function syntheticPilotWitness() {
   const source = 'a'.repeat(40);
   const manifestBytes = Buffer.from('{}', 'utf8');
   const manifestHash = asSha256Identity(manifestBytes);
-  const art = asSha256Identity('artifact');
+  const art = 'sha256:74f63fd7a59b12bf2ea35c6d4a63c6842ab807b0d599effed9e06092100e0561';
   const tests = asSha256Identity('tests');
   const build = asSha256Identity('build');
   const snapshots = ['vento-shell', 'vento-viso', 'vento-nexo', 'vento-fogo',
@@ -134,12 +170,18 @@ function syntheticPilotWitness() {
       consumer_manifest_unchanged: true,
       dependency_tree: { frozen: true },
       steps: structuredClone(PASS), snapshots,
+      semantic_probe: {
+        probe_id: 'CI005_CONTRACTS_SEMANTIC_V1', status: 'PASS',
+        checked_subpaths: 14, executions: 2,
+        artifact_content_identity: art,
+      },
     },
     testEvidence: { outcome: 'PASS', source_commit: source,
       manifest_identity: manifestHash, material_identity_sha256: tests },
     buildEvidence: { build_status: 'PASS', source_commit: source,
       package_manifest_hash: manifestHash, artifact_content_hash: art,
-      material_identity_sha256: build, pack_integrity: 'sha512-synthetic-only' },
+      material_identity_sha256: build, pack_integrity: 'sha512-synthetic-only',
+      exports_identity: 'sha256:da282d7c17dbcfc23a12d6c938c497fbfe8967ae6af434af772b115e6d2a6403' },
     manifestBytes,
     consumerManifest: {
       dependencies: { next: '16.4.2', react: '19.2.3', 'react-dom': '19.2.3' },
@@ -177,6 +219,11 @@ test('CI005 rejects synthetic drift, stale evidence, missing consumer and unreso
     x => { x.observed.snapshots.pop(); },
     x => { x.buildEvidence.artifact_content_hash = asSha256Identity('changed'); },
     x => { x.effectiveVersions.next = ''; },
+    x => { delete x.observed.semantic_probe; },
+    x => { x.observed.semantic_probe.executions = 1; },
+    x => { x.observed.semantic_probe.status = 'PENDING'; },
+    x => { x.observed.artifact_content_identity = asSha256Identity('modified-runtime'); },
+    x => { x.buildEvidence.exports_identity = asSha256Identity('modified-exports'); },
   ]) {
     const fixture = structuredClone(base);
     mutate(fixture);

@@ -21,6 +21,11 @@ const CANDIDATE = '@vento/contracts';
 const VERSION = '1.0.0-alpha.1';
 const SHA = /^[a-f0-9]{40}$/u;
 const OUT = path.join(ROOT, '.delivery/shared-package-compatibility/contracts-pilot');
+// CI002 reproducible en GitHub Actions #39704059587 y #39706091726.
+// El primer prerelease es inmutable; cambiar el contenido requiere una nueva version.
+const APPROVED_CANDIDATE_CONTENT = 'sha256:74f63fd7a59b12bf2ea35c6d4a63c6842ab807b0d599effed9e06092100e0561';
+const APPROVED_CANDIDATE_EXPORTS = 'sha256:da282d7c17dbcfc23a12d6c938c497fbfe8967ae6af434af772b115e6d2a6403';
+const SEMANTIC_PROBE_ID = 'CI005_CONTRACTS_SEMANTIC_V1';
 
 function block(code) {
   throw new Error('CI005_VISO:' + code);
@@ -123,6 +128,16 @@ export function buildRealCi005PilotInput({
     || !observed.steps.every(step => step.status === 'PASS')) {
     block('CERTIFICATION_NEEDS_UNRESTRICTED_PHYSICAL_PASS');
   }
+  if (observed.artifact_content_identity !== APPROVED_CANDIDATE_CONTENT
+    || buildEvidence?.artifact_content_hash !== APPROVED_CANDIDATE_CONTENT
+    || buildEvidence?.exports_identity !== APPROVED_CANDIDATE_EXPORTS
+    || observed.semantic_probe?.status !== 'PASS'
+    || observed.semantic_probe?.probe_id !== SEMANTIC_PROBE_ID
+    || observed.semantic_probe?.checked_subpaths !== 14
+    || observed.semantic_probe?.executions !== 2
+    || observed.semantic_probe?.artifact_content_identity !== APPROVED_CANDIDATE_CONTENT) {
+    block('SEMANTIC_BEHAVIOR_OR_IMMUTABLE_CANDIDATE_NOT_CERTIFIED');
+  }
   const snapshots = observed.snapshots ?? [];
   if (snapshots.length !== CANONICAL_WEB_CONSUMERS.length
     || CANONICAL_WEB_CONSUMERS.some(name =>
@@ -176,7 +191,10 @@ export function buildRealCi005PilotInput({
   const axes = COMPATIBILITY_AXES.map(({ id }) => (
     axisNotApplicable.has(id)
       ? { axis_id: id, status: 'NOT_APPLICABLE', reason: axisNotApplicable.get(id) }
-      : { axis_id: id, status: 'PASS', evidence_ids: [material] }
+      : id === 'COMP-AXIS-009'
+        ? { axis_id: id, status: 'PASS',
+          evidence_ids: [material, hash(observed.semantic_probe)] }
+        : { axis_id: id, status: 'PASS', evidence_ids: [material] }
   ));
   const coverage_evaluations = [
     ...['minimum_declared', 'maximum_tested', 'consumer_effective'].map(coverage_point => ({
@@ -267,6 +285,187 @@ function measuredPinnedVersions(lockBytes) {
   };
 }
 
+
+export function assertContractSemanticBehavior(modules) {
+  const paths = [
+    './actions', './events', './handoffs', './integrations',
+    './ownership', './processes', './process-states', './screens',
+    './work-items', './authorization/catalog/v1',
+    './authorization/base-roles/v1', './authorization/operational-roles/v1',
+    './authorization/scopes/v1', './authorization/reason-codes/v1',
+  ];
+  assert.deepEqual(Object.keys(modules).sort(), [...paths].sort(),
+    'CI005_SEMANTIC_PUBLIC_MODULE_SET_CHANGED');
+  const get = name => {
+    const entry = modules[name];
+    assert(entry && typeof entry === 'object', 'CI005_SEMANTIC_MODULE_MISSING:' + name);
+    return entry;
+  };
+  const membership = (module, ids, predicate, rejected) => {
+    assert(Array.isArray(module[ids]) && module[ids].length > 0,
+      'CI005_SEMANTIC_EMPTY_REGISTRY:' + ids);
+    assert.equal(typeof module[predicate], 'function');
+    for (const value of module[ids]) {
+      assert.equal(module[predicate](value), true,
+        'CI005_SEMANTIC_VALID_MEMBER_REJECTED:' + predicate);
+    }
+    assert.equal(module[predicate](rejected), false,
+      'CI005_SEMANTIC_INVALID_MEMBER_ACCEPTED:' + predicate);
+  };
+
+  const processes = get('./processes');
+  assert.equal(processes.PROCESS_IDS.length, 69);
+  assert.equal(processes.PROCESS_IDS[0], 'VPROC-0001');
+  assert.equal(processes.PROCESS_IDS.at(-1), 'VPROC-0069');
+  membership(processes, 'PROCESS_IDS', 'isProcessId', 'VPROC-0070');
+  assert.equal(processes.isProcessIdFormat('VPROC-0070'), true);
+
+  const screens = get('./screens');
+  assert.equal(screens.SCREEN_IDS.length, 177);
+  assert.equal(screens.SCREEN_IDS[0], 'VSCREEN-0001');
+  assert.equal(screens.SCREEN_IDS.at(-1), 'VSCREEN-0177');
+  membership(screens, 'SCREEN_IDS', 'isScreenId', 'VSCREEN-0178');
+
+  const actions = get('./actions');
+  assert(actions.FUNCTIONAL_ACTION_IDS.length >= 177);
+  membership(actions, 'FUNCTIONAL_ACTION_IDS', 'isFunctionalActionId',
+    'VSCREEN-0000::PRIMARY');
+  for (const id of actions.FUNCTIONAL_ACTION_IDS) {
+    assert.equal(actions.resolveFunctionalActionScreenId(id), id.split('::')[0]);
+    assert.equal(actions.resolveFunctionalActionKind(id),
+      id.includes('::SECONDARY:') ? 'SECONDARY' : 'PRIMARY');
+  }
+  assert.throws(() => actions.assertFunctionalActionId('VSCREEN-0000::PRIMARY'));
+
+  const events = get('./events');
+  assert(events.BUSINESS_EVENT_IDS.length >= 100);
+  membership(events, 'BUSINESS_EVENT_IDS', 'isBusinessEventId',
+    'VPROC-0000.EVT-001');
+  for (const id of events.BUSINESS_EVENT_IDS) {
+    assert.equal(events.resolveBusinessEventProcessId(id), id.split('.')[0]);
+    assert.equal(events.isBusinessEventType(
+      events.resolveBusinessEventType(id)), true);
+  }
+
+  const states = get('./process-states');
+  assert(states.PROCESS_STATE_IDS.length >= 69);
+  membership(states, 'PROCESS_STATE_IDS', 'isProcessStateId',
+    'VPROC-0000.UNKNOWN');
+  for (const id of states.PROCESS_STATE_IDS) {
+    const processId = id.split('.')[0];
+    assert.equal(states.getProcessIdForState(id), processId);
+    assert.equal(states.isProcessStateForProcess(processId, id), true);
+    assert.equal(states.isProcessStateForProcess('VPROC-0000', id), false);
+    assert.equal(states.getProcessStateDefinition(id).process_state_id, id);
+  }
+
+  const handoffs = get('./handoffs');
+  assert.equal(handoffs.APPLICATION_HANDOFF_RELATIONS.length, 49);
+  assert.equal(handoffs.HANDOFF_CONSUMER_MODE, 'SOLICITUD_HANDOFF_Y_EVENTO');
+  for (const relation of handoffs.APPLICATION_HANDOFF_RELATIONS) {
+    const args = [relation.process_id, relation.owner_application,
+      relation.participant_application];
+    assert.equal(handoffs.isApplicationHandoffRelation(...args), true);
+    assert.deepEqual(handoffs.getApplicationHandoffRelation(...args), relation);
+    assert(handoffs.getApplicationHandoffRelationsForProcess(args[0])
+      .some(item => item.participant_application === args[2]));
+  }
+  assert.equal(handoffs.isApplicationHandoffRelation(
+    'VPROC-0000', 'viso', 'anima'), false);
+
+  const ownership = get('./ownership');
+  assert(ownership.PROCESS_OWNERSHIP_PROJECTIONS.length >= 69);
+  for (const projection of ownership.PROCESS_OWNERSHIP_PROJECTIONS) {
+    assert.deepEqual(ownership.resolveProcessOwner(projection.process_id),
+      projection);
+    assert.equal(ownership.isCanonicalOwner(projection.owner_app_code,
+      projection.process_id), true);
+  }
+  assert.equal(ownership.resolveProcessOwner('VPROC-0000'), undefined);
+  assert.equal(ownership.assertOwnershipProjectionFresh('VPROC-0001',
+    ownership.FUNCTIONAL_OWNERSHIP_EFFECTIVE_VERSION), true);
+  assert.throws(() => ownership.assertOwnershipProjectionFresh(
+    'VPROC-0001', 'sha256:stale'));
+
+  const integrations = get('./integrations');
+  assert(integrations.INTEGRATION_PRINCIPAL_CONTRACT_METADATA
+    && typeof integrations.INTEGRATION_PRINCIPAL_CONTRACT_METADATA === 'object');
+  assert(integrations.EXTERNAL_CREDENTIAL_CONTRACT_METADATA
+    && typeof integrations.EXTERNAL_CREDENTIAL_CONTRACT_METADATA === 'object');
+  assert(integrations.EXTERNAL_RECEIVED_EVENT_CONTRACT_METADATA
+    && typeof integrations.EXTERNAL_RECEIVED_EVENT_CONTRACT_METADATA === 'object');
+
+  const work = get('./work-items');
+  assert.equal(work.WORK_ITEM_FIELD_NAMES.length, 29);
+  assert.equal(work.WORK_ITEM_STATUSES.length, 16);
+  membership(work, 'WORK_ITEM_FIELD_NAMES', 'isWorkItemFieldName',
+    '__invalid_work_item_field__');
+  membership(work, 'WORK_ITEM_STATUSES', 'isWorkItemStatus',
+    '__invalid_work_item_status__');
+  membership(work, 'WORK_ITEM_TYPES', 'isWorkItemType',
+    '__invalid_work_item_type__');
+  membership(work, 'WORK_ITEM_READINESS_STATUSES', 'isWorkItemReadinessStatus',
+    '__invalid_readiness__');
+
+  const catalog = get('./authorization/catalog/v1');
+  assert.deepEqual(catalog.APPLICATION_CODES, [
+    'shell', 'anima', 'viso', 'nexo', 'fogo',
+    'origo', 'pulso', 'numera', 'aura', 'pass',
+  ]);
+  membership(catalog, 'APPLICATION_CODES', 'isAppCode', '__invalid_app__');
+  membership(catalog, 'PERMISSION_KEYS', 'isPermissionKey',
+    '__invalid_permission__');
+  assert(catalog.PERMISSION_KEYS.length >= 100);
+  for (const code of catalog.APPLICATION_CODES) {
+    assert.equal(catalog.APPLICATION_BY_CODE[code].app_code, code);
+  }
+
+  const base = get('./authorization/base-roles/v1');
+  assert.deepEqual(base.BASE_ROLE_CODES, [
+    'propietario', 'gerente_general', 'gerente', 'supervisor',
+    'auxiliar_administrativa', 'contador', 'marketing', 'trabajador_operativo',
+  ]);
+  membership(base, 'BASE_ROLE_CODES', 'isBaseRoleCode', 'administrador_falso');
+
+  const operational = get('./authorization/operational-roles/v1');
+  assert.deepEqual(operational.OPERATIONAL_ROLE_CODES, [
+    'cajero_satelite', 'barista_satelite', 'cocinero_satelite',
+    'servicio_salon', 'mostrador_satelite', 'operador_integral_satelite',
+    'produccion_cocina', 'produccion_panaderia', 'produccion_reposteria',
+    'bodeguero', 'conductor_logistica', 'gerencia_operativa',
+  ]);
+  membership(operational, 'OPERATIONAL_ROLE_CODES', 'isOperationalRoleCode',
+    '__invalid_operational_role__');
+
+  const scopes = get('./authorization/scopes/v1');
+  assert.deepEqual(scopes.PERMISSION_SCOPE_CODES, [
+    'NT', 'ORG', 'G', 'AS', 'SS', 'AST', 'TST',
+    'AA', 'SA', 'AAT', 'ATW', 'CTX', 'OWN',
+  ]);
+  membership(scopes, 'PERMISSION_SCOPE_CODES', 'isPermissionScopeCode',
+    '__invalid_scope__');
+  assert.equal(scopes.isAllowedScopeSet(['NT']), true);
+  assert.equal(scopes.isAllowedScopeSet(['NT', 'NT']), false);
+  assert.equal(scopes.isMaximumScope('NT'), true);
+  assert.equal(scopes.isMaximumScope('__invalid_scope__'), false);
+  for (const code of scopes.PERMISSION_SCOPE_CODES) {
+    assert.equal(scopes.PERMISSION_SCOPE_BY_CODE[code].scope_code, code);
+  }
+
+  const reasons = get('./authorization/reason-codes/v1');
+  assert.equal(reasons.AUTHORIZATION_REASON_CODES[0], 'AUTH_NO_SESSION');
+  membership(reasons, 'AUTHORIZATION_REASON_CODES',
+    'isAuthorizationReasonCode', '__invalid_reason__');
+  membership(reasons, 'STRUCTURAL_ISSUE_CODES',
+    'isStructuralIssueCode', '__invalid_issue__');
+  membership(reasons, 'LANE_AVAILABILITY_REASON_CODES',
+    'isLaneAvailabilityReasonCode', '__invalid_lane_availability__');
+  membership(reasons, 'LANE_REASON_CODES',
+    'isLaneReasonCode', '__invalid_lane_reason__');
+  assert.equal(reasons.STRUCTURAL_ISSUE_CODES.length, 100);
+  return paths.length;
+}
+
 export function runtimeProgram(surface) {
   assert.equal(surface.length, 15, 'CI005_PUBLIC_SURFACE_CHANGED');
   assert.equal(surface.filter(x => x.type_only === true).length, 1,
@@ -283,7 +482,10 @@ export function runtimeProgram(surface) {
   lines.push("const onlyTypes = await import('" + CANDIDATE +
     "/authorization/response-contracts/v1');");
   lines.push("assert.deepEqual(Object.keys(onlyTypes), []);");
-  lines.push("console.log('CI005_VISO_RUNTIME_PASS');");
+  lines.push('const checkSemantics = (' + assertContractSemanticBehavior.toString() + ');');
+  lines.push('assert.equal(checkSemantics({' + runtime.map((entry, index) =>
+    JSON.stringify(entry.subpath) + ': module' + index).join(',') + '}), 14);');
+  lines.push("console.log('CI005_VISO_RUNTIME_SEMANTIC_PASS:14');");
   return lines.join('\n') + '\n';
 }
 
@@ -378,6 +580,10 @@ async function execute() {
     buildEvidence.package_manifest_hash !== hash(manifestBytes)) {
     block('PACKAGE_SOURCE_INVALID');
   }
+  if (buildEvidence.artifact_content_hash !== APPROVED_CANDIDATE_CONTENT
+    || buildEvidence.exports_identity !== APPROVED_CANDIDATE_EXPORTS) {
+    block('IMMUTABLE_RELEASE_CANDIDATE_DRIFT');
+  }
   const buildContract = JSON.parse(fs.readFileSync(path.join(ROOT,
     'scripts/quality/vento-contracts-pilot-build-contract.json'), 'utf8'));
   const surface = buildContract.public_surface;
@@ -463,12 +669,15 @@ async function execute() {
       ['viso-next-build', 'npm', ['run', 'build:ci011'], 600000],
     ]) {
       const done = command(binary, args, viso, timeout);
+      const semanticStep = name === 'runtime-first' || name === 'runtime-repeat';
+      const semanticPassed = !semanticStep
+        || done.output === 'CI005_VISO_RUNTIME_SEMANTIC_PASS:14';
       const stableBaseline = name === 'viso-typecheck' && !baselineTypecheck.ok
         && baselineTypecheck.compiler.identities.length > 0
         && JSON.stringify(done.compiler.identities)
           === JSON.stringify(baselineTypecheck.compiler.identities);
-      const accepted = done.ok || stableBaseline;
-      const status = done.ok ? 'PASS'
+      const accepted = (done.ok && semanticPassed) || stableBaseline;
+      const status = done.ok && semanticPassed ? 'PASS'
         : stableBaseline ? 'BASELINE_DEBT_UNCHANGED' : 'FAIL';
       steps.push({ name, status,
         ...(done.ok ? {} : { diagnostic: done.compiler }) });
@@ -520,6 +729,11 @@ async function execute() {
       snapshots: consumerSnapshots, steps, ...outcome,
       dependency_tree: frozenDependencies,
       lockfile_changed_and_restored: lockModifiedByPreview,
+      semantic_probe: {
+        probe_id: SEMANTIC_PROBE_ID, status: 'PASS',
+        checked_subpaths: 14, executions: 2,
+        artifact_content_identity: buildEvidence.artifact_content_hash,
+      },
     };
     fs.writeFileSync(path.join(OUT, 'observations.json'),
       JSON.stringify(evidence, null, 2) + '\n');
