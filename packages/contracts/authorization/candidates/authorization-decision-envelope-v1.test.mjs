@@ -186,6 +186,22 @@ function bothAllowed() {
   d.audit.authorizing_lanes = ["BASE", "OPERATIONAL"];
   return d;
 }
+function syntheticMatchedDeny() {
+  return {
+    deny_id: "deny:synthetic", deny_class: "BASE_LANE",
+    lane: "BASE", permission_key: "shell.access",
+    source_kind: "SYNTHETIC_DENY", matched_actor: true,
+    matched_resource: true, matched_territory: true,
+    matched_validity: true, reason_code: "AUTH_DENIED",
+  };
+}
+function syntheticBlockingReason() {
+  return {
+    reason_code: "AUTH_DENIED", category: "DENIAL",
+    severity: "BLOCKING", lane: "BASE", source: "synthetic-test",
+    safe_to_expose: false,
+  };
+}
 function failedPrerequisite() {
   return {
     prerequisite_type: "RESOURCE_STATE",
@@ -325,7 +341,9 @@ test("security: a lane DENY cannot be promoted to final ALLOW", () => {
 
 test("security: structurally impossible ALLOW cannot override any explicit blocking evidence", () => {
   for (const field of ["structural_denies","actor_wide_denies","lane_denies","blocked_reasons","matched_denies"]) {
-    const d = allowed(); d[field] = [{ reason_code: "blocked" }]; fail(d);
+    const d = allowed();
+    d[field] = [field === "matched_denies" ? syntheticMatchedDeny() : syntheticBlockingReason()];
+    fail(d);
   }
 });
 
@@ -477,6 +495,67 @@ test("contractual: AND requires both authorizing lanes; OR may use either", () =
   noLane.final_decision.authorizing_lanes = [];
   noLane.audit.authorizing_lanes = [];
   fail(noLane);
+});
+
+test("contractual: matched denies and decision reasons preserve canonical shapes", () => {
+  const valid = denied();
+  valid.matched_denies = [syntheticMatchedDeny()];
+  valid.base_decision.matched_deny_ids = ["deny:synthetic"];
+  valid.lane_denies = [syntheticBlockingReason()];
+  assert.equal(inspect(valid), undefined);
+  for (const [field, value] of [
+    ["deny_class", "ELEVATE"],
+    ["lane", "ALL"],
+    ["permission_key", "anima.access"],
+    ["matched_actor", "true"],
+    ["source_kind", null],
+    ["reason_code", ""],
+  ]) {
+    const d = denied();
+    d.matched_denies = [{ ...syntheticMatchedDeny(), [field]: value }];
+    fail(d);
+  }
+  for (const [field, value] of [
+    ["severity", "ALLOW"],
+    ["lane", "ROOT"],
+    ["safe_to_expose", "yes"],
+    ["source", ""],
+  ]) {
+    const d = denied();
+    d.blocked_reasons = [{ ...syntheticBlockingReason(), [field]: value }];
+    fail(d);
+  }
+  const extra = denied();
+  extra.matched_denies = [{ ...syntheticMatchedDeny(), bypass_applied: true }];
+  fail(extra);
+  const duplicated = denied();
+  duplicated.matched_denies = [syntheticMatchedDeny(), syntheticMatchedDeny()];
+  fail(duplicated);
+  const missing = denied();
+  const incomplete = syntheticBlockingReason();
+  delete incomplete.category;
+  missing.blocked_reasons = [incomplete];
+  fail(missing);
+});
+
+test("security: deny and reason getters are rejected without invocation", () => {
+  let invoked = 0;
+  for (const [collection, maker, key] of [
+    ["matched_denies", syntheticMatchedDeny, "deny_id"],
+    ["matched_denies", syntheticMatchedDeny, "matched_resource"],
+    ["structural_denies", syntheticBlockingReason, "severity"],
+    ["blocked_reasons", syntheticBlockingReason, "safe_to_expose"],
+  ]) {
+    const d = denied();
+    const value = maker();
+    Object.defineProperty(value, key, {
+      enumerable: true,
+      get() { invoked += 1; throw new Error("DENY_GETTER_MUST_NOT_RUN"); },
+    });
+    d[collection] = [value];
+    fail(d);
+  }
+  assert.equal(invoked, 0);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
