@@ -163,6 +163,28 @@ test('GAP-PKG-004 tracks all 22 findings and 14 TREQ through discovery completio
   }
 });
 
+test('GAP-PKG-004 disables only legacy scheduled checkout jobs, preserving audit and rollback', () => {
+  const sql = read('supabase/migrations/20261020223916_attendance_geofence_authority.sql');
+  const cronBlock = /do \$geofence_cron\$[\s\S]*?\$geofence_cron\$;/u.exec(sql)?.[0];
+  assert.ok(cronBlock, 'GAP-004 must retain one guarded cron transition');
+  assert.match(cronBlock, /to_regprocedure\('cron\.alter_job\(bigint,text,text,text,text,boolean\)'\)/u);
+  assert.match(cronBlock, /cron\.alter_job\(job_id := \$1, active := false\)/u,
+    'Legacy jobs must be deactivated reversibly, not deleted');
+  assert.doesNotMatch(cronBlock, /cron\.unschedule\s*\(|\bdelete\s+from\s+cron\.job/iu);
+  for (const job of [
+    'anima_attendance_day_end_close_0005',
+    'auto-close-attendance',
+    'attendance_stale_open_shift_autoclose_daily_bogota',
+  ]) {
+    assert.equal(cronBlock.split(job).length - 1, 2,
+      'Only these three named jobs may be deactivated and verified: ' + job);
+  }
+  assert.match(cronBlock, /GEOFENCE_LEGACY_AUTO_CLOSE_CRON_STILL_ACTIVE/u,
+    'Migration must fail closed if a legacy job remains active');
+  assert.equal(gate.authorization.decision, 'PENDING',
+    'SQL candidate must not silently approve a remote migration');
+});
+
 test('GAP-PKG-004 SQL candidate remains consistent with versioned migration manifest', () => {
   const body = read(fixtures.migration_path).replace(/\r\n?/gu, '\n');
   const digest = createHash('sha256').update(body).digest('hex');

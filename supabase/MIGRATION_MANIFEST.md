@@ -34,7 +34,7 @@ Regenerate with `npm run supabase:migrations:manifest:build` and validate with `
 | 20260902212940 | 20260902212940_auth_db_014_authorization_device_audit.sql | f8b4d2556403ee012e5b22550bb0349a2748b21d853a01ba99582a70a5a7d3ea | 104869 | STANDARD |  |  | SIN_HALLAZGO |
 | 20260913131524 | 20260913131524_gap_pkg_019_governed_analytics.sql | 8972233233852f8316327b58b2306e02d3089beaa7f86224d5a814ec2e96ece8 | 23168 | STANDARD |  |  | SIN_HALLAZGO |
 | 20261012173553 | 20261012173553_gap_pkg_004_rpc_acl_hardening.sql | 41d3e58e54d931e111e8dc9ddd78723087e8ccaa16a1b5eee01a97cb08443706 | 32249 | STANDARD |  |  | SIN_HALLAZGO |
-| 20261020223916 | 20261020223916_attendance_geofence_authority.sql | 40bdb94261c95e34d6f390b8c3ca6d88200f3af31838a71196d4637f63bae274 | 8210 | STANDARD |  |  | SIN_HALLAZGO |
+| 20261020223916 | 20261020223916_attendance_geofence_authority.sql | 364ec62e0f84a6eb0738d613610eb1b21f1d9eb8bc244e6f4ccaa499302fb92c | 8495 | STANDARD |  |  | SIN_HALLAZGO |
 
 ## Inventory summary
 

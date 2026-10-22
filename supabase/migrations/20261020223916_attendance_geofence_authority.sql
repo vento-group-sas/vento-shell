@@ -1,12 +1,16 @@
 begin;
 
--- AUTOCIERRE POR GEOcERCA: ninguna hora programada puede inventar una salida.
--- Deshabilitar solamente los tres jobs legados de check-out temporal.
+-- AUTOCIERRE POR GEOCERCA: ninguna hora programada puede inventar una salida.
+-- Desactivar reversiblemente solo los tres jobs legados; conservar definiciones
+-- e historial de ejecuciones para auditoria y eventual rollback gobernado.
 do $geofence_cron$
 declare
   v_job bigint;
 begin
   if to_regclass('cron.job') is not null then
+    if to_regprocedure('cron.alter_job(bigint,text,text,text,text,boolean)') is null then
+      raise exception 'GEOFENCE_LEGACY_CRON_DEACTIVATION_UNAVAILABLE';
+    end if;
     for v_job in
       select jobid from cron.job
       where active is true and jobname in (
@@ -15,7 +19,7 @@ begin
         'attendance_stale_open_shift_autoclose_daily_bogota'
       )
     loop
-      execute 'select cron.unschedule($1)' using v_job;
+      execute 'select cron.alter_job(job_id := $1, active := false)' using v_job;
     end loop;
     if exists (
       select 1 from cron.job
