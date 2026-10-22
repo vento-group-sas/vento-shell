@@ -46,8 +46,3 @@ export function getSafeDecisionProjection(_decision: never): never {
   throw unavailable();
 }
 
-/** @deprecated NOT IMPLEMENTED. Scope ownership belongs to SHELL-AUTH-003. */
-export function createAuthorizationScope(_request: never): never {
-  void _request;
-  throw unavailable();
-}
