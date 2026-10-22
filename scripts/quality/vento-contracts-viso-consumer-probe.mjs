@@ -7,6 +7,11 @@ import { fileURLToPath } from 'node:url';
 
 import { asSha256Identity } from './shared-package-release-gate.mjs';
 import { packPilotPrivatePreview } from './shared-package-release-preparation.mjs';
+import {
+  CANONICAL_BASE_RELATIONS, CANONICAL_WEB_CONSUMERS, COMPATIBILITY_AXES,
+  compatibilityIdentity, comparePreparedEvidence, prepareCompatibilityEvidence,
+} from './shared-package-compatibility-gate.mjs';
+import { requirePilotCompatibility } from './vento-contracts-private-release.mjs';
 
 const ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const CONSUMERS = ['vento-shell', 'vento-viso', 'vento-nexo', 'vento-fogo',
@@ -100,6 +105,150 @@ function snapshotLockedInstall(root, originalLock) {
     if (typeof pkg.version !== 'string') block('CONSUMER_PACKAGE_VERSION_MISSING');
     return [key, pkg.version];
   }));
+}
+
+
+export function buildRealCi005PilotInput({
+  observed, testEvidence, buildEvidence, manifestBytes,
+  consumerManifest, effectiveVersions, npmVersion,
+} = {}) {
+  if (!observed || observed.status !== 'PASS'
+    || observed.consumer !== 'vento-viso'
+    || observed.candidate !== CANDIDATE
+    || observed.candidate_version !== VERSION
+    || observed.preexisting_typecheck_debt !== false
+    || observed.consumer_manifest_unchanged !== true
+    || observed.dependency_tree?.frozen !== true
+    || observed.steps?.length !== 7
+    || !observed.steps.every(step => step.status === 'PASS')) {
+    block('CERTIFICATION_NEEDS_UNRESTRICTED_PHYSICAL_PASS');
+  }
+  const snapshots = observed.snapshots ?? [];
+  if (snapshots.length !== CANONICAL_WEB_CONSUMERS.length
+    || CANONICAL_WEB_CONSUMERS.some(name =>
+      snapshots.filter(item => item.consumer_repository === name).length !== 1)) {
+    block('ALL_SEVEN_REAL_CONSUMER_SNAPSHOTS_REQUIRED');
+  }
+  const consumerSnapshot = snapshots.find(x => x.consumer_repository === 'vento-viso');
+  if (consumerSnapshot.consumer_commit !== observed.consumer_sha
+    || observed.package_sha !== testEvidence?.source_commit
+    || observed.package_sha !== buildEvidence?.source_commit
+    || observed.candidate_manifest_identity !== hash(manifestBytes)
+    || observed.candidate_manifest_identity !== testEvidence?.manifest_identity
+    || observed.candidate_manifest_identity !== buildEvidence?.package_manifest_hash
+    || observed.artifact_content_identity !== buildEvidence?.artifact_content_hash
+    || observed.test_evidence_identity !== testEvidence?.material_identity_sha256
+    || observed.build_evidence_identity !== buildEvidence?.material_identity_sha256
+    || testEvidence?.outcome !== 'PASS' || buildEvidence?.build_status !== 'PASS'
+    || testEvidence?.invalidation_reason || buildEvidence?.invalidation_reason) {
+    block('CI001_CI002_OBSERVATION_IDENTITY_MISMATCH');
+  }
+  const requiredVersionKeys = ['node', 'next', 'react', 'react_dom', 'typescript'];
+  const semver = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
+  if (!effectiveVersions || requiredVersionKeys.some(key =>
+    !semver.test(String(effectiveVersions[key] ?? '')))
+    || typeof npmVersion !== 'string' || !semver.test(npmVersion)) {
+    block('EFFECTIVE_TOOLCHAIN_VERSIONS_NOT_MEASURED');
+  }
+  if (!consumerManifest || typeof consumerManifest.dependencies?.next !== 'string'
+    || typeof consumerManifest.dependencies?.react !== 'string'
+    || typeof consumerManifest.dependencies?.['react-dom'] !== 'string'
+    || typeof consumerManifest.devDependencies?.typescript !== 'string') {
+    block('CONSUMER_DECLARED_VERSIONS_NOT_MEASURED');
+  }
+  const binding = CANONICAL_BASE_RELATIONS.find(relation =>
+    relation.package_name === CANDIDATE && relation.consumer_repository === 'vento-viso');
+  if (!binding || binding.relation_identity !== 'PKG-COMP-MX-002') {
+    block('CANONICAL_PILOT_RELATION_INVALID');
+  }
+  const material = compatibilityIdentity(observed);
+  const versions = Object.fromEntries(requiredVersionKeys.map(key =>
+    [key, effectiveVersions[key]]));
+  const bands = Object.fromEntries(requiredVersionKeys.map(key => [
+    key, { minimum: versions[key], maximum_tested: versions[key] },
+  ]));
+  const axisNotApplicable = new Map([
+    ['COMP-AXIS-007', 'El paquete no exporta componentes React hidratables'],
+    ['COMP-AXIS-008', 'La prueba no accede a Supabase ni a sus credenciales'],
+    ['COMP-AXIS-010', 'No se ensayan autorizaciones reales de negocio ni produccion'],
+    ['COMP-AXIS-011', 'El paquete no exporta CSS ni controles visuales de UI'],
+  ]);
+  const axes = COMPATIBILITY_AXES.map(({ id }) => (
+    axisNotApplicable.has(id)
+      ? { axis_id: id, status: 'NOT_APPLICABLE', reason: axisNotApplicable.get(id) }
+      : { axis_id: id, status: 'PASS', evidence_ids: [material] }
+  ));
+  const coverage_evaluations = [
+    ...['minimum_declared', 'maximum_tested', 'consumer_effective'].map(coverage_point => ({
+      coverage_point, status: 'PASS', evidence_ids: [material],
+      observed_versions: versions,
+    })),
+    { coverage_point: 'relevant_peers', status: 'NOT_APPLICABLE',
+      reason: 'El package candidato no declara peerDependencies' },
+    { coverage_point: 'server_client_ssr', status: 'NOT_APPLICABLE',
+      reason: 'Next build probado; hidratacion y SSR remoto fuera del alcance del contrato sin componentes' },
+  ];
+  const pkg = {
+    package_name: CANDIDATE,
+    package_version: VERSION,
+    package_source_commit: observed.package_sha,
+    package_manifest_identity: observed.candidate_manifest_identity,
+    artifact_content_identity: observed.artifact_content_identity,
+    artifact_integrity: buildEvidence.pack_integrity,
+    test_evidence: testEvidence,
+    build_evidence: buildEvidence,
+  };
+  const relation = {
+    ...binding,
+    package_version: pkg.package_version,
+    package_source_commit: pkg.package_source_commit,
+    package_manifest_identity: pkg.package_manifest_identity,
+    artifact_content_identity: pkg.artifact_content_identity,
+    artifact_integrity: pkg.artifact_integrity,
+    candidate_bands: bands,
+    consumer_commit: consumerSnapshot.consumer_commit,
+    consumer_manifest_identity: consumerSnapshot.consumer_manifest_identity,
+    consumer_lockfile_identity: consumerSnapshot.consumer_lockfile_identity,
+    declared_versions: {
+      next: consumerManifest.dependencies.next,
+      react: consumerManifest.dependencies.react,
+      react_dom: consumerManifest.dependencies['react-dom'],
+      typescript: consumerManifest.devDependencies.typescript,
+    },
+    resolved_versions: versions,
+    toolchain_identity: hash('node:' + versions.node + ';npm:' + npmVersion),
+    runtime_identity: hash('node:' + versions.node + ';next:' + versions.next),
+    runtime_reproducible: true,
+    environment: 'isolated-github-actions-viso-pinned-consumer',
+    target: 'WEB', renderer: 'NEXT', profile: 'BASE_WEB',
+    coverage_evaluations, axes,
+    restrictions: [{
+      owner: 'VENTO shared packages',
+      scope: '@vento/contracts prerelease tested in one pinned VISO checkout',
+      exit_criteria: 'Run authorized consumer migration and live application verification before broad adoption',
+      reason: 'Exact Node, Next, React, TypeScript and VISO commit tested; no production authorization or live hydration validated',
+    }],
+    evidence_ids: [material],
+    evidence_context: {
+      package_name: CANDIDATE, consumer_repository: 'vento-viso',
+      target: 'WEB', renderer: 'NEXT',
+    },
+    bypass_flags: [], stale: false, invalidation_reason: null,
+  };
+  return {
+    schema_version: 1,
+    release_channel_type: 'PRERELEASE',
+    pilot_relation_ids: [binding.relation_identity],
+    package_snapshot: pkg,
+    consumer_snapshots: snapshots,
+    relations: [relation],
+    extension_bindings: [],
+    metadata: {
+      measurement_source: 'CI005_REAL_CONSUMER_PROBE',
+      observation_identity: material,
+      consumer_mode: 'isolated_exact_pin_no_production_changes',
+    },
+  };
 }
 
 export function runtimeProgram(surface) {
