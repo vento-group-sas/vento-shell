@@ -18,6 +18,8 @@ on:
       - "scripts/quality/shared-package-build-gate.mjs"
       - "scripts/quality/shared-package-build-gate.test.mjs"
       - "scripts/quality/vento-contracts-pilot-*"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.mjs"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.test.mjs"
       - "packages/**"
       - ".gitignore"
       - "package.json"
@@ -41,6 +43,8 @@ on:
       - "scripts/quality/shared-package-build-gate.mjs"
       - "scripts/quality/shared-package-build-gate.test.mjs"
       - "scripts/quality/vento-contracts-pilot-*"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.mjs"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.test.mjs"
       - "packages/**"
       - ".gitignore"
       - "package.json"
@@ -172,6 +176,53 @@ jobs:
             .delivery/shared-package-tests/vento__contracts/*.json
             .delivery/shared-package-builds/vento__contracts/*.json
           if-no-files-found: error
+          retention-days: 7
+
+  ci005-real-viso-consumer:
+    name: CI005 VISO - instalacion real de contratos y Next aislado
+    needs: package-qa
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - name: Descargar VENTO Shell sin credenciales
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Configurar Node del contrato
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Instalar solo dependencias fijadas y compilar candidato
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build --workspace @vento/contracts
+      - name: Generar evidencia CI001 real del mismo SHA
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Generar evidencia CI002 reproducible del mismo SHA
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: Probar controles de integridad del consumidor aislado
+        run: node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+      - name: Instalar tarball efimero en VISO real y probar ESM TypeScript Next
+        run: node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+      - name: Guardar exclusivamente los resultados JSON sin tarballs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci005-viso-${{ github.sha }}
+          path: .delivery/shared-package-compatibility/contracts-pilot/*.json
+          if-no-files-found: warn
           retention-days: 7
 
   gitlab-registry-readonly:
