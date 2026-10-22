@@ -52,7 +52,7 @@ function hash(bytes) {
   return asSha256Identity(bytes);
 }
 
-function runtimeProgram(surface) {
+export function runtimeProgram(surface) {
   assert.equal(surface.length, 15, 'CI005_PUBLIC_SURFACE_CHANGED');
   assert.equal(surface.filter(x => x.type_only === true).length, 1,
     'CI005_PUBLIC_SURFACE_CHANGED');
