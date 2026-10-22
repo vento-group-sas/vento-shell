@@ -1246,6 +1246,156 @@ test("contractual: DENY preserves incoherent or unresolved resource evidence wit
   assert.equal(inspect(d) === true, false);
 });
 
+test("contractual: the six canonical field classification codes are closed", () => {
+  const valid = denied();
+  valid.resource.field_classification = {
+    a_public: "PUBLIC", b_internal: "INTERNAL", c_sensitive: "SENSITIVE",
+    d_restricted: "RESTRICTED", e_immutable: "IMMUTABLE",
+    f_system: "SYSTEM_MANAGED",
+  };
+  assert.equal(inspect(valid), undefined);
+  for (const value of ["ADMIN_OVERRIDE", "public", "UNCLASSIFIED", "", 42, null]) {
+    const d = denied();
+    d.resource.field_classification = { status: value };
+    fail(d);
+  }
+  const nullPrototype = denied();
+  nullPrototype.resource.field_classification =
+    Object.assign(Object.create(null), { status: "PUBLIC" });
+  assert.equal(inspect(nullPrototype), undefined);
+});
+
+test("security: field selectors never accept wildcard expansion", () => {
+  for (const fields of [["*"], ["orders.*"], ["some*field"]]) {
+    const d = denied();
+    d.request.requested_fields = fields;
+    fail(d);
+  }
+  for (const key of ["visible_fields", "masked_fields", "mutable_fields", "blocked_fields"]) {
+    const d = denied();
+    d.field_policy_decision[key] = ["*"];
+    fail(d);
+  }
+  const classifications = denied();
+  classifications.resource.field_classification = { "*": "PUBLIC" };
+  fail(classifications);
+});
+
+test("contractual: ALLOW field projections require canonically classified names", () => {
+  const valid = allowed();
+  valid.resource.field_classification = { secret: "SENSITIVE", status: "PUBLIC" };
+  valid.request.requested_fields = ["status"];
+  valid.field_policy_decision.status = "PARTIAL";
+  valid.field_policy_decision.visible_fields = ["status"];
+  valid.field_policy_decision.masked_fields = ["secret"];
+  assert.equal(inspect(valid), undefined);
+  for (const field of ["requested_fields", "visible_fields", "masked_fields", "mutable_fields"]) {
+    const unclassified = allowed();
+    if (field === "requested_fields") unclassified.request.requested_fields = ["unknown"];
+    else unclassified.field_policy_decision[field] = ["unknown"];
+    fail(unclassified);
+  }
+  // Preserve unclassified caller requests in DENY audit without elevating them.
+  const deniedUnknown = denied();
+  deniedUnknown.request.requested_fields = ["not-classified"];
+  deniedUnknown.field_policy_decision.blocked_fields = ["not-classified"];
+  assert.equal(inspect(deniedUnknown), undefined);
+});
+
+test("security: field projections reject duplicates and incompatible partitions", () => {
+  for (const key of [
+    "visible_fields", "masked_fields", "mutable_fields", "blocked_fields", "reason_codes",
+  ]) {
+    const d = denied();
+    d.field_policy_decision[key] = ["status", "status"];
+    fail(d);
+  }
+  const exposedAndMasked = denied();
+  exposedAndMasked.field_policy_decision.visible_fields = ["status"];
+  exposedAndMasked.field_policy_decision.masked_fields = ["status"];
+  fail(exposedAndMasked);
+  const mutableAndBlocked = denied();
+  mutableAndBlocked.field_policy_decision.mutable_fields = ["status"];
+  mutableAndBlocked.field_policy_decision.blocked_fields = ["status"];
+  fail(mutableAndBlocked);
+  const separate = denied();
+  separate.resource.field_classification = { a: "PUBLIC", b: "INTERNAL" };
+  separate.field_policy_decision.visible_fields = ["a"];
+  separate.field_policy_decision.masked_fields = ["b"];
+  separate.field_policy_decision.mutable_fields = ["a"];
+  separate.field_policy_decision.blocked_fields = ["b"];
+  assert.equal(inspect(separate), undefined);
+});
+
+test("contractual: resolved IDs and resource snapshot keys are deterministic", () => {
+  const valid = denied();
+  valid.resource.resource_ids = ["item-1", "item-2"];
+  valid.audit.resource_ids = ["item-1", "item-2"];
+  valid.resource.territory.site_ids = ["site-1", "site-2"];
+  valid.resource.state_snapshot = { a: 1, z: 2 };
+  valid.resource.field_classification = { a: "INTERNAL", z: "PUBLIC" };
+  assert.equal(inspect(valid), undefined);
+  for (const items of [["item-2", "item-1"], ["item-1", "item-1"]]) {
+    const d = denied();
+    d.resource.resource_ids = [...items];
+    d.audit.resource_ids = [...items];
+    fail(d);
+  }
+  for (const key of [
+    "business_unit_ids", "site_ids", "area_ids", "area_kinds", "route_ids", "vehicle_ids",
+  ]) {
+    for (const values of [["z", "a"], ["a", "a"]]) {
+      const d = denied();
+      d.resource.territory[key] = values;
+      fail(d);
+    }
+  }
+  const unsortedState = denied();
+  unsortedState.resource.state_snapshot = { z: 2, a: 1 };
+  fail(unsortedState);
+  const unsortedClassification = denied();
+  unsortedClassification.resource.field_classification = { z: "PUBLIC", a: "INTERNAL" };
+  fail(unsortedClassification);
+});
+
+test("security: ALLOW cannot carry unresolved mandatory resource facts", () => {
+  for (const mutate of [
+    (d) => { d.resource.territory.coherent = false; },
+    (d) => { d.resource.territory.isolated_environment = true; },
+    (d) => { d.resource.subject = syntheticSubject({ coherent: false }); },
+    (d) => { d.resource.territory.origin = syntheticTerritorySide({ coherent: false }); },
+    (d) => {
+      d.resource.required_sides = [syntheticResolvedSide({
+        resolution_status: "UNRESOLVED", territory: null, resource_ids: [],
+      })];
+    },
+    (d) => {
+      d.resource.required_sides = [syntheticResolvedSide({
+        territory: syntheticTerritorySide({ coherent: false }),
+      })];
+    },
+    (d) => {
+      d.resource.concurrency = {
+        policy: "EXPECTED_VERSION", expected_version: "v1",
+        idempotency_key: null, validated: false,
+      };
+    },
+  ]) {
+    const d = allowed();
+    mutate(d);
+    fail(d);
+    const deniedEvidence = denied();
+    mutate(deniedEvidence);
+    assert.equal(inspect(deniedEvidence), undefined);
+  }
+  const noConcurrencyPolicy = allowed();
+  noConcurrencyPolicy.resource.concurrency = {
+    policy: "NONE", expected_version: null, idempotency_key: null,
+    validated: false,
+  };
+  assert.equal(inspect(noConcurrencyPolicy), undefined);
+});
+
 test("security: getter-backed DTO properties cannot execute", () => {
   let invoked = 0;
   const d = denied();
