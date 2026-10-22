@@ -1859,6 +1859,18 @@
         "surface": "GAP-PKG-004 / MADURACION-F09 ANIMA_VISO_INVITE_UI (2026-10-22)",
         "method": "ESTADO=PARCIAL; ACREDITADO=Typecheck ANIMA/VISO y tests invitaciones LOCAL PASS; VISO build+lint y QA nominal VISO publicadas DRAFT; PENDIENTE=QA visual Android autenticada, confirmación de correo proveedor, flujo real de invitación y placeholder histórico en archivo fuera del target; ANIMA local detrás PR #6 y untracked ajeno; SIGUIENTE=Preservar worktree, aprobar alcance específico del placeholder/visual UI, certificar create-resend-cancel-accept en STAGING después E5 con usuarios sintéticos y sin residuos.",
         "evidence": "ANIMA PR #6 370463ce; VISO PR #19 7a8e7a7f; targets y QA UI históricos"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / E1-22-ORACULOS-MATRIZ (2026-10-22)",
+        "method": "MATRIZ_DE_ACEPTACION=22/22; E1_STATUS_PRESERVADO=12 CONFIRMADO,3 BRECHA,2 CONDICIONAL,1 GOBIERNO,4 CONTROL_PRESENTE; TREQ_EXPLICITOS_E1=15 señales; INTERSECCION_TREQ_PKG=4 señales; POSITIVO_NEGATIVO_CORRECCION_ACTOR_PROVENIENCIA=22/22; ACEPTACION_E2E=PENDING 22/22; E1_CONTROL_CERRADO_HISTORICO_DISTINTO_DE_E2E_CERTIFICADO; sin tocar 14 TREQ/04A.",
+        "evidence": "tests/packages/GAP-PKG-004/fixtures.json acceptance_matrix/e1_provenance; tests/packages/GAP-PKG-004/contract.test.ts:18/18 PASS local; E1/07_REGISTRO_CANONICO_DE_BRECHAS.md; SHA local 75521228 no push, fase de prueba aún sin commit."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-004 / AUTH-DB-029-E5-STAGING-PREFLIGHT (2026-10-22)",
+        "method": "FOUNDATION_LOCAL=HISTORICAL_PASS; STAGING_BACKUP=false; ISOLATED_RESTORE=false; STORAGE_AUTH_SECRETS_CONSUMERS_RESTORE=false; RPO_RTO=false; E5_GATE_008=false; assistant_remote_mutations=false; STAGING_MIGRATION_AUTH=false; STAGING_APPLIED=22/24 (2 pendientes); REMOTE_MUTATIONS=NONE; OUTCOME=BLOCKED hasta pruebas restore, recovery point, rollback/PONR, E5 y operador autorizado.",
+        "evidence": "AUTH-DB-029::GLOBAL/.delivery/auth-db-029-final-battery.json histórico LOCAL; docs/ARQUITECTURA-MIGRACIONES-CENTRALIZADAS.md:322-343; tests/packages/GAP-PKG-004/fixtures.json recovery_readiness; supabase/MIGRATION_MANIFEST.md; #1020 STAGING preflight."
       }
     ],
     "findings": [

@@ -27,6 +27,24 @@ type Gate = {
 };
 const fixtures = JSON.parse(read('tests/packages/GAP-PKG-004/fixtures.json')) as {
   package_id: string; migration_path: string; gap_signals: string[]; treq_ids: string[];
+  acceptance_matrix: Array<{
+    signal: string; owner: string; consumer: string; source_ref: string; source_claim: string;
+    actor: string; positive: string; negative: string; correction: string; evidence: string;
+    acceptance: string; environment: string;
+  }>;
+  e1_provenance: Array<{
+    signal: string; e1_audit_line: number; e1_source_status: string;
+    e1_disposition: string | null; e1_explicit_treq_refs: string[];
+    package_treq_refs: string[];
+  }>;
+  recovery_readiness: {
+    foundation_id: string; foundation_evidence: string; foundation_scope: string;
+    staging_branch: string; staging_parent: string; migration_sequence: string[];
+    required_recovery_proofs: string[]; backup_verified: boolean;
+    isolated_restore_verified: boolean; non_database_recovery_verified: boolean;
+    rpo_rto_verified: boolean; e5_gate_pass: boolean; staging_migration_authorized: boolean;
+    assistant_remote_mutations: boolean; outcome: string;
+  };
 };
 const gate = JSON.parse(read('docs/plan-canonico/modular/package-gate-instances/GAP-PKG-004.json')) as Gate;
 
@@ -179,6 +197,114 @@ test('GAP-PKG-004 retains authorized ANIMA/VISO UI and staff-detail targets', ()
     ));
     assert.deepEqual(finding, match);
   }
+});
+
+test('GAP-PKG-004 has 22 source-backed positive/negative acceptance oracles without false PASS', () => {
+  const e1 = read('docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md')
+    .split(/\r?\n/u);
+  const matrix = fixtures.acceptance_matrix;
+  assert.equal(matrix.length, 22);
+  assert.deepEqual(matrix.map((row) => row.signal), fixtures.gap_signals);
+  assert.equal(uniqueSorted(matrix.map((row) => row.signal)).length, 22);
+  for (const row of matrix) {
+    const sourceLine = /^E1\/07_REGISTRO_CANONICO_DE_BRECHAS\.md:(\d+)$/u.exec(row.source_ref);
+    assert.ok(sourceLine, row.signal + ': source must be a specific E1 row');
+    const source = e1[Number(sourceLine[1]) - 1] ?? '';
+    assert.ok(source.startsWith('| ' + String.fromCharCode(96) + row.signal + String.fromCharCode(96)),
+      row.signal + ': wrong E1 row');
+    assert.ok(source.includes(row.source_claim), row.signal + ': claim has drifted from E1');
+    assert.equal(row.owner, 'OWN-SEG', row.signal);
+    for (const field of ['consumer','actor','positive','negative','correction','evidence'] as const) {
+      assert.ok(row[field].length >= (field === 'consumer' ? 3 : 6),
+        row.signal + ': missing ' + field);
+    }
+    assert.ok(row.positive.length >= 30 && row.negative.length >= 30,
+      row.signal + ': substantive positive and negative outcomes are required');
+    assert.notEqual(row.positive, row.negative);
+    assert.equal(row.environment, 'STAGING_AFTER_E5', row.signal);
+    assert.equal(row.acceptance, 'PENDING_E2E', row.signal);
+  }
+  assert.equal(gate.status, 'MATURATION_DRAFT');
+  assert.equal(gate.authorization.decision, 'PENDING');
+});
+
+test('GAP-PKG-004 preserves E1 risk classification and explicit TREQ provenance for all 22 signals', () => {
+  const source = read('docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md')
+    .split(/\r?\n/u);
+  const provenance = fixtures.e1_provenance;
+  assert.equal(provenance.length, 22);
+  assert.deepEqual(provenance.map((entry) => entry.signal), fixtures.gap_signals);
+  let controlPresentCount = 0;
+  let reportedExplicitRequirements = 0;
+  for (const [index, entry] of provenance.entries()) {
+    const line = source[entry.e1_audit_line - 1] ?? '';
+    assert.ok(line.startsWith('| ' + String.fromCharCode(96) + entry.signal + String.fromCharCode(96)),
+      entry.signal + ': audit row must identify the same signal');
+    const e1Status = String.fromCharCode(96) + entry.e1_source_status + String.fromCharCode(96);
+    assert.ok(line.includes(e1Status), entry.signal + ': E1 historical status must be preserved');
+    const refs = uniqueSorted(line.match(/TREQ-[A-Z0-9-]+/gu) ?? []);
+    assert.deepEqual(uniqueSorted(entry.e1_explicit_treq_refs), refs,
+      entry.signal + ': explicit requirement references must come from the original E1 audit row');
+    const inPackage = refs.filter((ref) => fixtures.treq_ids.includes(ref));
+    assert.deepEqual(uniqueSorted(entry.package_treq_refs), inPackage,
+      entry.signal + ': do not add requirements to the package or invent crosswalks');
+    reportedExplicitRequirements += refs.length;
+    if (entry.e1_disposition !== null) {
+      assert.ok(line.includes(entry.e1_disposition),
+        entry.signal + ': preserve original disposition separately from new E2E acceptance');
+    }
+    if (entry.e1_source_status === 'CONTROL_PRESENTE') controlPresentCount++;
+    assert.equal(fixtures.acceptance_matrix[index].acceptance, 'PENDING_E2E',
+      entry.signal + ': an E1 control-present record is not current operational certification');
+  }
+  assert.equal(controlPresentCount, 4);
+  assert.ok(reportedExplicitRequirements >= 15);
+  const historicalClosed = provenance.find((entry) => entry.signal === 'H-CODE-017-018');
+  assert.equal(historicalClosed?.e1_source_status, 'CONTROL_PRESENTE');
+  assert.equal(historicalClosed?.e1_disposition, 'cerrado');
+  const packageEvidence = gate.physical_discovery.searches.filter((x) =>
+    x.surface.startsWith('GAP-PKG-004 / E1-22-ORACULOS-MATRIZ'));
+  assert.equal(packageEvidence.length, 1, 'Discovery must register one unique E1 acceptance evidence record');
+  assert.match(packageEvidence[0].method, /MATRIZ_DE_ACEPTACION=22\/22/u);
+  assert.match(packageEvidence[0].method, /ACEPTACION_E2E=PENDING 22\/22/u);
+  assert.match(packageEvidence[0].evidence, /fixtures\.json/u);
+  assert.equal(gate.authorization.decision, 'PENDING');
+});
+
+test('GAP-PKG-004 reuses AUTH-DB-029 local recovery without claiming STAGING recoverability', () => {
+  const recovery = fixtures.recovery_readiness;
+  const canonical = read('docs/ARQUITECTURA-MIGRACIONES-CENTRALIZADAS.md');
+  const manifest = read('supabase/MIGRATION_MANIFEST.md');
+  assert.equal(recovery.foundation_id, 'AUTH-DB-029::GLOBAL');
+  assert.match(canonical, /Fundación física de recuperación — AUTH-DB-029/u);
+  assert.match(canonical, /vento_recovery_drill/u);
+  assert.match(canonical, /La autocertificación local no usa staging ni producción/u);
+  assert.equal(recovery.foundation_scope, 'LOCAL_SYNTHETIC_RECOVERY_ONLY');
+  assert.equal(recovery.foundation_evidence, '.delivery/auth-db-029-final-battery.json');
+  assert.equal(recovery.staging_branch, 'rcrxixmqhrndcervbllp');
+  assert.equal(recovery.staging_parent, 'clzdpinthhtknkmefsxx');
+  assert.deepEqual(recovery.migration_sequence, [
+    '20261012173553_gap_pkg_004_rpc_acl_hardening.sql',
+    '20261020223916_attendance_geofence_authority.sql',
+  ]);
+  for (const name of recovery.migration_sequence) {
+    assert.ok(manifest.includes(name), 'Missing canonical migration: ' + name);
+  }
+  assert.equal(recovery.required_recovery_proofs.length, 8);
+  for (const key of [
+    'backup_verified', 'isolated_restore_verified', 'non_database_recovery_verified',
+    'rpo_rto_verified', 'e5_gate_pass', 'staging_migration_authorized',
+    'assistant_remote_mutations',
+  ] as const) assert.equal(recovery[key], false, 'Unsafe recovery promotion: ' + key);
+  assert.equal(recovery.outcome, 'BLOCKED');
+  const stagingEvidence = gate.physical_discovery.searches.filter((x) =>
+    x.surface.startsWith('GAP-PKG-004 / AUTH-DB-029-E5-STAGING-PREFLIGHT'));
+  assert.equal(stagingEvidence.length, 1, 'Recovery preflight requires one unambiguous evidence record');
+  assert.match(stagingEvidence[0].method, /FOUNDATION_LOCAL=HISTORICAL_PASS/u);
+  assert.match(stagingEvidence[0].method, /STAGING_BACKUP=false/u);
+  assert.match(stagingEvidence[0].method, /E5_GATE_008=false/u);
+  assert.match(stagingEvidence[0].method, /OUTCOME=BLOCKED/u);
+  assert.equal(gate.authorization.decision, 'PENDING');
 });
 
 test('GAP-PKG-004 tracks all 22 findings and 14 TREQ through discovery completion', () => {
