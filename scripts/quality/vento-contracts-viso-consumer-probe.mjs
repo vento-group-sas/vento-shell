@@ -53,6 +53,9 @@ function hash(bytes) {
 }
 
 function runtimeProgram(surface) {
+  assert.equal(surface.length, 15, 'CI005_PUBLIC_SURFACE_CHANGED');
+  assert.equal(surface.filter(x => x.type_only === true).length, 1,
+    'CI005_PUBLIC_SURFACE_CHANGED');
   const runtime = surface.filter(x => x.type_only !== true);
   assert.equal(runtime.length, 14);
   const lines = ["import assert from 'node:assert/strict';"];
