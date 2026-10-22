@@ -623,7 +623,7 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || audit.resource_type !== resource.resource_type
       || !same(textList(audit.resource_ids), resourceIds)
       || audit.outcome !== final.outcome
-      || !same(laneList(audit.authorizing_lanes), authorizing)
+      || !same(laneList(audit.authorizing_lanes), finalLanes)
       || audit.context_fingerprint !== c.context_fingerprint
       || !text(audit.resource_fingerprint)
       || audit.catalog_hash !== p.catalog_hash
