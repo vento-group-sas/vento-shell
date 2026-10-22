@@ -103,6 +103,22 @@ const REASON_FIELDS = [
 ];
 const REASON_SEVERITIES = new Set(["BLOCKING", "INFORMATIONAL"]);
 const REASON_LANES = new Set(["BASE", "OPERATIONAL", "ALL", null]);
+const TERRITORY_FIELDS = [
+  "organization_id", "business_unit_ids", "site_ids", "area_ids",
+  "area_kinds", "origin", "destination", "route_ids", "vehicle_ids",
+  "isolated_environment", "source", "coherent",
+];
+const TERRITORY_ID_FIELDS = [
+  "business_unit_ids", "site_ids", "area_ids", "area_kinds",
+  "route_ids", "vehicle_ids",
+];
+const CONCURRENCY_FIELDS = [
+  "policy", "expected_version", "idempotency_key", "validated",
+];
+const CONCURRENCY_POLICIES = new Set([
+  "NONE", "EXPECTED_VERSION", "UPDATED_AT", "LOCK", "SNAPSHOT",
+  "IDEMPOTENCY_KEY",
+]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -205,6 +221,26 @@ function decisionReason(input) {
     || !text(v.source) || typeof v.safe_to_expose !== "boolean") invalid();
   return v;
 }
+function territory(input) {
+  // ResolvedTerritoryContext: validate the stable canonical envelope only.
+  const v = exact(input, TERRITORY_FIELDS);
+  if (!nullableText(v.organization_id)
+    || typeof v.isolated_environment !== "boolean"
+    || !text(v.source) || typeof v.coherent !== "boolean") invalid();
+  for (const key of TERRITORY_ID_FIELDS) textList(v[key]);
+  // TerritorySide subtypes need their dedicated resource contracts.
+  if (v.origin !== null) record(v.origin);
+  if (v.destination !== null) record(v.destination);
+  return v;
+}
+function concurrency(input) {
+  const v = exact(input, CONCURRENCY_FIELDS);
+  if (!CONCURRENCY_POLICIES.has(v.policy)
+    || !nullableText(v.expected_version)
+    || !nullableText(v.idempotency_key)
+    || typeof v.validated !== "boolean") invalid();
+  return v;
+}
 function constraint(input) {
   const v = exact(input, ["status", "policy_code", "reason_codes"]);
   if (!CONSTRAINT_STATUS.has(v.status) || !nullableText(v.policy_code)) invalid();
@@ -259,11 +295,14 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || !RESOURCE_STATUSES.has(resource.resolution_status)
       || !nullableText(resource.resource_version)) invalid();
     const resourceIds = textList(resource.resource_ids);
-    record(resource.territory); record(resource.ownership);
-    record(resource.state_snapshot); record(resource.field_classification);
-    array(resource.required_sides, (x) => x !== null && typeof x === "object" && !Array.isArray(x));
+    territory(resource.territory); record(resource.ownership);
+    record(resource.state_snapshot);
+    const classifications = record(resource.field_classification);
+    if (!Object.values(classifications).every(text)) invalid();
+    // Side and subject subtypes remain opaque until their owned schemas exist.
+    array(resource.required_sides).forEach(record);
     if (resource.subject !== null) record(resource.subject);
-    if (resource.concurrency !== null) record(resource.concurrency);
+    if (resource.concurrency !== null) concurrency(resource.concurrency);
 
     const required = laneList(v.required_lanes);
     if (!same(required, REQUIREMENTS.get(p.authorization_requirement))) invalid();
