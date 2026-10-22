@@ -29,6 +29,19 @@ async function sha256Hex(value: string) {
     .join("")
 }
 
+
+// A short-lived CAS reservation ensures an invitation cannot be cancelled
+// by the sibling cancel handler while a resend is being delivered.
+const RESEND_CLAIM_TTL_MS = 90_000
+
+function hasActiveResendClaim(metadata: unknown): boolean {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return false
+  const claim = (metadata as Record<string, unknown>).resend_claim
+  if (!claim || typeof claim !== "object" || Array.isArray(claim)) return false
+  const expiration = Date.parse(String((claim as Record<string, unknown>).expires_at ?? ""))
+  return Number.isFinite(expiration) && expiration > Date.now()
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -96,7 +109,9 @@ serve(async (req) => {
       site_id,
       staff_site_id,
       auth_user_id,
-      employee_id
+      employee_id,
+      updated_at,
+      metadata
     `)
     .eq("id", invitationId)
     .maybeSingle()
@@ -130,6 +145,15 @@ serve(async (req) => {
     return buildJsonResponse({ error: "Invitation cancelled" }, 409)
   }
 
+  if (invitation.status !== "sent" && invitation.status !== "failed" &&
+      invitation.status !== "linked_existing_user") {
+    return buildJsonResponse({ error: "Invitation cannot be resent" }, 409)
+  }
+
+  if (!invitation.auth_user_id && invitation.status === "failed") {
+    return buildJsonResponse({ error: "Invitation cannot be resent without an Auth identity" }, 409)
+  }
+
   if (invitation.status === "linked_existing_user") {
     return buildJsonResponse(
       {
@@ -138,6 +162,20 @@ serve(async (req) => {
       },
       409,
     )
+  }
+
+  // Do not replay a queued, in-flight or uncertain event. A lost Resend
+  // acknowledgement must be reconciled before generating another token.
+  const { data: unresolved, error: unresolvedError } = await supabase.rpc(
+    "has_unresolved_staff_invitation_delivery_v1",
+    { p_invitation_id: invitationId },
+  )
+  if (unresolvedError || unresolved !== false) {
+    return buildJsonResponse({ error: "Invitation mail delivery requires reconciliation" }, 409)
+  }
+
+  if (hasActiveResendClaim(invitation.metadata)) {
+    return buildJsonResponse({ error: "Invitation resend already in progress" }, 409)
   }
 
   const setPasswordWebUrl =
@@ -156,22 +194,123 @@ serve(async (req) => {
     )
   }
 
-  const { data: linkData, error: linkError } =
-    await supabase.auth.admin.generateLink({
+  const resendKey = Deno.env.get("RESEND_API_KEY")
+  const fromEmail =
+    Deno.env.get("ANIMA_INVITE_FROM_EMAIL") ?? "ANIMA <onboarding@resend.dev>"
+
+  if (!resendKey) {
+    return buildJsonResponse(
+      {
+        error:
+          "Configura RESEND_API_KEY (y opcionalmente ANIMA_INVITE_FROM_EMAIL) para reenviar la invitación.",
+      },
+      500,
+    )
+  }
+
+  // Reserve the invitation before contacting Resend. Cancellation reads this
+  // claim and cannot win after a successful CAS. If cancellation won earlier,
+  // the CAS returns no row and absolutely no email is attempted.
+  const previousMetadata =
+    invitation.metadata && typeof invitation.metadata === "object" &&
+    !Array.isArray(invitation.metadata)
+      ? invitation.metadata as Record<string, unknown>
+      : {}
+  const claimedAt = new Date().toISOString()
+  const resendClaim = {
+    id: crypto.randomUUID(),
+    expires_at: new Date(Date.now() + RESEND_CLAIM_TTL_MS).toISOString(),
+  }
+  const { data: reservation, error: reservationError } = await supabase
+    .from("staff_invitations")
+    .update({
+      metadata: { ...previousMetadata, resend_claim: resendClaim },
+      updated_at: claimedAt,
+    })
+    .eq("id", invitationId)
+    .eq("status", invitation.status)
+    .eq("resend_count", invitation.resend_count)
+    .eq("updated_at", invitation.updated_at)
+    .select("id, updated_at")
+    .maybeSingle()
+
+  if (reservationError) {
+    return buildJsonResponse({ error: reservationError.message }, 500)
+  }
+  if (!reservation?.id || !reservation.updated_at) {
+    return buildJsonResponse({ error: "Invitation changed during resend" }, 409)
+  }
+  const { data: deliveryId, error: deliveryClaimError } = await supabase.rpc(
+    "claim_staff_invitation_delivery_v1",
+    { p_invitation_id: invitationId, p_event_key: `resend:${resendClaim.id}` },
+  )
+  if (deliveryClaimError || !deliveryId) {
+    return buildJsonResponse({ error: "Invitation delivery reservation failed" }, 409)
+  }
+  async function finishDelivery(state: "delivered" | "rejected" | "uncertain") {
+    const { data, error } = await supabase.rpc(
+      "finish_staff_invitation_delivery_v1",
+      { p_delivery_id: deliveryId, p_delivery_state: state, p_provider_message_id: null },
+    )
+    return !error && data === true
+  }
+
+
+  // Release only the reservation created by this request. An intervening
+  // mutation keeps its own state and is never overwritten by cleanup.
+  async function releaseClaim(): Promise<boolean> {
+    // No email was accepted: reconcile this exact outbox event first.
+    if (!await finishDelivery("rejected")) return false
+    const { data: released, error: releaseError } = await supabase
+      .from("staff_invitations")
+      .update({
+        metadata: previousMetadata,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", invitationId)
+      .eq("status", invitation.status)
+      .eq("resend_count", invitation.resend_count)
+      .eq("updated_at", reservation.updated_at)
+      .select("id")
+      .maybeSingle()
+    return !releaseError && Boolean(released?.id)
+  }
+
+  let linkResult
+  try {
+    linkResult = await supabase.auth.admin.generateLink({
       type: "invite",
       email,
       options: {
         redirectTo: setPasswordWebUrl || undefined,
         data: {
-          role,
-          site_id: siteId,
           full_name: fullName,
         },
       },
     })
+  } catch {
+    if (!await releaseClaim()) {
+      return buildJsonResponse({ error: "Invitation changed during link generation" }, 409)
+    }
+    return buildJsonResponse({ error: "Invite link failed" }, 502)
+  }
+  const { data: linkData, error: linkError } = linkResult
 
   if (linkError) {
+    if (!await releaseClaim()) {
+      return buildJsonResponse({ error: "Invitation changed during link generation" }, 409)
+    }
     return buildJsonResponse({ error: linkError.message ?? "Invite link failed" }, 400)
+  }
+
+  // Auth identity may be re-provisioned after an earlier failed invitation.
+  // Persist only the exact account returned for the canonical invite email.
+  const generatedUser = linkData?.user
+  if (!generatedUser?.id || generatedUser.email?.trim().toLowerCase() !== email) {
+    if (!await releaseClaim()) {
+      return buildJsonResponse({ error: "Invitation changed during link generation" }, 409)
+    }
+    return buildJsonResponse({ error: "Invitation Auth identity mismatch" }, 409)
   }
 
   const linkProps =
@@ -193,21 +332,10 @@ serve(async (req) => {
   const emailActionLink = tokenHashLink || actionLink
 
   if (!emailActionLink) {
+    if (!await releaseClaim()) {
+      return buildJsonResponse({ error: "Invitation changed during link generation" }, 409)
+    }
     return buildJsonResponse({ error: "No invite link generated" }, 500)
-  }
-
-  const resendKey = Deno.env.get("RESEND_API_KEY")
-  const fromEmail =
-    Deno.env.get("ANIMA_INVITE_FROM_EMAIL") ?? "ANIMA <onboarding@resend.dev>"
-
-  if (!resendKey) {
-    return buildJsonResponse(
-      {
-        error:
-          "Configura RESEND_API_KEY (y opcionalmente ANIMA_INVITE_FROM_EMAIL) para reenviar la invitación.",
-      },
-      500,
-    )
   }
 
   const inviteSubject = "Invitación a ANIMA – Crear contraseña"
@@ -225,29 +353,48 @@ serve(async (req) => {
 </body>
 </html>`
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${resendKey}`,
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [email],
-      subject: inviteSubject,
-      html,
-    }),
-  })
 
-  if (!res.ok) {
-    const errText = await res.text()
-    return buildJsonResponse(
-      {
-        error: "No se pudo reenviar el correo",
-        details: errText.slice(0, 200),
+  // Each outbox event has one provider idempotency identity. Unknown
+  // delivery outcomes stay blocked for operator reconciliation, never replay.
+  let deliveryOutcome: "delivered" | "rejected" | "uncertain" = "uncertain"
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${resendKey}`,
+        "Idempotency-Key": deliveryId,
       },
-      500,
-    )
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [email],
+        subject: inviteSubject,
+        html,
+      }),
+      signal: AbortSignal.timeout(20_000),
+    })
+    deliveryOutcome = res.ok ? "delivered" :
+      (res.status >= 500 || res.status === 409 ? "uncertain" : "rejected")
+  } catch {
+    deliveryOutcome = "uncertain"
+  }
+
+  if (deliveryOutcome === "rejected") {
+    if (!await releaseClaim()) {
+      return buildJsonResponse({ error: "Invitation changed during failed resend" }, 409)
+    }
+    return buildJsonResponse({ error: "Mail provider rejected delivery" }, 502)
+  }
+  if (deliveryOutcome === "uncertain") {
+    if (!await finishDelivery("uncertain")) {
+      return buildJsonResponse({ error: "Invitation delivery outcome not persisted" }, 409)
+    }
+    return buildJsonResponse({
+      error: "Mail provider confirmation missing; manual reconciliation required",
+    }, 502)
+  }
+  if (!await finishDelivery("delivered")) {
+    return buildJsonResponse({ error: "Mail accepted but delivery result was not committed" }, 409)
   }
 
   const now = new Date().toISOString()
@@ -255,10 +402,12 @@ serve(async (req) => {
   const inviteTokenHash = hashedToken ? await sha256Hex(hashedToken) : null
   const resendCount = Number(invitation.resend_count ?? 0) + 1
 
-  const { error: updateError } = await supabase
+  const { data: updated, error: updateError } = await supabase
     .from("staff_invitations")
     .update({
       status: "sent",
+      auth_user_id: generatedUser.id,
+      employee_id: null,
       last_sent_at: now,
       expires_at: expiresAt,
       expired_at: expiresAt,
@@ -266,15 +415,25 @@ serve(async (req) => {
       invite_token_hash: inviteTokenHash,
       updated_at: now,
       metadata: {
+        ...previousMetadata,
         source: "staff-invitations-resend",
         verification_type: verificationType,
         resent_by: userData.user.id,
       },
     })
     .eq("id", invitationId)
+    .eq("status", invitation.status)
+    .eq("resend_count", invitation.resend_count)
+    .eq("updated_at", reservation.updated_at)
+    .select("id")
+    .maybeSingle()
 
   if (updateError) {
     return buildJsonResponse({ error: updateError.message }, 500)
+  }
+  if (!updated?.id) {
+    // Delivery already happened; never claim it was rolled back.
+    return buildJsonResponse({ error: "Invitation changed after email delivery" }, 409)
   }
 
   return buildJsonResponse({

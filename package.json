@@ -22,6 +22,12 @@
     "supabase:migrations:manifest:build": "node scripts/supabase/migration-manifest.mjs build",
     "supabase:migrations:manifest:check": "node scripts/supabase/migration-manifest.mjs check",
     "supabase:db:harness:test": "node --test scripts/quality/supabase-db-harness.test.mjs",
+    "qa:isolated:viso": "node scripts/quality/supabase-db-harness.mjs",
+    "qa:isolated:viso:templates:prepare": "node scripts/quality/supabase-db-harness.mjs qa-templates-prepare",
+    "qa:isolated:viso:templates:fixture:seed": "node scripts/quality/supabase-db-harness.mjs qa-templates-fixture-seed",
+    "qa:isolated:viso:templates:fixture:cleanup": "node scripts/quality/supabase-db-harness.mjs qa-templates-fixture-cleanup",
+    "qa:isolated:viso:auth": "node scripts/quality/supabase-db-harness.mjs qa-auth",
+    "qa:isolated:viso:recover": "node scripts/quality/supabase-db-harness.mjs qa-recover",
     "supabase:db:test": "node scripts/quality/supabase-db-harness.mjs incremental",
     "supabase:db:test:clean": "node scripts/quality/supabase-db-harness.mjs clean",
     "supabase:drift:test": "node --test scripts/supabase/environment-drift.test.mjs",
@@ -140,8 +146,7 @@
     "@supabase/supabase-js": "^2.90.1",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "supabase": "2.109.0"
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -152,6 +157,7 @@
     "eslint-config-next": "16.1.1",
     "png-to-ico": "^2.1.8",
     "sharp": "^0.33.5",
+    "supabase": "2.121.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -7,64 +7,26 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
-async function markInvitationAccepted(
+async function completeInvitation(
   supabase: ReturnType<typeof createClient>,
   params: {
+    invitationId: string
     userId: string
-    email: string | null
-    role: string
-    siteId: string
+    email: string
+    fullName: string
+    alias: string | null
   },
 ) {
-  const acceptedAt = new Date().toISOString()
-
-  const tryScopes = [
-    () =>
-      supabase
-        .from("staff_invitations")
-        .update({
-          status: "accepted",
-          accepted_at: acceptedAt,
-          auth_user_id: params.userId,
-          employee_id: params.userId,
-          updated_at: acceptedAt,
-        })
-        .eq("auth_user_id", params.userId)
-        .neq("status", "accepted")
-        .select("id"),
-    () =>
-      params.email
-        ? supabase
-            .from("staff_invitations")
-            .update({
-              status: "accepted",
-              accepted_at: acceptedAt,
-              auth_user_id: params.userId,
-              employee_id: params.userId,
-              role_code: params.role,
-              site_id: params.siteId,
-              updated_at: acceptedAt,
-            })
-            .eq("email", params.email.toLowerCase())
-            .in("status", ["sent", "linked_existing_user", "expired"])
-            .or(`role_code.eq.${params.role},staff_role.eq.${params.role}`)
-            .or(`site_id.eq.${params.siteId},staff_site_id.eq.${params.siteId}`)
-            .select("id")
-        : Promise.resolve({ data: [], error: null }),
-  ]
-
-  for (const run of tryScopes) {
-    const { data, error } = await run()
-    if (error) {
-      console.error("[staff-invitations-accept] update invitation error:", error)
-      continue
-    }
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0]?.id ?? null
-    }
-  }
-
-  return null
+  const { data, error } = await supabase.rpc("complete_staff_invitation_v1", {
+    p_invitation_id: params.invitationId,
+    p_auth_user_id: params.userId,
+    p_email: params.email,
+    p_full_name: params.fullName,
+    p_alias: params.alias,
+    p_completion_status: "accepted",
+  })
+  if (error) throw error
+  return data === true
 }
 
 serve(async (req) => {
@@ -148,13 +110,43 @@ serve(async (req) => {
 
   const user = userData.user
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>
+  const trustedEmail = user.email?.trim().toLowerCase()
+  if (!trustedEmail || !user.email_confirmed_at) {
+    return new Response(JSON.stringify({ error: "Verified email required" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    })
+  }
 
-  const role = String(payload.role ?? meta.role ?? "").trim()
-  const siteId = String(payload.site_id ?? meta.site_id ?? "").trim()
+  // Role and site come exclusively from a live server-side invitation.
+  const { data: invitation, error: invitationError } = await supabase
+    .from("staff_invitations")
+    .select("id,role_code,staff_role,site_id,staff_site_id")
+    .eq("auth_user_id", user.id)
+    .eq("email", trustedEmail)
+    .eq("status", "sent")
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  if (!role || !siteId) {
-    return new Response(JSON.stringify({ error: "Invitation incomplete" }), {
-      status: 400,
+  if (invitationError || !invitation) {
+    return new Response(JSON.stringify({ error: "Valid invitation required" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    })
+  }
+
+  const role = String(invitation.role_code ?? invitation.staff_role ?? "").trim()
+  const siteId = String(invitation.site_id ?? invitation.staff_site_id ?? "").trim()
+  const inconsistentInvitation =
+    (invitation.role_code && invitation.staff_role && invitation.role_code !== invitation.staff_role) ||
+    (invitation.site_id && invitation.staff_site_id && invitation.site_id !== invitation.staff_site_id)
+  if (!role || !siteId || inconsistentInvitation ||
+      (payload.role != null && payload.role.trim() !== role) ||
+      (payload.site_id != null && payload.site_id.trim() !== siteId)) {
+    return new Response(JSON.stringify({ error: "Invitation scope mismatch" }), {
+      status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }
@@ -203,85 +195,52 @@ serve(async (req) => {
     })
   }
 
-  const now = new Date().toISOString()
   const aliasValue = String(
     payload.alias ?? (typeof meta.alias === "string" ? meta.alias : ""),
   ).trim()
 
-  try {
-    const mergedMeta = {
-      ...meta,
-      role,
-      site_id: siteId,
-      full_name: fullName,
-      ...(aliasValue ? { alias: aliasValue } : {}),
-    }
+  // Auth is separate from Postgres. Updating credentials cannot grant staff
+  // permissions: the database RPC below is the only activation boundary.
+  // Client-editable metadata never defines employee role or site.
+  const mergedMeta = {
+    ...meta,
+    full_name: fullName,
+    ...(aliasValue ? { alias: aliasValue } : {}),
+  }
+  delete mergedMeta.role
+  delete mergedMeta.site_id
 
-    const { error: updateAuthError } =
-      await supabase.auth.admin.updateUserById(user.id, {
-        password,
-        user_metadata: mergedMeta,
-      })
-
-    if (updateAuthError) throw updateAuthError
-
-    const { data: existingEmployee } = await supabase
-      .from("employees")
-      .select("id, joined_at, alias")
-      .eq("id", user.id)
-      .maybeSingle()
-
-    const joinedAt = existingEmployee?.joined_at ?? now
-    const finalAlias = aliasValue || existingEmployee?.alias || null
-
-    const { error: employeeError } = await supabase.from("employees").upsert(
-      {
-        id: user.id,
-        full_name: fullName,
-        alias: finalAlias,
-        role,
-        site_id: siteId,
-        is_active: true,
-        joined_at: joinedAt,
-        updated_at: now,
-      },
-      { onConflict: "id" },
-    )
-
-    if (employeeError) throw employeeError
-
-    const { error: clearPrimaryError } = await supabase
-      .from("employee_sites")
-      .update({ is_primary: false })
-      .eq("employee_id", user.id)
-      .eq("is_primary", true)
-      .neq("site_id", siteId)
-
-    if (clearPrimaryError) throw clearPrimaryError
-
-    const { error: siteError } = await supabase.from("employee_sites").upsert(
-      {
-        employee_id: user.id,
-        site_id: siteId,
-        is_primary: true,
-        is_active: true,
-      },
-      { onConflict: "employee_id,site_id" },
-    )
-
-    if (siteError) throw siteError
-
-    await markInvitationAccepted(supabase, {
-      userId: user.id,
-      email: user.email ?? null,
-      role,
-      siteId,
+  const { error: updateAuthError } =
+    await supabase.auth.admin.updateUserById(user.id, {
+      password,
+      user_metadata: mergedMeta,
     })
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Invitation activation failed"
-    return new Response(JSON.stringify({ error: message }), {
-      status: 400,
+
+  if (updateAuthError) {
+    return new Response(JSON.stringify({ error: "Authentication setup failed" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    })
+  }
+
+  try {
+    const accepted = await completeInvitation(supabase, {
+      invitationId: invitation.id,
+      userId: user.id,
+      email: trustedEmail,
+      fullName,
+      alias: aliasValue || null,
+    })
+    if (!accepted) {
+      return new Response(JSON.stringify({ error: "Invitation no longer available" }), {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      })
+    }
+  } catch (error) {
+    console.error("[staff-invitations-accept] completion failed:", error)
+    return new Response(JSON.stringify({ error: "Staff activation failed; retry safely" }), {
+      status: 503,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }

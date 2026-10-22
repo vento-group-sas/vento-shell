@@ -21,6 +21,17 @@ function buildJsonResponse(body: Record<string, unknown>, status = 200) {
   })
 }
 
+
+// Resend reserves a short-lived CAS delivery claim before sending email.
+// A concurrent cancellation must not overtake an in-flight delivery.
+function hasActiveResendClaim(metadata: unknown): boolean {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return false
+  const claim = (metadata as Record<string, unknown>).resend_claim
+  if (!claim || typeof claim !== "object" || Array.isArray(claim)) return false
+  const expiration = Date.parse(String((claim as Record<string, unknown>).expires_at ?? ""))
+  return Number.isFinite(expiration) && expiration > Date.now()
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -77,7 +88,7 @@ serve(async (req) => {
 
   const { data: invitation, error: invitationError } = await supabase
     .from("staff_invitations")
-    .select("id, status, site_id, staff_site_id")
+    .select("id, status, site_id, staff_site_id, updated_at, metadata")
     .eq("id", invitationId)
     .maybeSingle()
 
@@ -94,7 +105,7 @@ serve(async (req) => {
     return buildJsonResponse({ error: "Forbidden site" }, 403)
   }
 
-  if (invitation.status === "accepted") {
+  if (invitation.status === "accepted" || invitation.status === "linked_existing_user") {
     return buildJsonResponse({ error: "Accepted invitations cannot be cancelled" }, 409)
   }
 
@@ -110,9 +121,23 @@ serve(async (req) => {
     )
   }
 
+  // An in-flight or uncertain provider acknowledgement must not be mistaken
+  // for a safe cancellation. Reconciliation precedes any state mutation.
+  const { data: unresolved, error: unresolvedError } = await supabase.rpc(
+    "has_unresolved_staff_invitation_delivery_v1",
+    { p_invitation_id: invitationId },
+  )
+  if (unresolvedError || unresolved !== false) {
+    return buildJsonResponse({ error: "Invitation mail delivery requires reconciliation" }, 409)
+  }
+
+  if (hasActiveResendClaim(invitation.metadata)) {
+    return buildJsonResponse({ error: "Invitation resend in progress" }, 409)
+  }
+
   const now = new Date().toISOString()
 
-  const { error: updateError } = await supabase
+  const { data: updated, error: updateError } = await supabase
     .from("staff_invitations")
     .update({
       status: "cancelled",
@@ -124,9 +149,17 @@ serve(async (req) => {
       },
     })
     .eq("id", invitationId)
+    .eq("status", invitation.status)
+    .eq("updated_at", invitation.updated_at)
+    .select("id")
+    .maybeSingle()
 
   if (updateError) {
     return buildJsonResponse({ error: updateError.message }, 500)
+  }
+
+  if (!updated?.id) {
+    return buildJsonResponse({ error: "Invitation changed during cancellation" }, 409)
   }
 
   return buildJsonResponse({

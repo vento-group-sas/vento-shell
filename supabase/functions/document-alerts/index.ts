@@ -49,24 +49,36 @@ async function sendPush(messages: { to: string; title: string; body: string; dat
   }
 
   const invalidTokens = new Set<string>()
+  let acceptedCount = 0
 
   for (const chunk of chunks) {
     const res = await fetch(EXPO_PUSH_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(chunk),
+      signal: AbortSignal.timeout(15_000),
     })
+    if (!res.ok) throw new Error("PUSH_PROVIDER_HTTP_FAILED")
+
     const payload = await res.json()
-    const data = Array.isArray(payload?.data) ? payload.data : []
-    data.forEach((item: any, index: number) => {
+    if (!Array.isArray(payload?.data) || payload.data.length !== chunk.length) {
+      throw new Error("PUSH_PROVIDER_RESPONSE_INVALID")
+    }
+    payload.data.forEach((item: { status?: string; details?: { error?: string } }, index: number) => {
+      if (item?.status === "ok") {
+        acceptedCount += 1
+        return
+      }
       if (item?.status === "error" && item?.details?.error === "DeviceNotRegistered") {
         const token = chunk[index]?.to
         if (token) invalidTokens.add(token)
+        return
       }
+      throw new Error("PUSH_PROVIDER_RESPONSE_REJECTED")
     })
   }
 
-  return Array.from(invalidTokens)
+  return { invalidTokens: Array.from(invalidTokens), acceptedCount }
 }
 
 serve(async (req) => {
@@ -81,8 +93,14 @@ serve(async (req) => {
     })
   }
 
-  const cronSecret = Deno.env.get("DOCUMENT_ALERTS_CRON_SECRET")
-  if (cronSecret && req.headers.get("x-cron-key") !== cronSecret) {
+  const cronSecret = Deno.env.get("DOCUMENT_ALERTS_CRON_SECRET")?.trim()
+  if (!cronSecret) {
+    return new Response(JSON.stringify({ error: "Cron secret not configured" }), {
+      status: 503,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    })
+  }
+  if (req.headers.get("x-cron-key") !== cronSecret) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -207,16 +225,24 @@ serve(async (req) => {
     })
   }
 
-  const invalidTokens = await sendPush(messages)
+  let delivery: { invalidTokens: string[]; acceptedCount: number }
+  try {
+    delivery = await sendPush(messages)
+  } catch {
+    return new Response(JSON.stringify({ error: "Push delivery could not be confirmed" }), {
+      status: 502,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    })
+  }
 
-  if (invalidTokens.length) {
+  if (delivery.invalidTokens.length) {
     await supabase
       .from("employee_push_tokens")
       .update({ is_active: false })
-      .in("token", invalidTokens)
+      .in("token", delivery.invalidTokens)
   }
 
-  return new Response(JSON.stringify({ sent: messages.length }), {
+  return new Response(JSON.stringify({ sent: delivery.acceptedCount }), {
     status: 200,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   })
