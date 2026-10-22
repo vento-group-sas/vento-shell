@@ -22,7 +22,7 @@ type Gate = {
   implementation_units: Array<{ unit_id: string }>;
   physical_identity: { targets: Target[] };
   physical_discovery: { findings: Target[]; status: string; unresolved_findings: string[] };
-  evidence_plan: { observability: Array<{ signal: string }>; acceptance_criteria: string[] };
+  evidence_plan: { observability: Array<{ signal: string }>; acceptance_criteria: string[]; rollback_steps: string[] };
   deployment_environment: { production_authorized: boolean };
 };
 const fixtures = JSON.parse(read('tests/packages/GAP-PKG-004/fixtures.json')) as {
@@ -161,6 +161,21 @@ test('GAP-PKG-004 tracks all 22 findings and 14 TREQ through discovery completio
     assert.equal(gate.physical_discovery.unresolved_findings.length, 0,
       'Discovery cannot be complete while physical findings remain unresolved');
   }
+});
+
+test('GAP-PKG-004 requires scoped and explicit rollback for the legacy cron jobs', () => {
+  const steps = gate.evidence_plan.rollback_steps.filter((entry) =>
+    entry.startsWith('CRON GAP-PKG-004:'));
+  assert.equal(steps.length, 1, 'The rollback plan must have one dedicated cron entry');
+  const plan = steps[0];
+  assert.match(plan, /cron\.alter_job\(job_id := ID_VERIFICADO, active := false\)/u);
+  assert.match(plan, /cron\.alter_job\(job_id := ID_VERIFICADO, active := true\)/u);
+  assert.match(plan, /NO AUTOMATICO/u);
+  assert.match(plan, /autorizacion expresa del responsable/u);
+  assert.match(plan, /sin mostrar command ni secretos/u);
+  assert.match(plan, /que los tres jobs persisten en cron\.job con active=false/u);
+  assert.equal(gate.authorization.decision, 'PENDING',
+    'A rollback plan cannot authorize a database mutation');
 });
 
 test('GAP-PKG-004 disables only legacy scheduled checkout jobs, preserving audit and rollback', () => {
