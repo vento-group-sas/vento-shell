@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  evaluateProbe, runtimeProgram,
+  classifyCompilerErrors, evaluateProbe, runtimeProgram,
 } from './vento-contracts-viso-consumer-probe.mjs';
 
 const STEPS = ['npm-ci', 'npm-install-tarball', 'runtime-first', 'runtime-repeat',
@@ -42,4 +42,16 @@ test('runtime probe verifies all fourteen ESM entrypoints and the empty type-onl
   assert(code.includes('assert.deepEqual(Object.keys(onlyTypes), [])'));
   assert.throws(() => runtimeProgram(surface.slice(0, 14)),
     /CI005_PUBLIC_SURFACE_CHANGED/u);
+});
+
+
+test('compiler failures report only diagnostic codes, never consumer source or credentials', () => {
+  const sample = "src/app/foo/page.tsx(5,3): error TS2307: Cannot find module 'sensitive-value'.\n"
+    + ".ci005-contracts-types.ts(2,1): error TS2344: secret=another-sensitive-value\n";
+  const diagnostic = classifyCompilerErrors(sample);
+  assert.deepEqual(diagnostic.codes, ['TS2307', 'TS2344']);
+  assert.equal(diagnostic.diagnostic_count, 2);
+  assert.equal(diagnostic.probe_related, true);
+  assert(!JSON.stringify(diagnostic).includes('sensitive-value'));
+  assert.deepEqual(classifyCompilerErrors('npm exited 1').codes, []);
 });
