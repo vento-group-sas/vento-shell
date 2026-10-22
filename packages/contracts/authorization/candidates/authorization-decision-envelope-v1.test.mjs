@@ -57,7 +57,20 @@ function denied() {
       resource_ids: [],
       resource_version: null,
       subject: null,
-      territory: {},
+      territory: {
+        organization_id: null,
+        business_unit_ids: [],
+        site_ids: [],
+        area_ids: [],
+        area_kinds: [],
+        origin: null,
+        destination: null,
+        route_ids: [],
+        vehicle_ids: [],
+        isolated_environment: false,
+        source: "synthetic-non-resource",
+        coherent: true,
+      },
       ownership: {},
       required_sides: [],
       state_snapshot: {},
@@ -553,6 +566,123 @@ test("security: deny and reason getters are rejected without invocation", () => 
       get() { invoked += 1; throw new Error("DENY_GETTER_MUST_NOT_RUN"); },
     });
     d[collection] = [value];
+    fail(d);
+  }
+  assert.equal(invoked, 0);
+});
+
+test("contractual: resource territory uses exact canonical envelope and typed lists", () => {
+  assert.equal(inspect(allowed()), undefined);
+  const origin = denied();
+  origin.resource.territory.origin = { label: "synthetic-origin" };
+  origin.resource.territory.destination = Object.assign(Object.create(null), { label: "synthetic-destination" });
+  assert.equal(inspect(origin), undefined);
+  for (const field of Object.keys(denied().resource.territory)) {
+    const d = denied();
+    delete d.resource.territory[field];
+    fail(d);
+  }
+  for (const [field, value] of [
+    ["organization_id", 1],
+    ["site_ids", "site"],
+    ["business_unit_ids", [null]],
+    ["area_ids", new Array(1)],
+    ["area_kinds", [false]],
+    ["route_ids", [""]],
+    ["vehicle_ids", [42]],
+    ["isolated_environment", "false"],
+    ["coherent", null],
+    ["source", ""],
+    ["origin", new Date()],
+    ["destination", 42],
+  ]) {
+    const d = denied();
+    d.resource.territory[field] = value;
+    fail(d);
+  }
+  const extra = denied();
+  extra.resource.territory.can_operate = true;
+  fail(extra);
+});
+
+test("security: territory and side getters never execute", () => {
+  let invoked = 0;
+  for (const field of ["source", "site_ids", "coherent", "origin"]) {
+    const d = denied();
+    Object.defineProperty(d.resource.territory, field, {
+      enumerable: true,
+      get() { invoked += 1; throw Error("TERRITORY_GETTER_MUST_NOT_RUN"); },
+    });
+    fail(d);
+  }
+  for (const field of ["origin", "destination"]) {
+    const d = denied();
+    const side = {};
+    Object.defineProperty(side, "site_id", {
+      enumerable: true,
+      get() { invoked += 1; throw Error("SIDE_GETTER_MUST_NOT_RUN"); },
+    });
+    d.resource.territory[field] = side;
+    fail(d);
+  }
+  assert.equal(invoked, 0);
+});
+
+test("contractual: concurrency policy and typed fields match canonical schema", () => {
+  const valid = denied();
+  valid.resource.concurrency = {
+    policy: "EXPECTED_VERSION", expected_version: "v1",
+    idempotency_key: null, validated: true,
+  };
+  assert.equal(inspect(valid), undefined);
+  for (const [field, value] of [
+    ["policy", "FORCE_ALLOW"],
+    ["expected_version", false],
+    ["idempotency_key", 42],
+    ["validated", "true"],
+  ]) {
+    const d = denied();
+    d.resource.concurrency = { ...valid.resource.concurrency, [field]: value };
+    fail(d);
+  }
+  const missing = denied();
+  missing.resource.concurrency = { policy: "NONE", validated: true };
+  fail(missing);
+  const extra = denied();
+  extra.resource.concurrency = { ...valid.resource.concurrency, bypass_applied: true };
+  fail(extra);
+  let invoked = 0;
+  const getter = denied();
+  getter.resource.concurrency = { ...valid.resource.concurrency };
+  Object.defineProperty(getter.resource.concurrency, "validated", {
+    enumerable: true,
+    get() { invoked += 1; throw Error("CONCURRENCY_GETTER_MUST_NOT_RUN"); },
+  });
+  fail(getter);
+  assert.equal(invoked, 0);
+});
+
+test("security: field classification and side arrays are strictly data-only", () => {
+  const valid = denied();
+  valid.resource.field_classification = { status: "PUBLIC" };
+  valid.resource.required_sides = [{ label: "synthetic-side" }];
+  assert.equal(inspect(valid), undefined);
+  const wrong = denied();
+  wrong.resource.field_classification = { status: { allow: true } };
+  fail(wrong);
+  const invalidSide = denied();
+  invalidSide.resource.required_sides = [new Date()];
+  fail(invalidSide);
+  let invoked = 0;
+  for (const path of ["field_classification", "required_sides"]) {
+    const d = denied();
+    const payload = {};
+    Object.defineProperty(payload, "status", {
+      enumerable: true,
+      get() { invoked += 1; throw Error("NESTED_GETTER_MUST_NOT_RUN"); },
+    });
+    if (path === "required_sides") d.resource.required_sides = [payload];
+    else d.resource.field_classification = payload;
     fail(d);
   }
   assert.equal(invoked, 0);
