@@ -185,6 +185,13 @@ const CATEGORIES = new Set([
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
   "FIELD_POLICY_DENY", "DEFAULT_DENY", "CONTRACT_INVALID",
 ]);
+// AUTH-CTX-024 / AUTH-CTX-026: logical evaluator ID is not backend proof.
+const CANONICAL_EVALUATOR_NAME = "vento.authorization.evaluate_authorization";
+const FORBIDDEN_EVALUATOR_VERSIONS = new Set([
+  "latest", "current", "production", "main", "unknown",
+]);
+// Currently supported published dataset digest profile (not a trust anchor).
+const DATASET_DIGEST = /^sha256:[0-9a-f]{64}$/u;
 const text = (v) => typeof v === "string" && v.length > 0;
 const nullableText = (v) => v === null || text(v);
 const invalid = () => { throw new TypeError("VENTO_AUTH_DECISION:ENVELOPE_INVALID"); };
@@ -546,7 +553,7 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || (final.outcome === "ALLOW" && combination.combination_result !== "ALLOW")
       || !CATEGORIES.has(final.reason_category)
       || !text(final.primary_reason_code) || !text(final.safe_message_code)
-      || !same(finalLanes, authorizing)) invalid();
+      || !same(finalLanes, final.outcome === "ALLOW" ? authorizing : [])) invalid();
     if (final.outcome === "ALLOW") {
       // A complete BASE_OR_OPERATIONAL lane can win even when its alternative
       // is denied. Structural/actor-wide and request-global denies still win.
@@ -558,12 +565,14 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       const foreignLaneDeny = denies.some((x) =>
         !["BASE_LANE", "OPERATIONAL_LANE"].includes(x.deny_class)
         || !isDeniedAlternative(x.lane));
-      if (final.reason_category !== "AUTHORIZED" || authorizing.length === 0
+      if (final.reason_category !== "AUTHORIZED"
+        || final.primary_reason_code !== "AUTHORIZED"
+        || final.safe_message_code !== "AUTHORIZATION_GRANTED"
+        || authorizing.length === 0
         || allows.length === 0 || blocked[0].length !== 0
         || blocked[1].length !== 0 || foreignLaneDeny
         || blocked[2].some((x) => !isDeniedAlternative(x.lane))
-        || blocked[3].some((x) =>
-          x.severity === "BLOCKING" && !isDeniedAlternative(x.lane))
+        || blocked[3].length !== 0
         || !["RESOLVED","MULTI_RESOLVED","NOT_APPLICABLE"].includes(resource.resolution_status)
         // AUTH-CTX-018: inconsistent/isolated resources and mandatory
         // unresolved sides cannot produce a valid ALLOW envelope.
@@ -594,7 +603,17 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
         const candidate = name === "BASE" ? base : operational;
         if (candidate.outcome !== "ALLOW") invalid();
       }
-    } else if (final.reason_category === "AUTHORIZED") invalid();
+    } else {
+      // AUTH-CTX-023 §§21,35: final DENY clears authority but retains
+      // blocking reasons; earlier positive lane evidence stays in combination.
+      if (final.reason_category === "AUTHORIZED"
+        || final.primary_reason_code === "AUTHORIZED"
+        || final.safe_message_code === "AUTHORIZATION_GRANTED"
+        || blocked[3].length === 0
+        || blocked[3].some((reason) => reason.severity !== "BLOCKING")
+        || !blocked[3].some((reason) =>
+          reason.reason_code === final.primary_reason_code)) invalid();
+    }
 
     const audit = exact(v.audit, AUDIT);
     if (audit.decision_id !== v.decision_id || audit.correlation_id !== v.correlation_id
@@ -608,9 +627,24 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || audit.context_fingerprint !== c.context_fingerprint
       || !text(audit.resource_fingerprint)
       || audit.catalog_hash !== p.catalog_hash
-      || !text(audit.evaluator_name) || !text(audit.evaluator_version)) invalid();
+      || audit.evaluator_name !== CANONICAL_EVALUATOR_NAME
+      || !text(audit.evaluator_version)
+      || audit.evaluator_version.trim() !== audit.evaluator_version
+      || FORBIDDEN_EVALUATOR_VERSIONS.has(audit.evaluator_version.toLowerCase())) invalid();
     const datasetHashes = record(audit.dataset_hashes);
-    if (!Object.values(datasetHashes).every(text)) invalid();
+    const datasetKeys = Object.keys(datasetHashes);
+    if (!sortedUnique(datasetKeys)
+      || datasetKeys.some((key) => {
+        const separator = key.lastIndexOf("@");
+        return separator <= 0 || separator === key.length - 1
+          || key.indexOf("@") !== separator
+          || key.trim() !== key
+          || !DATASET_DIGEST.test(datasetHashes[key]);
+      })
+      // AUTH-CTX-024 §42: every matched grant must be traceable to its
+      // exact source dataset/version. Hash presence is not authenticity.
+      || allows.some((grant) => !Object.hasOwn(datasetHashes,
+        `${grant.source_dataset_id}@${grant.source_dataset_version}`))) invalid();
     // Intentionally NO return of decision, outcome, ALLOW flag, or capability.
     return undefined;
   } catch {

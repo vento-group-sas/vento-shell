@@ -111,7 +111,7 @@ function denied() {
     structural_denies: [],
     actor_wide_denies: [],
     lane_denies: [],
-    blocked_reasons: [],
+    blocked_reasons: [syntheticBlockingReason()],
     combination: {
       authorization_requirement: "BASE_ONLY",
       base_outcome: "DENY",
@@ -143,7 +143,7 @@ function denied() {
       resource_fingerprint: "synthetic-resource-fingerprint",
       catalog_hash: "cataloghash:synthetic",
       dataset_hashes: {},
-      evaluator_name: "synthetic-fixture",
+      evaluator_name: "vento.authorization.evaluate_authorization",
       evaluator_version: "1.0.0",
     },
   };
@@ -192,12 +192,18 @@ function allowed() {
     source_dataset_id: "synthetic-dataset",
     source_dataset_version: "1.0.0",
   }];
+  d.audit.dataset_hashes = {
+    "synthetic-dataset@1.0.0": "sha256:" + "a".repeat(64),
+  };
+  d.blocked_reasons = [];
   d.combination.base_outcome = "ALLOW";
   d.combination.authorizing_lanes = ["BASE"];
   d.combination.blocked_lanes = [];
   d.combination.combination_result = "ALLOW";
   d.final_decision.outcome = "ALLOW";
   d.final_decision.reason_category = "AUTHORIZED";
+  d.final_decision.primary_reason_code = "AUTHORIZED";
+  d.final_decision.safe_message_code = "AUTHORIZATION_GRANTED";
   d.final_decision.authorizing_lanes = ["BASE"];
   d.audit.outcome = "ALLOW";
   d.audit.authorizing_lanes = ["BASE"];
@@ -242,7 +248,9 @@ function deniedAlternative(laneName) {
   d.matched_allows = d.matched_allows.filter((x) => x.lane === otherLane);
   d.matched_denies = [evidence];
   d.lane_denies = [{ ...syntheticBlockingReason(), lane: laneName }];
-  d.blocked_reasons = [{ ...syntheticBlockingReason(), lane: laneName }];
+  // An alternative lane DENY is preserved in lane_denies, not in the
+  // effective blocked_reasons of the successful OR decision.
+  d.blocked_reasons = [];
   d.permission_contract.authorization_requirement = "BASE_OR_OPERATIONAL";
   d.combination.authorization_requirement = "BASE_OR_OPERATIONAL";
   d.combination.combination_rule = "BASE_OR_OPERATIONAL";
@@ -431,9 +439,53 @@ test("contractual: combination ALLOW can finish DENY when a downstream constrain
     block(d);
     d.final_decision.outcome = "DENY";
     d.final_decision.reason_category = category;
+    d.final_decision.primary_reason_code = "AUTH_DENIED";
+    d.final_decision.safe_message_code = "AUTH_APP_ACCESS_DENIED";
+    d.final_decision.authorizing_lanes = [];
     d.audit.outcome = "DENY";
+    d.audit.authorizing_lanes = [];
+    d.blocked_reasons = [{ ...syntheticBlockingReason(), lane: "ALL" }];
     assert.equal(d.combination.combination_result, "ALLOW");
     assert.equal(inspect(d), undefined); // inspection never grants authority
+  }
+});
+
+test("contractual: final DENY has no authorizing lanes even after positive combination", () => {
+  const d = allowed();
+  d.device_decision.status = "FAIL";
+  d.final_decision.outcome = "DENY";
+  d.final_decision.reason_category = "DEVICE_DENY";
+  d.final_decision.primary_reason_code = "AUTH_DENIED";
+  d.final_decision.safe_message_code = "AUTH_APP_ACCESS_DENIED";
+  d.final_decision.authorizing_lanes = [];
+  d.audit.outcome = "DENY";
+  d.audit.authorizing_lanes = [];
+  d.blocked_reasons = [{ ...syntheticBlockingReason(), lane: "ALL" }];
+  assert.deepEqual(d.combination.authorizing_lanes, ["BASE"]);
+  assert.equal(inspect(d), undefined);
+  for (const mutate of [
+    (x) => { x.final_decision.authorizing_lanes = ["BASE"]; },
+    (x) => { x.audit.authorizing_lanes = ["BASE"]; },
+    (x) => { x.blocked_reasons = []; },
+    (x) => { x.blocked_reasons[0].severity = "INFORMATIONAL"; },
+    (x) => { x.final_decision.primary_reason_code = "OTHER_REASON"; },
+  ]) {
+    const bad = structuredClone(d);
+    mutate(bad);
+    fail(bad);
+  }
+});
+
+test("contractual: final ALLOW has one positive reason and no effective blocks", () => {
+  assert.equal(inspect(allowed()), undefined);
+  for (const mutate of [
+    (d) => { d.final_decision.primary_reason_code = "AUTH_DENIED"; },
+    (d) => { d.final_decision.safe_message_code = "AUTH_APP_ACCESS_DENIED"; },
+    (d) => { d.blocked_reasons = [syntheticBlockingReason()]; },
+  ]) {
+    const bad = allowed();
+    mutate(bad);
+    fail(bad);
   }
 });
 
@@ -490,6 +542,47 @@ test("security: no replay across decision id, context id, audit identity or vers
   const d2 = allowed(); d2.audit.context_fingerprint = "other"; fail(d2);
   const d3 = allowed(); d3.audit.catalog_hash = "other"; fail(d3);
   const d4 = allowed(); d4.audit.permission_key = "anima.access"; fail(d4);
+});
+
+test("contractual: audit datasets bind matched grants to versioned SHA256 digests", () => {
+  assert.equal(inspect(allowed()), undefined);
+  const consulted = allowed();
+  consulted.audit.dataset_hashes = {
+    "auxiliary@1.0.0": "sha256:" + "b".repeat(64),
+    "synthetic-dataset@1.0.0": "sha256:" + "a".repeat(64),
+  };
+  assert.equal(inspect(consulted), undefined);
+  for (const changes of [
+    {},
+    { "synthetic-dataset@2.0.0": "sha256:" + "a".repeat(64) },
+    { "synthetic-dataset@1.0.0": "latest" },
+    { "synthetic-dataset@1.0.0": "sha256:" + "A".repeat(64) },
+    { invalid: "sha256:" + "a".repeat(64) },
+    {
+      "z@1.0.0": "sha256:" + "b".repeat(64),
+      "synthetic-dataset@1.0.0": "sha256:" + "a".repeat(64),
+    },
+  ]) {
+    const bad = allowed();
+    bad.audit.dataset_hashes = changes;
+    fail(bad);
+  }
+  const deniedNoGrant = denied();
+  assert.equal(inspect(deniedNoGrant), undefined);
+});
+
+test("security: auditor evaluator identity and version are exact, not provenance proof", () => {
+  assert.equal(inspect(allowed()), undefined);
+  for (const value of ["unknown", "host-specific", "client-evaluator"]) {
+    const bad = allowed();
+    bad.audit.evaluator_name = value;
+    fail(bad);
+  }
+  for (const value of ["latest", "main", "current", "production", "unknown", " 1.0.0 "]) {
+    const bad = allowed();
+    bad.audit.evaluator_version = value;
+    fail(bad);
+  }
 });
 
 test("security: correlation is an audit handle, not authority", () => {
