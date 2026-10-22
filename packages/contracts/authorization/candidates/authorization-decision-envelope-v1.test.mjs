@@ -1396,6 +1396,28 @@ test("security: ALLOW cannot carry unresolved mandatory resource facts", () => {
   assert.equal(inspect(noConcurrencyPolicy), undefined);
 });
 
+test("security: OWN-scoped ALLOW cannot use incoherent ownership", () => {
+  const own = allowed();
+  own.matched_allows[0].scope_code = "OWN";
+  own.resource.ownership = syntheticOwnership({
+    owner_type: "ACTOR", owner_id: "synthetic-actor",
+    actor_relation: "SELF", coherent: true,
+  });
+  assert.equal(inspect(own), undefined);
+
+  const incoherentOwn = structuredClone(own);
+  incoherentOwn.resource.ownership.coherent = false;
+  fail(incoherentOwn);
+
+  const nonOwn = allowed();
+  nonOwn.resource.ownership.coherent = false;
+  assert.equal(inspect(nonOwn), undefined);
+
+  const deniedEvidence = denied();
+  deniedEvidence.resource.ownership.coherent = false;
+  assert.equal(inspect(deniedEvidence), undefined);
+});
+
 test("security: getter-backed DTO properties cannot execute", () => {
   let invoked = 0;
   const d = denied();

@@ -569,6 +569,10 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
         // unresolved sides cannot produce a valid ALLOW envelope.
         || !resource.territory.coherent || resource.territory.isolated_environment
         || (resource.subject !== null && !resource.subject.coherent)
+        // OWN is only a coherent ownership-scoped grant; the real actor
+        // relation and resource authority still require the backend evaluator.
+        || allows.some((grant) => authorizing.includes(grant.lane)
+          && grant.scope_code === "OWN" && !resource.ownership.coherent)
         || [resource.territory.origin, resource.territory.destination]
           .some((side) => side !== null && !side.coherent)
         || sides.some((side) => side.required
