@@ -69,6 +69,39 @@ function hash(bytes) {
   return asSha256Identity(bytes);
 }
 
+export function compareFrozenDependencyTrees(before, after) {
+  const keys = [...new Set([...Object.keys(before ?? {}), ...Object.keys(after ?? {})])]
+    .filter(key => key !== 'node_modules/@vento/contracts').sort();
+  const changed = keys.filter(key => before?.[key] !== after?.[key]);
+  return {
+    frozen: changed.length === 0,
+    changed_count: changed.length,
+    // Package names and public versions only; no source code, environment or tokens.
+    changed_packages: changed.slice(0, 20).map(key => ({
+      name: key,
+      before: before?.[key] ?? null,
+      after: after?.[key] ?? null,
+    })),
+  };
+}
+
+function snapshotLockedInstall(root, originalLock) {
+  const lock = JSON.parse(originalLock.toString('utf8'));
+  const entries = Object.entries(lock.packages ?? {})
+    .filter(([name, meta]) => name.startsWith('node_modules/')
+      && meta && typeof meta.version === 'string');
+  if (entries.length < 50) block('CONSUMER_LOCKFILE_NOT_REPRESENTATIVE');
+  return Object.fromEntries(entries.map(([key]) => {
+    const filename = path.join(root, key, 'package.json');
+    if (!fs.existsSync(filename)) return [key, null];
+    const stat = fs.lstatSync(filename);
+    if (!stat.isFile() || stat.isSymbolicLink()) block('CONSUMER_PACKAGE_PATH_UNSAFE');
+    const pkg = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    if (typeof pkg.version !== 'string') block('CONSUMER_PACKAGE_VERSION_MISSING');
+    return [key, pkg.version];
+  }));
+}
+
 export function runtimeProgram(surface) {
   assert.equal(surface.length, 15, 'CI005_PUBLIC_SURFACE_CHANGED');
   assert.equal(surface.filter(x => x.type_only === true).length, 1,
@@ -210,16 +243,41 @@ async function execute() {
       ['ci', '--ignore-scripts', '--no-audit', '--no-fund'], viso, 480000);
     steps.push({ name: 'npm-ci', status: npmCi.ok ? 'PASS' : 'FAIL' });
     if (!npmCi.ok) block('FAILED_NPM_CI');
+    const dependencyTreeBefore = snapshotLockedInstall(viso, lockOriginal);
     // Establish an attributable baseline BEFORE the tarball or probe enters VISO.
     // No waiver is possible for new compiler diagnostics introduced by the candidate.
     const baselineTypecheck = command('npm', ['run', 'typecheck'], viso, 180000);
     const install = command('npm',
-      ['install', '--no-save', '--package-lock=false',
+      ['install', '--no-save', '--package-lock=true',
         '--ignore-scripts', '--no-audit', '--no-fund', archive.tarballPath],
       viso, 480000);
     steps.push({ name: 'npm-install-tarball',
       status: install.ok ? 'PASS' : 'FAIL' });
     if (!install.ok) block('FAILED_NPM_INSTALL_TARBALL');
+    // Lockfile-aware npm install may temporarily record the preview in the
+    // isolated checkout. Preserve that fact and restore the original lockfile
+    // before asserting no consumer source/lockfile persisted changes.
+    const lockAfterInstall = fs.readFileSync(path.join(viso, 'package-lock.json'));
+    const lockModifiedByPreview = hash(lockAfterInstall) !== hash(lockOriginal);
+    const dependencyTreeAfter = snapshotLockedInstall(viso, lockOriginal);
+    const frozenDependencies = compareFrozenDependencyTrees(
+      dependencyTreeBefore, dependencyTreeAfter);
+    if (lockModifiedByPreview) {
+      fs.writeFileSync(path.join(viso, 'package-lock.json'), lockOriginal);
+    }
+    if (!frozenDependencies.frozen) {
+      fs.mkdirSync(OUT, { recursive: true });
+      fs.writeFileSync(path.join(OUT, 'blocked.json'), JSON.stringify({
+        status: 'BLOCKED', failed_step: 'npm-install-tarball',
+        reason: 'PINNED_DEPENDENCY_TREE_CHANGED',
+        dependency_tree: frozenDependencies,
+        lockfile_changed_and_restored: lockModifiedByPreview,
+        package_sha: sha, consumer_sha: visoSnapshot.consumer_commit,
+        relation_certified: false, publication_executed: false,
+      }, null, 2) + '
+');
+      block('PINNED_DEPENDENCY_TREE_CHANGED');
+    }
     // Distinguish npm re-resolution from the transitory probe's TypeScript
     // surface without assuming an existing VISO TS2345 is unchanged.
     const postInstallTypecheck = command('npm', ['run', 'typecheck'], viso, 180000);
@@ -262,6 +320,8 @@ async function execute() {
             typecheck_after_install: {
               ok: postInstallTypecheck.ok, compiler: postInstallTypecheck.compiler,
             },
+            dependency_tree: frozenDependencies,
+            lockfile_changed_and_restored: lockModifiedByPreview,
             ...(name === 'viso-typecheck'
               ? { compare: {
                 install_changed: JSON.stringify(baselineTypecheck.compiler.identities)
@@ -294,6 +354,8 @@ async function execute() {
       test_evidence_identity: testEvidence.material_identity_sha256,
       build_evidence_identity: buildEvidence.material_identity_sha256,
       snapshots: consumerSnapshots, steps, ...outcome,
+      dependency_tree: frozenDependencies,
+      lockfile_changed_and_restored: lockModifiedByPreview,
     };
     fs.writeFileSync(path.join(OUT, 'observations.json'),
       JSON.stringify(evidence, null, 2) + '\n');
