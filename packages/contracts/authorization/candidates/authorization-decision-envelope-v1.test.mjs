@@ -241,11 +241,41 @@ test("contractual: lane outcomes cannot claim ALLOW without readiness and eviden
   const d4 = allowed(); d4.operational_decision.outcome = "ALLOW"; fail(d4);
 });
 
-test("contractual: operation and final combination results must match", () => {
+test("contractual: inconsistent combination or final audit is rejected", () => {
   const d = denied(); d.combination.combination_result = "ALLOW"; fail(d);
   const d2 = allowed(); d2.combination.combination_result = "DENY"; fail(d2);
-  const d3 = allowed(); d3.final_decision.outcome = "DENY"; fail(d3);
+  const d3 = allowed(); d3.final_decision.outcome = "DENY"; fail(d3); // audit still says ALLOW
   const d4 = allowed(); d4.final_decision.reason_category = "DEFAULT_DENY"; fail(d4);
+});
+
+test("contractual: combination ALLOW can finish DENY when a downstream constraint blocks", () => {
+  for (const [category, block] of [
+    ["DEVICE_DENY", (d) => { d.device_decision.status = "FAIL"; }],
+    ["SENSITIVITY_DENY", (d) => { d.sensitivity_decision.status = "FAIL"; }],
+    ["FIELD_POLICY_DENY", (d) => { d.field_policy_decision.status = "FAIL"; }],
+    ["RESOURCE_DENY", (d) => { d.resource.resolution_status = "CONFLICT"; }],
+    ["PREREQUISITE_DENY", (d) => { d.prerequisite_decisions = [{ status: "FAIL" }]; }],
+  ]) {
+    const d = allowed();
+    block(d);
+    d.final_decision.outcome = "DENY";
+    d.final_decision.reason_category = category;
+    d.audit.outcome = "DENY";
+    assert.equal(d.combination.combination_result, "ALLOW");
+    assert.equal(inspect(d), undefined); // inspection never grants authority
+  }
+});
+
+test("security: a lane DENY cannot be promoted to final ALLOW", () => {
+  const d = denied();
+  d.final_decision.outcome = "ALLOW";
+  d.final_decision.reason_category = "AUTHORIZED";
+  d.audit.outcome = "ALLOW";
+  fail(d);
+  const d2 = denied();
+  d2.final_decision.outcome = "UNRECOGNIZED";
+  d2.audit.outcome = "UNRECOGNIZED";
+  fail(d2);
 });
 
 test("security: structurally impossible ALLOW cannot override any explicit blocking evidence", () => {
