@@ -119,6 +119,14 @@ const CONCURRENCY_POLICIES = new Set([
   "NONE", "EXPECTED_VERSION", "UPDATED_AT", "LOCK", "SNAPSHOT",
   "IDEMPOTENCY_KEY",
 ]);
+// These are caller-supplied authority or outcome hints, not resource locators.
+// Do not guess unknown subtype schemas or reject ordinary domain identifiers.
+const REQUEST_CONTROL_KEYS = new Set([
+  "access_context", "context_id", "authorization_requirement", "grant_ids",
+  "deny_ids", "decision_id", "final_outcome", "catalog_hash", "dataset_hashes",
+  "expected_outcome", "allow", "can_operate", "bypass", "force_allow",
+  "ignore_denies", "skip_resource_resolution", "skip_prerequisites",
+]);
 const CATEGORIES = new Set([
   "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
   "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
@@ -182,8 +190,9 @@ function jsonData(value, ancestors = new WeakSet()) {
   }
 }
 function jsonRecord(value) {
-  record(value);
+  const snapshot = record(value);
   jsonData(value);
+  return snapshot;
 }
 const textList = (v) => array(v, text);
 const laneList = (v) => array(v, (x) => x === "BASE" || x === "OPERATIONAL");
@@ -297,8 +306,11 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || PERMISSION_BY_KEY[r.permission_key]?.app_code !== r.app_code
       || !KINDS.has(r.operation_kind) || !SOURCES.has(r.request_source)) invalid();
     // ResourceRequest subtypes are not yet published: enforce safe JSON only.
-    jsonRecord(r.resource_request);
-    textList(r.requested_fields);
+    // Reject root-level attempts to supply authority, decision or bypass state.
+    const resourceRequest = jsonRecord(r.resource_request);
+    if (Object.keys(resourceRequest).some((key) => REQUEST_CONTROL_KEYS.has(key))) invalid();
+    const requestedFields = textList(r.requested_fields);
+    if (new Set(requestedFields).size !== requestedFields.length) invalid();
 
     const p = exact(v.permission_contract, PERMISSION);
     if (!text(p.catalog_id) || !text(p.catalog_version) || !text(p.catalog_hash)
