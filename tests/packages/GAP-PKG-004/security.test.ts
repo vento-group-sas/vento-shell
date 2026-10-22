@@ -137,7 +137,11 @@ test('GEOFENCE auto-checkout SQL preserves one authority and atomically binds th
     'auto-close-attendance',
     'attendance_stale_open_shift_autoclose_daily_bogota',
   ]) assert.ok(sql.includes(job), job);
-  assert.match(sql, /cron[.]unschedule/iu);
+  assert.match(sql, /to_regprocedure\('cron[.]alter_job[(]bigint,text,text,text,text,boolean[)]'\)/iu);
+  assert.match(sql, /select jobid from cron[.]job/iu);
+  assert.match(sql, /execute 'select cron[.]alter_job[(]job_id := [$]1, active := false[)]' using v_job;/iu);
+  assert.match(sql, /GEOFENCE_LEGACY_AUTO_CLOSE_CRON_STILL_ACTIVE/u);
+  assert.doesNotMatch(sql, /cron[.]unschedule/iu);
   assert.match(sql, /create or replace function public[.]apply_geofence_auto_checkout_v1/iu);
   assert.match(sql, /security invoker/iu);
   assert.match(sql, /current_user <> 'service_role'/iu);
