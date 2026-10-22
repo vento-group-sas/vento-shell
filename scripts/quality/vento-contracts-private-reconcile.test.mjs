@@ -97,6 +97,8 @@ test('recovery reads original source and guards protected npm mutation', () => {
   assert(workflow.includes('VENTO_RECOVERY_CONFIRMATION'));
   assert(workflow.includes('if-no-files-found: error'));
   assert(workflow.includes('persist-credentials: false'));
+  assert(workflow.includes("SOURCE_SHA: ${{ inputs.expected_source_sha }}"));
+  assert(workflow.includes("GITHUB_SHA=\"$SOURCE_SHA\" node scripts/quality/vento-contracts-viso-consumer-probe.mjs"));
   assert(!workflow.includes('contents: write'));
   assert(!workflow.includes('operation: publish'));
   assert(runner.includes('requirePilotCompatibility'));
