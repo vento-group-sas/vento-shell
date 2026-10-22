@@ -9,8 +9,11 @@ on:
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
       - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - ".github/workflows/vento-contracts-private-npm-reconcile.yml"
       - "scripts/quality/vento-contracts-private-release.mjs"
       - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
       - "scripts/quality/shared-package-test-gate.mjs"
@@ -34,8 +37,11 @@ on:
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
       - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - ".github/workflows/vento-contracts-private-npm-reconcile.yml"
       - "scripts/quality/vento-contracts-private-release.mjs"
       - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
       - "scripts/quality/shared-package-test-gate.mjs"
@@ -166,6 +172,7 @@ jobs:
       - name: Verificar politica de publicacion privada y preflight CI003 sin escribir
         run: |
           node --test scripts/quality/vento-contracts-private-release.test.mjs
+          node --test scripts/quality/vento-contracts-private-reconcile.test.mjs
           node scripts/quality/vento-contracts-private-release.mjs --mode prepare
 
       - name: Conservar evidencia CI001 CI002 sin tarball ni secretos
