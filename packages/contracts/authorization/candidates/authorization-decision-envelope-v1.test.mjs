@@ -199,6 +199,33 @@ function bothAllowed() {
   d.audit.authorizing_lanes = ["BASE", "OPERATIONAL"];
   return d;
 }
+function deniedAlternative(laneName) {
+  const d = bothAllowed();
+  const otherLane = laneName === "BASE" ? "OPERATIONAL" : "BASE";
+  const rejectedLane = laneName === "BASE" ? d.base_decision : d.operational_decision;
+  const evidence = syntheticMatchedDeny();
+  evidence.deny_id = "deny:" + laneName.toLowerCase();
+  evidence.deny_class = laneName === "BASE" ? "BASE_LANE" : "OPERATIONAL_LANE";
+  evidence.lane = laneName;
+  rejectedLane.outcome = "DENY";
+  rejectedLane.matched_allow_ids = [];
+  rejectedLane.matched_deny_ids = [evidence.deny_id];
+  rejectedLane.reason_codes = ["AUTH_DENIED"];
+  d.matched_allows = d.matched_allows.filter((x) => x.lane === otherLane);
+  d.matched_denies = [evidence];
+  d.lane_denies = [{ ...syntheticBlockingReason(), lane: laneName }];
+  d.blocked_reasons = [{ ...syntheticBlockingReason(), lane: laneName }];
+  d.permission_contract.authorization_requirement = "BASE_OR_OPERATIONAL";
+  d.combination.authorization_requirement = "BASE_OR_OPERATIONAL";
+  d.combination.combination_rule = "BASE_OR_OPERATIONAL";
+  d.combination.base_outcome = d.base_decision.outcome;
+  d.combination.operational_outcome = d.operational_decision.outcome;
+  d.combination.authorizing_lanes = [otherLane];
+  d.combination.blocked_lanes = [laneName];
+  d.final_decision.authorizing_lanes = [otherLane];
+  d.audit.authorizing_lanes = [otherLane];
+  return d;
+}
 function syntheticMatchedDeny() {
   return {
     deny_id: "deny:synthetic", deny_class: "BASE_LANE",
@@ -686,6 +713,64 @@ test("security: field classification and side arrays are strictly data-only", ()
     fail(d);
   }
   assert.equal(invoked, 0);
+});
+
+test("contractual: OR fallback accepts a complete BASE or OPERATIONAL lane", () => {
+  for (const deniedLane of ["BASE", "OPERATIONAL"]) {
+    const d = deniedAlternative(deniedLane);
+    assert.equal(d.combination.combination_result, "ALLOW");
+    assert.equal(d.final_decision.outcome, "ALLOW");
+    assert.equal(inspect(d), undefined);
+  }
+});
+
+test("security: fallback cannot ignore global denies or blocks on the winning lane", () => {
+  for (const field of ["structural_denies", "actor_wide_denies"]) {
+    const d = deniedAlternative("BASE");
+    d[field] = [{ ...syntheticBlockingReason(), lane: "ALL" }];
+    fail(d);
+  }
+  const globalMatched = deniedAlternative("BASE");
+  globalMatched.matched_denies.push({
+    ...syntheticMatchedDeny(),
+    deny_id: "deny:actorwide", deny_class: "ACTOR_WIDE", lane: "ALL",
+  });
+  fail(globalMatched);
+  for (const field of ["lane_denies", "blocked_reasons"]) {
+    const d = deniedAlternative("BASE");
+    d[field].push({ ...syntheticBlockingReason(), lane: "OPERATIONAL" });
+    fail(d);
+  }
+  const globalReason = deniedAlternative("BASE");
+  globalReason.blocked_reasons.push({ ...syntheticBlockingReason(), lane: "ALL" });
+  fail(globalReason);
+});
+
+test("security: deny IDs and blocked lanes cannot be fabricated or misplaced", () => {
+  const missingId = deniedAlternative("BASE");
+  missingId.base_decision.matched_deny_ids = ["deny:spoofed"];
+  fail(missingId);
+  const wrongLane = deniedAlternative("BASE");
+  wrongLane.matched_denies[0].lane = "OPERATIONAL";
+  fail(wrongLane);
+  const absentEvidence = deniedAlternative("BASE");
+  absentEvidence.matched_denies = [];
+  fail(absentEvidence);
+  const unlinked = deniedAlternative("BASE");
+  unlinked.base_decision.matched_deny_ids = [];
+  fail(unlinked);
+  const missingBlocked = deniedAlternative("BASE");
+  missingBlocked.combination.blocked_lanes = [];
+  fail(missingBlocked);
+  const phantomBlocked = bothAllowed();
+  phantomBlocked.combination.blocked_lanes = ["BASE"];
+  fail(phantomBlocked);
+  const repeatedDeny = deniedAlternative("BASE");
+  repeatedDeny.base_decision.matched_deny_ids.push("deny:base");
+  fail(repeatedDeny);
+  const borrowedDeny = deniedAlternative("BASE");
+  borrowedDeny.operational_decision.matched_deny_ids = ["deny:base"];
+  fail(borrowedDeny);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
