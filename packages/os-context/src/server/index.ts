@@ -18,30 +18,36 @@ function unavailable(): Error {
 
 /** @deprecated NOT IMPLEMENTED. Never use as an authorization decision. */
 export async function resolveAccessContext(_request: never): Promise<never> {
+  void _request;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Never reconstruct an outcome locally. */
 export async function evaluateAuthorization(_request: never): Promise<never> {
+  void _request;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Cannot permit mutations while unavailable. */
 export async function requireAuthorization(_request: never): Promise<never> {
+  void _request;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Requires a validated canonical context. */
 export function getSafeContextProjection(_context: never): never {
+  void _context;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Requires a validated canonical decision. */
 export function getSafeDecisionProjection(_decision: never): never {
+  void _decision;
   throw unavailable();
 }
 
 /** @deprecated NOT IMPLEMENTED. Scope ownership belongs to SHELL-AUTH-003. */
 export function createAuthorizationScope(_request: never): never {
+  void _request;
   throw unavailable();
 }
