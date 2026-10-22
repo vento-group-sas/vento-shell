@@ -225,14 +225,18 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
       ") THEN RAISE EXCEPTION 'VPROC0008_ANON_EXECUTE'; END IF; END $acl$;",
     "INSERT INTO auth.users(id,email) VALUES (" + u(worker) + ",'qa-" + stamp +
       "@example.invalid'),(" + u(reviewer) + ",'qa-rev-" + stamp + "@example.invalid');",
-    'INSERT INTO public.sites(id,code,name,type,site_kind,is_active,latitude,longitude)' +
+    'INSERT INTO public.sites(id,code,name,type,site_kind,site_type,is_active,latitude,longitude)' +
       ' VALUES (' + u(site) + ",'REV_" + stamp.toUpperCase() +
-      "','QA attendance site','satellite','satellite',true,7.9,-72.5)," +
+      "','QA attendance site','satellite','satellite','satellite',true,7.9,-72.5)," +
       '(' + u(otherSite) + ",'REV_B_" + stamp.toUpperCase() +
-      "','QA foreign site','satellite','satellite',true,7.9,-72.5);",
+      "','QA foreign site','satellite','satellite','satellite',true,7.9,-72.5);",
     'INSERT INTO public.employees(id,site_id,role,full_name,is_active)' +
       ' VALUES (' + u(worker) + ',' + u(site) + ",'mesero','QA worker',true)," +
       '(' + u(reviewer) + ',' + u(site) + ",'gerente','QA reviewer',true);",
+    'INSERT INTO public.employee_sites(employee_id,site_id,is_primary,is_active)' +
+      ' VALUES (' + u(worker) + ',' + u(site) + ',true,true),' +
+      '(' + u(reviewer) + ',' + u(site) +
+      ',true,true) ON CONFLICT (employee_id,site_id) DO UPDATE SET is_active=true;',
     'INSERT INTO public.employee_shifts' +
       '(id,employee_id,site_id,shift_date,start_time,end_time,shift_kind,status,published_at)' +
       ' VALUES (' + [shift, worker, site].map(u).join(',') +
@@ -279,10 +283,48 @@ test('VPROC-0008 isolated administrative review enforces site scope, decisions, 
     expectedError('foreign_scope', rpc(ticket,checkIn,'approve',reason,timestamp),
       '42501','ATTENDANCE_REVIEW_FORBIDDEN'),
     ...resetClaims,
-    'UPDATE public.employee_permissions SET scope_site_id=' + u(site) +
-      ' WHERE employee_id=' + u(reviewer) + ' AND permission_id IN' +
+    // Generic has_permission() accepts GLOBAL: the sensitive decision must
+    // still fail because the new permission permits ONLY explicit SS grants.
+    'UPDATE public.employee_permissions SET scope_type=' + "'global'," +
+      'scope_site_id=NULL WHERE employee_id=' + u(reviewer) +
+      ' AND permission_id IN' +
       " (SELECT p.id FROM public.app_permissions p JOIN public.apps a ON a.id=p.app_id" +
       " WHERE a.code='anima' AND p.code='attendance.checkout_review.decide');",
+    ...claims(reviewer),
+    expectedError('global_scope',rpc(ticket,checkIn,'approve',reason,timestamp),
+      '42501','ATTENDANCE_REVIEW_SITE_GRANT_REQUIRED'),
+    ...resetClaims,
+    // A role-level grant cannot replace individual authorization.
+    'DELETE FROM public.employee_permissions WHERE employee_id=' + u(reviewer) +
+      ' AND permission_id IN' +
+      " (SELECT p.id FROM public.app_permissions p JOIN public.apps a ON a.id=p.app_id" +
+      " WHERE a.code='anima' AND p.code='attendance.checkout_review.decide');",
+    'INSERT INTO public.role_permissions(role,permission_id,is_allowed,scope_type,scope_site_id)' +
+      " SELECT 'gerente',p.id,true,'site'," + u(site) +
+      ' FROM public.app_permissions p JOIN public.apps a ON a.id=p.app_id' +
+      " WHERE a.code='anima' AND p.code='attendance.checkout_review.decide';",
+    ...claims(reviewer),
+    expectedError('role_only',rpc(ticket,checkIn,'approve',reason,timestamp),
+      '42501','ATTENDANCE_REVIEW_SITE_GRANT_REQUIRED'),
+    ...resetClaims,
+    'INSERT INTO public.employee_permissions' +
+      '(employee_id,permission_id,is_allowed,scope_type,scope_site_id)' +
+      ' SELECT ' + u(reviewer) + ",p.id,true,'site'," + u(site) +
+      ' FROM public.app_permissions p JOIN public.apps a ON a.id=p.app_id' +
+      " WHERE a.code='anima' AND p.code='attendance.checkout_review.decide';",
+    // Keep a valid alternate primary site while revoking assignment to
+    // the reviewed site: employee-role integrity forbids a null site_id.
+    'INSERT INTO public.employee_sites(employee_id,site_id,is_primary,is_active)' +
+      ' VALUES (' + u(reviewer) + ',' + u(otherSite) + ',false,true)' +
+      ' ON CONFLICT (employee_id,site_id) DO UPDATE SET is_active=true;',
+    'UPDATE public.employee_sites SET is_active=false WHERE employee_id=' +
+      u(reviewer) + ' AND site_id=' + u(site) + ';',
+    ...claims(reviewer),
+    expectedError('inactive_membership',rpc(ticket,checkIn,'approve',reason,timestamp),
+      '42501','ATTENDANCE_REVIEW_FORBIDDEN'),
+    ...resetClaims,
+    'UPDATE public.employee_sites SET is_active=true WHERE employee_id=' +
+      u(reviewer) + ' AND site_id=' + u(site) + ';',
     'INSERT INTO public.employee_permissions' +
       '(employee_id,permission_id,is_allowed,scope_type,scope_site_id)' +
       ' SELECT ' + u(worker) + ",p.id,true,'site'," + u(site) +

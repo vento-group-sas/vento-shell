@@ -280,6 +280,32 @@ begin
   ) then
     raise exception 'ATTENDANCE_REVIEW_FORBIDDEN' using errcode = '42501';
   end if;
+  -- El resolutor RBAC generico puede aceptar un grant GLOBAL o por rol.
+  -- Esta accion sensible solo admite una concesion INDIVIDUAL/SS del
+  -- actor en la sede del ticket, con adscripcion laboral activa.
+  -- No basta con que has_permission() retorne true.
+  if not exists (
+    select 1
+    from public.employee_permissions ep
+    join public.app_permissions ap on ap.id = ep.permission_id
+    join public.apps a on a.id = ap.app_id
+    join public.employee_sites es
+      on es.employee_id = ep.employee_id and es.site_id = v_ticket.site_id
+    where ep.employee_id = v_actor
+      and ep.is_allowed is true
+      and ep.scope_type = 'site'
+      and ep.scope_site_id = v_ticket.site_id
+      and ep.scope_area_id is null
+      and ep.scope_site_type is null
+      and ep.scope_area_kind is null
+      and es.is_active is true
+      and ap.code = 'attendance.checkout_review.decide'
+      and ap.is_active is true
+      and a.code = 'anima'
+      and a.is_active is true
+  ) then
+    raise exception 'ATTENDANCE_REVIEW_SITE_GRANT_REQUIRED' using errcode = '42501';
+  end if;
   if not exists (
     select 1 from public.employees e
     where e.id = v_actor and e.is_active is true

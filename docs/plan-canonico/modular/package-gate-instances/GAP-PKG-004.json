@@ -369,6 +369,12 @@
         "path": "src/components/support/use-support-actions.ts",
         "symbol_or_surface": "ANIMA: persistir ticket attendance idempotente en interfaz frente a fallo posterior del mensaje, sin duplicar caso",
         "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/catalog/candidates/anima-attendance-checkout-review.json",
+        "symbol_or_surface": "VPROC-0008 permiso nuevo ANIMA checkout_review.decide por sede: candidato sin publicacion, grants ni cambio a 1.0.0/1.1.0",
+        "operation": "CREAR"
       }
     ]
   },

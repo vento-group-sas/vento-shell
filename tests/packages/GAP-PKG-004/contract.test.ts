@@ -212,6 +212,14 @@ test('VPROC-0008 administrative checkout candidate is fail-closed, audited and i
   assert.match(fn, /'anima\.attendance\.checkout_review\.decide'/u,
     'A dedicated site-scoped permission, not shift scheduling, is mandatory');
   assert.match(fn, /public\.has_permission\([\s\S]*?v_ticket\.site_id/u);
+  assert.match(fn, /from public\.employee_permissions ep[\s\S]*?join public\.employee_sites es/u,
+    'Decision must require a direct grant and an active site assignment');
+  assert.match(fn, /ep\.scope_type = 'site'/u);
+  assert.match(fn, /ep\.scope_site_id = v_ticket\.site_id/u);
+  assert.match(fn, /ep\.is_allowed is true/u);
+  assert.match(fn, /es\.is_active is true/u);
+  assert.match(fn, /ATTENDANCE_REVIEW_SITE_GRANT_REQUIRED/u,
+    'A GLOBAL or role grant must not authorize a sensitive site-only review');
   assert.match(fn, /pg_advisory_xact_lock/u);
   assert.match(fn, /ATTENDANCE_REVIEW_REPLAY_CONFLICT/u);
   assert.match(fn, /ATTENDANCE_REVIEW_SESSION_CHANGED/u);
@@ -244,6 +252,94 @@ test('VPROC-0008 administrative checkout candidate is fail-closed, audited and i
     'anima.attendance.checkout_review.decide'), false,
   'Until its canonical grant is approved, the candidate MUST stay inaccessible');
   assert.equal(gate.authorization.decision, 'PENDING');
+});
+
+test('VPROC-0008 governance candidate is site-only, inactive, and does not mutate frozen permission versions', () => {
+  const candidatePath =
+    'packages/contracts/authorization/catalog/candidates/anima-attendance-checkout-review.json';
+  const candidate = JSON.parse(read(candidatePath)) as {
+    process_id: string;
+    permission_key: string;
+    app_code: string;
+    lifecycle_status: string;
+    candidate_status: string;
+    catalog_version: string | null;
+    allowed_scope_codes: string[];
+    maximum_scope_code: string;
+    runtime_grant_scope_type: string;
+    grant_defaults: { base_roles: string[]; operational_roles: string[];
+      individual_grants: string[]; auto_seed: boolean };
+    allow_shared_device: boolean;
+    allow_simulation: boolean;
+    is_sensitive: boolean;
+    is_read_only: boolean;
+    requires_authenticated_actor: boolean;
+    requires_active_employee: boolean;
+    decision_conditions: Record<string, boolean>;
+    implementation: { candidate_not_published: boolean;
+      apply_remote_migration: boolean;
+      register_permission_remote: boolean;
+      grant_permission_remote: boolean;
+      merge_or_deploy: boolean };
+    target_resource: { required_category: string;
+      required_title: string; required_site_field: string;
+      check_in_identity_field: string; require_support_message: boolean };
+  };
+  const identity = 'anima.attendance.checkout_review.decide';
+  assert.equal(candidate.process_id, 'VPROC-0008');
+  assert.equal(candidate.permission_key, identity);
+  assert.equal(candidate.app_code, 'anima');
+  assert.equal(candidate.lifecycle_status, 'reserved');
+  assert.equal(candidate.candidate_status, 'PENDING_CANONICAL_AUTHORIZATION');
+  assert.equal(candidate.catalog_version, null,
+    'A version cannot be invented, and neither 1.0.0 nor 1.1.0 may be overwritten');
+  assert.deepEqual(candidate.allowed_scope_codes, ['SS']);
+  assert.equal(candidate.maximum_scope_code, 'SS');
+  assert.equal(candidate.runtime_grant_scope_type, 'site');
+  assert.deepEqual(candidate.grant_defaults, {
+    base_roles: [], operational_roles: [], individual_grants: [], auto_seed: false,
+  });
+  assert.equal(candidate.allow_shared_device, false);
+  assert.equal(candidate.allow_simulation, false);
+  assert.equal(candidate.is_sensitive, true);
+  assert.equal(candidate.is_read_only, false);
+  assert.equal(candidate.requires_authenticated_actor, true);
+  assert.equal(candidate.requires_active_employee, true);
+  for (const k of [
+    'explicit_actor_site_grant','reject_self_approval',
+    'forbid_untrusted_client_claims','preserve_original_event',
+    'serialize_by_employee','idempotent_by_ticket',
+    'resolution_and_notification_atomic',
+  ]) assert.equal(candidate.decision_conditions[k], true, k);
+  assert.equal(candidate.target_resource.required_category, 'attendance');
+  assert.equal(candidate.target_resource.required_title, 'Revisión de salida sin ubicación');
+  assert.equal(candidate.target_resource.required_site_field, 'site_id');
+  assert.equal(candidate.target_resource.check_in_identity_field, 'attendance_logs.id');
+  assert.equal(candidate.target_resource.require_support_message, true);
+  assert.deepEqual(candidate.implementation, {
+    rpc: 'public.decide_attendance_checkout_review_v1(uuid,uuid,text,text,timestamptz)',
+    gate: 'GAP-PKG-004',
+    dossier_status: 'MATURATION_DRAFT',
+    candidate_not_published: true,
+    apply_remote_migration: false,
+    register_permission_remote: false,
+    grant_permission_remote: false,
+    merge_or_deploy: false,
+  });
+  const targets = gate.physical_identity.targets.filter((t) => t.path === candidatePath);
+  assert.equal(targets.length, 1, 'The new permission candidate requires one explicit physical target');
+  assert.equal(targets[0].operation, 'CREAR');
+  assert.equal(targets[0].repository, 'vento-group-sas/vento-shell');
+  assert.equal(gate.authorization.decision, 'PENDING');
+  assert.equal(gate.physical_discovery.status, 'PENDING');
+  const stable = JSON.parse(read('packages/contracts/authorization/catalog/versions/1.0.0/permissions.json')) as
+    Array<{ permission_key: string }>;
+  assert.equal(stable.length, 140);
+  assert.equal(stable.some((p) => p.permission_key === identity), false,
+    'The new permission cannot appear in frozen 1.0.0 identity or active grant catalogs');
+  assert.equal(fs.existsSync(path.join(root,
+    'packages/contracts/authorization/catalog/versions/1.1.0/permissions.json')), false,
+    'Do not materialize or overwrite the already documented 1.1.0 successor implicitly');
 });
 
 test('GAP-PKG-004 SQL candidate remains consistent with versioned migration manifest', () => {
