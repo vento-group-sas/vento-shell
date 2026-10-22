@@ -8,12 +8,14 @@ La primera release estable `1.0.0` está bloqueada por `SHELL-AUTH-001..005`, `T
 
 | Import | Superficie | Estado |
 | --- | --- | --- |
-| `@vento/os-context/server` | `resolveAccessContext`, `evaluateAuthorization`, `requireAuthorization`, `getSafeContextProjection`, `getSafeDecisionProjection`, `createAuthorizationScope` | **BLOCKED:** siempre rechazan la llamada; no ejecutan backend ni conceden capacidad |
+| `@vento/os-context/server` | `resolveAccessContext`, `evaluateAuthorization`, `requireAuthorization`, `getSafeContextProjection`, `getSafeDecisionProjection` | **BLOCKED:** siempre rechazan la llamada; no ejecutan backend ni conceden capacidad |
 | `@vento/os-context/client` | `parseSafeContextProjection`, `parseSafeDecisionProjection` | **BLOCKED:** rechazan `unknown` hasta existir validadores publicados; sin red, Supabase, UI o React |
 | `@vento/os-context/testing` | `makeInvalidAuthorizationFixture` | Fixture negativa, determinista y sin autoridad |
 | `@vento/os-context/legacy` | Cuatro wrappers RPC previamente existentes y tipos `EffectiveContext` / `ContextSimulationInput` | **TRANSITORIO / DEPRECADO**; no equivale a contexto o decisión canónicos |
 
 No existe export público de `@vento/os-context` raíz. Las cuatro rutas no se reexportan unas a otras. `src/client.ts` contiene exclusivamente el código histórico y se compila como implementación privada del subpath `/legacy`.
+
+`createAuthorizationScope` está reservado exclusivamente a `SHELL-AUTH-003`; no forma parte de la superficie pública de `/server` bajo `SHELL-AUTH-002`.
 
 ## Restricciones de seguridad
 
