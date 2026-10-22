@@ -357,6 +357,18 @@
         "path": "docs/ANIMA-SHIFT-POLICY-CONFIG-SIN-BUILD.md",
         "symbol_or_surface": "ANIMA: guia operativa del cierre por geocerca y ausencia de autocierre por calendario",
         "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "app/(app)/support.tsx",
+        "symbol_or_surface": "ANIMA: abrir solicitud asistida y explícita de revisión de salida denegada, sin alterar asistencia ni geocerca",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "path": "src/components/support/use-support-actions.ts",
+        "symbol_or_surface": "ANIMA: persistir ticket attendance idempotente en interfaz frente a fallo posterior del mensaje, sin duplicar caso",
+        "operation": "MODIFICAR"
       }
     ]
   },
