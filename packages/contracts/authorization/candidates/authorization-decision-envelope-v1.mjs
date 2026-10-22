@@ -241,7 +241,10 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
 
     const final = exact(v.final_decision, FINAL);
     const finalLanes = laneList(final.authorizing_lanes);
-    if (final.outcome !== combination.combination_result
+    // AUTH-CTX-002: a lane-level ALLOW may still end in final DENY due to
+    // request-level constraints. A lane DENY must never become final ALLOW.
+    if (!["ALLOW", "DENY"].includes(final.outcome)
+      || (final.outcome === "ALLOW" && combination.combination_result !== "ALLOW")
       || !CATEGORIES.has(final.reason_category)
       || !text(final.primary_reason_code) || !text(final.safe_message_code)
       || !same(finalLanes, authorizing)) invalid();
