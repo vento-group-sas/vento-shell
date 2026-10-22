@@ -83,8 +83,8 @@ test('GAP-PKG-004 preserves physical target and finding integrity during discove
   } else {
     assert.equal(gate.physical_discovery.status, 'PENDING');
     assert.equal(gate.status, 'MATURATION_DRAFT');
-    assert.ok(findingIdentities.length < targetIdentities.length,
-      'Pending discovery must retain incomplete physical target coverage');
+    assert.ok(findingIdentities.length <= targetIdentities.length,
+      'Pending discovery may complete physical coverage while risks remain unresolved');
     assert.ok(gate.physical_discovery.unresolved_findings.length > 0,
       'Pending discovery must preserve explicitly unresolved items');
   }
