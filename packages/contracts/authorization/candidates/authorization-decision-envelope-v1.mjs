@@ -164,6 +164,27 @@ function array(value, check = () => true) {
   }
   return result;
 }
+// Opaque resource leaves remain JSON-only until their subtype schemas exist.
+// This checks serialized data recursively, not resource semantics or authority.
+function jsonData(value, ancestors = new WeakSet()) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) invalid();
+    return;
+  }
+  if (typeof value !== "object" || ancestors.has(value)) invalid();
+  ancestors.add(value);
+  try {
+    const children = Array.isArray(value) ? array(value) : Object.values(record(value));
+    for (const child of children) jsonData(child, ancestors);
+  } finally {
+    ancestors.delete(value);
+  }
+}
+function jsonRecord(value) {
+  record(value);
+  jsonData(value);
+}
 const textList = (v) => array(v, text);
 const laneList = (v) => array(v, (x) => x === "BASE" || x === "OPERATIONAL");
 const same = (a,b) => a.length === b.length && a.every((x,i) => x === b[i]);
@@ -229,8 +250,8 @@ function territory(input) {
     || !text(v.source) || typeof v.coherent !== "boolean") invalid();
   for (const key of TERRITORY_ID_FIELDS) textList(v[key]);
   // TerritorySide subtypes need their dedicated resource contracts.
-  if (v.origin !== null) record(v.origin);
-  if (v.destination !== null) record(v.destination);
+  if (v.origin !== null) jsonRecord(v.origin);
+  if (v.destination !== null) jsonRecord(v.destination);
   return v;
 }
 function concurrency(input) {
@@ -275,7 +296,8 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
     if (!isAppCode(r.app_code) || !isPermissionKey(r.permission_key)
       || PERMISSION_BY_KEY[r.permission_key]?.app_code !== r.app_code
       || !KINDS.has(r.operation_kind) || !SOURCES.has(r.request_source)) invalid();
-    record(r.resource_request);
+    // ResourceRequest subtypes are not yet published: enforce safe JSON only.
+    jsonRecord(r.resource_request);
     textList(r.requested_fields);
 
     const p = exact(v.permission_contract, PERMISSION);
@@ -295,13 +317,13 @@ export function inspectAuthorizationDecisionEnvelopeV1(input) {
       || !RESOURCE_STATUSES.has(resource.resolution_status)
       || !nullableText(resource.resource_version)) invalid();
     const resourceIds = textList(resource.resource_ids);
-    territory(resource.territory); record(resource.ownership);
-    record(resource.state_snapshot);
+    territory(resource.territory); jsonRecord(resource.ownership);
+    jsonRecord(resource.state_snapshot);
     const classifications = record(resource.field_classification);
     if (!Object.values(classifications).every(text)) invalid();
     // Side and subject subtypes remain opaque until their owned schemas exist.
-    array(resource.required_sides).forEach(record);
-    if (resource.subject !== null) record(resource.subject);
+    array(resource.required_sides).forEach(jsonRecord);
+    if (resource.subject !== null) jsonRecord(resource.subject);
     if (resource.concurrency !== null) concurrency(resource.concurrency);
 
     const required = laneList(v.required_lanes);
