@@ -274,8 +274,7 @@ async function execute() {
         lockfile_changed_and_restored: lockModifiedByPreview,
         package_sha: sha, consumer_sha: visoSnapshot.consumer_commit,
         relation_certified: false, publication_executed: false,
-      }, null, 2) + '
-');
+      }, null, 2) + '\n');
       block('PINNED_DEPENDENCY_TREE_CHANGED');
     }
     // Distinguish npm re-resolution from the transitory probe's TypeScript
