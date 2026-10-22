@@ -115,6 +115,8 @@ jobs:
           npm run validate --workspace @vento/supabase
           node --test scripts/quality/shared-package-distribution-gate.test.mjs
 
+      - name: Probar RPC de contexto, permisos y simulacion sin acceso a la base
+        run: npm run test --workspace @vento/os-context
       - name: Revalidar fronteras Supabase y 86 casos canónicos de seguridad
         run: |
           node packages/supabase/scripts/validate-supabase-errors.mjs
@@ -169,6 +171,35 @@ jobs:
             --contract scripts/quality/vento-contracts-pilot-build-contract.json \
             --verify-evidence "$1" --json
 
+      - name: Certificar CI001 os-context con tres grupos RPC reales
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+
+      - name: Certificar CI002 os-context con build reproducible y peer v2
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+
+      - name: Verificar vigencia de las evidencias CI001 y CI002 de os-context
+        shell: bash
+        run: |
+          set -- .delivery/shared-package-tests/vento__os-context/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-test-contract.json \
+            --verify-evidence "$1" --json
+          set -- .delivery/shared-package-builds/vento__os-context/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-build-contract.json \
+            --verify-evidence "$1" --json
       - name: Verificar politica de publicacion privada y preflight CI003 sin escribir
         run: |
           node --test scripts/quality/vento-contracts-private-release.test.mjs
@@ -182,6 +213,16 @@ jobs:
           path: |
             .delivery/shared-package-tests/vento__contracts/*.json
             .delivery/shared-package-builds/vento__contracts/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Conservar evidencia CI001 CI002 os-context sin tarball ni secretos
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-os-context-ci001-ci002-${{ github.sha }}
+          path: |
+            .delivery/shared-package-tests/vento__os-context/*.json
+            .delivery/shared-package-builds/vento__os-context/*.json
           if-no-files-found: error
           retention-days: 7
 
