@@ -168,10 +168,10 @@ async function execute() {
     'scripts/quality', name)).href);
   const { releaseContract, requirePilotCompatibility, registryNpmrc } =
     await fromSource('vento-contracts-private-release.mjs');
-  const { packPilotPrivatePreview, auditPrivatePublicationAuthority,
-    auditProtectionRules } = await fromSource('shared-package-release-preparation.mjs');
+  const { packPilotPrivatePreview, auditProtectionRules } =
+    await fromSource('shared-package-release-preparation.mjs');
   const { queryGitLabPackages } = await fromSource('shared-package-registry-preflight.mjs');
-  const { runGate, parseRemoteAnnotatedTag, privateReleaseNotes } =
+  const { evaluateReleaseCandidate, parseRemoteAnnotatedTag, privateReleaseNotes } =
     await fromSource('shared-package-release-gate.mjs');
 
   const tagOutput = run('git', ['ls-remote', 'origin', 'refs/tags/' + TAG,
