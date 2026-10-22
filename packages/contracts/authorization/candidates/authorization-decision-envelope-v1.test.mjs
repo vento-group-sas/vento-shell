@@ -137,7 +137,20 @@ function allowed() {
   d.base_decision.outcome = "ALLOW";
   d.base_decision.reason_codes = [];
   d.base_decision.matched_allow_ids = ["grant:synthetic"];
-  d.matched_allows = [{ grant_id: "grant:synthetic" }];
+  d.matched_allows = [{
+    grant_id: "grant:synthetic",
+    lane: "BASE",
+    source_kind: "BASE_ROLE",
+    source_subject_id: "synthetic-subject",
+    permission_key: "shell.access",
+    effect: "ALLOW",
+    scope_code: "GLOBAL",
+    matched_territory: true,
+    matched_resource: true,
+    validity_status: "ACTIVE",
+    source_dataset_id: "synthetic-dataset",
+    source_dataset_version: "1.0.0",
+  }];
   d.combination.base_outcome = "ALLOW";
   d.combination.authorizing_lanes = ["BASE"];
   d.combination.blocked_lanes = [];
@@ -147,6 +160,30 @@ function allowed() {
   d.final_decision.authorizing_lanes = ["BASE"];
   d.audit.outcome = "ALLOW";
   d.audit.authorizing_lanes = ["BASE"];
+  return d;
+}
+function bothAllowed() {
+  const d = allowed();
+  const operationalGrant = {
+    ...d.matched_allows[0],
+    grant_id: "grant:operational",
+    lane: "OPERATIONAL",
+    source_kind: "OPERATIONAL_ROLE",
+  };
+  d.matched_allows.push(operationalGrant);
+  d.permission_contract.authorization_requirement = "BASE_AND_OPERATIONAL";
+  d.required_lanes = ["BASE", "OPERATIONAL"];
+  d.operational_decision = {
+    lane: "OPERATIONAL", outcome: "ALLOW", readiness: "READY",
+    evaluated: true, matched_allow_ids: [operationalGrant.grant_id],
+    matched_deny_ids: [], reason_codes: [],
+  };
+  d.combination.authorization_requirement = "BASE_AND_OPERATIONAL";
+  d.combination.operational_outcome = "ALLOW";
+  d.combination.combination_rule = "BASE_AND_OPERATIONAL";
+  d.combination.authorizing_lanes = ["BASE", "OPERATIONAL"];
+  d.final_decision.authorizing_lanes = ["BASE", "OPERATIONAL"];
+  d.audit.authorizing_lanes = ["BASE", "OPERATIONAL"];
   return d;
 }
 function failedPrerequisite() {
@@ -369,6 +406,77 @@ test("security: prerequisite getters cannot run even for status", () => {
     fail(d);
   }
   assert.equal(invoked, 0);
+});
+
+test("contractual: matched grants have canonical fields and real lane/permission linkage", () => {
+  assert.equal(inspect(allowed()), undefined);
+  for (const [key, value] of [
+    ["source_kind", "INVALID"],
+    ["source_kind", "OPERATIONAL_ROLE"],
+    ["lane", "OPERATIONAL"],
+    ["permission_key", "anima.access"],
+    ["effect", "DENY"],
+    ["matched_territory", false],
+    ["matched_resource", false],
+    ["validity_status", "EXPIRED"],
+    ["scope_code", ""],
+    ["source_dataset_version", null],
+  ]) {
+    const d = allowed();
+    d.matched_allows[0][key] = value;
+    fail(d);
+  }
+  const missing = allowed();
+  delete missing.matched_allows[0].source_dataset_id;
+  fail(missing);
+  const extra = allowed();
+  extra.matched_allows[0].bypass_applied = true;
+  fail(extra);
+});
+
+test("security: grant IDs cannot be fabricated, duplicated or read through getters", () => {
+  const substituted = allowed();
+  substituted.base_decision.matched_allow_ids = ["different-grant"];
+  fail(substituted);
+  const absent = allowed();
+  absent.matched_allows = [];
+  fail(absent);
+  const duplicate = allowed();
+  duplicate.matched_allows.push({ ...duplicate.matched_allows[0] });
+  fail(duplicate);
+  let invoked = 0;
+  for (const field of ["grant_id", "lane", "permission_key", "effect"]) {
+    const d = allowed();
+    Object.defineProperty(d.matched_allows[0], field, {
+      enumerable: true,
+      get() { invoked += 1; throw new Error("GRANT_GETTER_MUST_NOT_RUN"); },
+    });
+    fail(d);
+  }
+  assert.equal(invoked, 0);
+});
+
+test("contractual: AND requires both authorizing lanes; OR may use either", () => {
+  const valid = bothAllowed();
+  assert.equal(inspect(valid), undefined);
+  for (const list of [["BASE"], ["OPERATIONAL"], []]) {
+    const d = bothAllowed();
+    d.combination.authorizing_lanes = [...list];
+    d.final_decision.authorizing_lanes = [...list];
+    d.audit.authorizing_lanes = [...list];
+    fail(d);
+  }
+  const or = allowed();
+  or.permission_contract.authorization_requirement = "BASE_OR_OPERATIONAL";
+  or.required_lanes = ["BASE", "OPERATIONAL"];
+  or.combination.authorization_requirement = "BASE_OR_OPERATIONAL";
+  or.combination.combination_rule = "BASE_OR_OPERATIONAL";
+  assert.equal(inspect(or), undefined);
+  const noLane = allowed();
+  noLane.combination.authorizing_lanes = [];
+  noLane.final_decision.authorizing_lanes = [];
+  noLane.audit.authorizing_lanes = [];
+  fail(noLane);
 });
 
 test("security: getter-backed DTO properties cannot execute", () => {
