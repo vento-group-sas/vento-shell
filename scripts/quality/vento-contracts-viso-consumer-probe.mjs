@@ -31,6 +31,7 @@ export function classifyCompilerErrors(output) {
     codes,
     diagnostic_count: diagnosticLines.length,
     probe_related: diagnosticLines.some(line => /ci005|@vento\/contracts/iu.test(line)),
+    identities: diagnosticLines.map(line => asSha256Identity(line.trim())).sort(),
     // Never publish arbitrary compiler output or secrets from consumer env.
   };
 }
@@ -92,6 +93,9 @@ function nextPage(surface) {
   const runtime = surface.filter(x => !x.type_only);
   const lines = runtime.map((x, i) => "import * as module" + i + " from '" +
     CANDIDATE + '/' + x.subpath.slice(2) + "';");
+  lines.unshift("import type { AccessContextV1, SimulationContextV1 } from '" +
+    CANDIDATE + "/authorization/response-contracts/v1';");
+  lines.push('type CI005TypeWitness = [AccessContextV1, SimulationContextV1];');
   lines.push('export default function ContractsProbe() {');
   lines.push('  const counts = [' + runtime.map((_, i) =>
     'Object.keys(module' + i + ').length').join(', ') + "].join(':');");
@@ -140,11 +144,15 @@ export function evaluateProbe(steps, originalManifestHash, manifestHash,
     'runtime-repeat', 'viso-baseline', 'viso-typecheck', 'viso-next-build'];
   const complete = expected.length === steps.length
     && expected.every((name, i) => steps[i]?.name === name
-      && steps[i]?.status === 'PASS');
+      && (steps[i]?.status === 'PASS'
+        || (name === 'viso-typecheck' && steps[i]?.status === 'BASELINE_DEBT_UNCHANGED')));
+  const restricted = steps.some(step => step.status === 'BASELINE_DEBT_UNCHANGED');
   const untouched = originalManifestHash === manifestHash
     && originalLockHash === lockHash;
-  return { status: complete && untouched ? 'PASS' : 'BLOCKED',
+  return { status: complete && untouched
+      ? (restricted ? 'PASS_WITH_RESTRICTIONS' : 'PASS') : 'BLOCKED',
     all_steps_pass: complete,
+    preexisting_typecheck_debt: restricted,
     consumer_manifest_unchanged: untouched,
     release_eligibility: 'PENDING_CI005_RELATION_ATTESTATION',
     publication_executed: false };
@@ -198,16 +206,20 @@ async function execute() {
     const consumerSnapshots = await Promise.all(CONSUMERS.map(name => (
       name === 'vento-viso' ? visoSnapshot : snapshot(name)
     )));
-    const tasks = [
-      ['npm-ci', 'npm', ['ci', '--ignore-scripts', '--no-audit', '--no-fund'], 480000],
-      ['npm-install-tarball', 'npm', ['install', '--no-save', '--package-lock=false',
-        '--ignore-scripts', '--no-audit', '--no-fund', archive.tarballPath], 480000],
-    ];
-    for (const [name, binary, args, timeout] of tasks) {
-      const done = command(binary, args, viso, timeout);
-      steps.push({ name, status: done.ok ? 'PASS' : 'FAIL' });
-      if (!done.ok) block('FAILED_' + name.replaceAll('-', '_').toUpperCase());
-    }
+    const npmCi = command('npm',
+      ['ci', '--ignore-scripts', '--no-audit', '--no-fund'], viso, 480000);
+    steps.push({ name: 'npm-ci', status: npmCi.ok ? 'PASS' : 'FAIL' });
+    if (!npmCi.ok) block('FAILED_NPM_CI');
+    // Establish an attributable baseline BEFORE the tarball or probe enters VISO.
+    // No waiver is possible for new compiler diagnostics introduced by the candidate.
+    const baselineTypecheck = command('npm', ['run', 'typecheck'], viso, 180000);
+    const install = command('npm',
+      ['install', '--no-save', '--package-lock=false',
+        '--ignore-scripts', '--no-audit', '--no-fund', archive.tarballPath],
+      viso, 480000);
+    steps.push({ name: 'npm-install-tarball',
+      status: install.ok ? 'PASS' : 'FAIL' });
+    if (!install.ok) block('FAILED_NPM_INSTALL_TARBALL');
     fs.writeFileSync(path.join(viso, '.ci005-contracts-runtime.mjs'),
       runtimeProgram(surface));
     fs.writeFileSync(path.join(viso, '.ci005-contracts-types.ts'),
@@ -226,9 +238,16 @@ async function execute() {
       ['viso-next-build', 'npm', ['run', 'build:ci011'], 600000],
     ]) {
       const done = command(binary, args, viso, timeout);
-      steps.push({ name, status: done.ok ? 'PASS' : 'FAIL',
+      const stableBaseline = name === 'viso-typecheck' && !baselineTypecheck.ok
+        && baselineTypecheck.compiler.identities.length > 0
+        && JSON.stringify(done.compiler.identities)
+          === JSON.stringify(baselineTypecheck.compiler.identities);
+      const accepted = done.ok || stableBaseline;
+      const status = done.ok ? 'PASS'
+        : stableBaseline ? 'BASELINE_DEBT_UNCHANGED' : 'FAIL';
+      steps.push({ name, status,
         ...(done.ok ? {} : { diagnostic: done.compiler }) });
-      if (!done.ok) {
+      if (!accepted) {
         fs.mkdirSync(OUT, { recursive: true });
         fs.writeFileSync(path.join(OUT, 'blocked.json'),
           JSON.stringify({
@@ -245,7 +264,9 @@ async function execute() {
     const outcome = evaluateProbe(steps, hash(manifestOriginal),
       hash(fs.readFileSync(path.join(viso, 'package.json'))), hash(lockOriginal),
       hash(fs.readFileSync(path.join(viso, 'package-lock.json'))));
-    if (outcome.status !== 'PASS') block('CONSUMER_SOURCE_CHANGED');
+    if (!['PASS', 'PASS_WITH_RESTRICTIONS'].includes(outcome.status)) {
+      block('CONSUMER_SOURCE_CHANGED');
+    }
     fs.mkdirSync(OUT, { recursive: true });
     const evidence = {
       schema_version: 1, gate: 'CI005_REAL_CONSUMER_PROBE',
@@ -260,7 +281,7 @@ async function execute() {
     };
     fs.writeFileSync(path.join(OUT, 'observations.json'),
       JSON.stringify(evidence, null, 2) + '\n');
-    console.log(JSON.stringify({ status: 'PASS', package_sha: sha,
+    console.log(JSON.stringify({ status: outcome.status, package_sha: sha,
       consumer_sha: visoSnapshot.consumer_commit,
       verified_steps: steps.length, snapshots: consumerSnapshots.length,
       relation_certified: false, publication_executed: false }));
