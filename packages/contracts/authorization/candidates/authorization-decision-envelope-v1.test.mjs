@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { inspectAuthorizationResourceFingerprintBindingV1 as binding } from "./authorization-resource-fingerprint-binding-v1.mjs";
 import { inspectAuthorizationDecisionEnvelopeV1 as inspect } from "./authorization-decision-envelope-v1.mjs";
 
 function denied() {
@@ -1556,6 +1558,109 @@ test("contractual: AuthorizationDecisionV1 draft types compile with adversarial 
   const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
   assert.equal(Object.hasOwn(pkg.exports, "./authorization/decision/v1"), false);
   assert.equal(pkg.version, "1.0.0-alpha.1");
+});
+
+
+function bindingCanonical(v) {
+  if (v === null || typeof v !== "object") return JSON.stringify(v);
+  if (Array.isArray(v)) return "[" + v.map(bindingCanonical).join(",") + "]";
+  return "{" + Object.keys(v).sort().map((key) =>
+    JSON.stringify(key) + ":" + bindingCanonical(v[key])).join(",") + "}";
+}
+function bindingEvidence(d = allowed()) {
+  const r = d.resource;
+  const resource = {
+    resource_type: r.resource_type,
+    request_shape: r.request_shape,
+    resolution_status: r.resolution_status,
+    resource_ids: r.resource_ids,
+    resource_version: r.resource_version,
+    subject: r.subject,
+    territory: r.territory,
+    ownership: r.ownership,
+    required_sides: r.required_sides,
+    state_snapshot: r.state_snapshot,
+    field_classification: r.field_classification,
+    concurrency: r.concurrency,
+  };
+  const canonical_preimage_json = bindingCanonical({
+    resource, resource_contract_id: d.permission_contract.resource_contract_id,
+  });
+  d.audit.resource_fingerprint = "sha256:" +
+    createHash("sha256").update(canonical_preimage_json).digest("hex");
+  return { decision: d, canonical_preimage_json };
+}
+function bindingError(e) {
+  assert.throws(() => binding(e),
+    (err) => err instanceof TypeError
+      && err.message === "VENTO_AUTH_RESOURCE_BINDING:DIAGNOSTIC_INVALID");
+}
+test("binding: reconciles audited SHA256 and resource contract for ALLOW and DENY", () => {
+  for (const d of [allowed(), denied()]) {
+    const e = bindingEvidence(d);
+    assert.equal(inspect(d), undefined);
+    assert.equal(binding(e), undefined);
+  }
+  const wrongContract = bindingEvidence();
+  wrongContract.decision.permission_contract.resource_contract_id = "nonresource:foreign";
+  bindingError(wrongContract);
+  const wrongDigest = bindingEvidence();
+  wrongDigest.decision.audit.resource_fingerprint = "sha256:" + "0".repeat(64);
+  bindingError(wrongDigest);
+});
+test("binding: stale resolved resource identity and available snapshot facts fail closed", () => {
+  for (const mutate of [
+    (d) => { d.resource.resource_type = "changed"; d.audit.resource_type = "changed"; },
+    (d) => { d.resource.request_shape = "EXISTING"; },
+    (d) => { d.resource.resource_version = "v2"; },
+    (d) => { d.resource.territory.source = "different"; },
+    (d) => { d.resource.ownership.coherent = false; },
+    (d) => { d.resource.state_snapshot = { state: "CHANGED" }; },
+  ]) {
+    const e = bindingEvidence();
+    mutate(e.decision);
+    bindingError(e);
+  }
+});
+test("binding: mandatory identity required but absent optional facts remain uncertified", () => {
+  const missing = bindingEvidence();
+  const p = JSON.parse(missing.canonical_preimage_json);
+  delete p.resource.resource_version;
+  missing.canonical_preimage_json = bindingCanonical(p);
+  missing.decision.audit.resource_fingerprint = "sha256:" +
+    createHash("sha256").update(missing.canonical_preimage_json).digest("hex");
+  bindingError(missing);
+
+  const incomplete = bindingEvidence();
+  const minimum = JSON.parse(incomplete.canonical_preimage_json);
+  for (const key of [
+    "subject", "territory", "ownership", "required_sides",
+    "state_snapshot", "field_classification", "concurrency",
+  ]) delete minimum.resource[key];
+  incomplete.canonical_preimage_json = bindingCanonical(minimum);
+  incomplete.decision.audit.resource_fingerprint = "sha256:" +
+    createHash("sha256").update(incomplete.canonical_preimage_json).digest("hex");
+  assert.equal(binding(incomplete), undefined);
+  incomplete.decision.resource.territory.source = "changed";
+  assert.equal(binding(incomplete), undefined); // No false provenance/coverage proof.
+});
+test("binding: forged fields and accessors fail, and module is not a public authorizer", async () => {
+  const e = bindingEvidence();
+  bindingError({ ...e, allow: true });
+  bindingError(Object.assign(Object.create({ role: "owner" }), e));
+  bindingError({ ...e, [Symbol("auth")]: true });
+  bindingError({ ...e, canonical_preimage_json: null });
+  let calls = 0;
+  const poisoned = Object.defineProperty({ ...e }, "decision", {
+    enumerable: true, get() { calls++; throw Error("GETTER_EXECUTED"); },
+  });
+  bindingError(poisoned);
+  assert.equal(calls, 0);
+  assert.equal(binding(e), undefined);
+  const m = await import("./authorization-resource-fingerprint-binding-v1.mjs");
+  assert.deepEqual(Object.keys(m), ["inspectAuthorizationResourceFingerprintBindingV1"]);
+  const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
+  assert.equal(Object.hasOwn(pkg.exports, "./authorization/resource-binding/v1"), false);
 });
 
 test("security: no runtime/backend/registry import and no authority-returning surface", async () => {
