@@ -113,7 +113,7 @@ test("security: /client never exports an authorization grant API", () => {
 
 test("security: canonical client has no Supabase, fetch or framework imports", () => {
   const source = readFileSync(new URL("../src/client/index.ts", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /@supabase|supabase\.rpc|fetch\s*\(|XMLHttpRequest|React|next\/|expo|react-native/iu);
+  assert.doesNotMatch(source, /@supabase|supabase\.rpc|\bfetch\s*\(|\bXMLHttpRequest\b|\bReact\b|next\/|\bexpo\b|react-native/iu);
 });
 
 test("security: all canonical server operations reject fabricated allow inputs", async () => {
