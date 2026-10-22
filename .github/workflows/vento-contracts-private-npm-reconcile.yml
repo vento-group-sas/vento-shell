@@ -75,9 +75,11 @@ jobs:
             --evidence-root .delivery/shared-package-builds --json
       - name: CI005 fisico sobre VISO y SHA original
         working-directory: source
+        env:
+          SOURCE_SHA: ${{ inputs.expected_source_sha }}
         run: |
-          node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
-          node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+          GITHUB_SHA="$SOURCE_SHA" node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+          GITHUB_SHA="$SOURCE_SHA" node scripts/quality/vento-contracts-viso-consumer-probe.mjs
       - name: Transferir solamente JSON CI005 del mismo run
         uses: actions/upload-artifact@v7
         with:
