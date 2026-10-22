@@ -1,0 +1,284 @@
+// SOURCE-ONLY CANDIDATE: AUTH-CTX-002/004 and TREQ-SHELL-068.
+// No runtime export, publish, authorization grant or backend adapter.
+// This deliberately validates only the documented decision ENVELOPE;
+// it is NOT the full AuthorizationDecisionV1 runtime validator.
+import {
+  isAppCode, isPermissionKey, PERMISSION_BY_KEY,
+} from "@vento/contracts/authorization/catalog/v1";
+
+const ROOT = [
+  "contract_family", "contract_family_version", "contract_name",
+  "contract_version", "schema_version", "decision_id", "decided_at",
+  "correlation_id", "access_context_ref", "request", "permission_contract",
+  "resource", "required_lanes", "base_decision", "operational_decision",
+  "prerequisite_decisions", "device_decision", "sensitivity_decision",
+  "field_policy_decision", "matched_allows", "matched_denies",
+  "structural_denies", "actor_wide_denies", "lane_denies",
+  "blocked_reasons", "combination", "final_decision", "audit",
+];
+const CONTEXT = [
+  "context_id", "context_contract_version", "resolved_at", "actor_type",
+  "actor_id", "principal_type", "principal_id", "context_fingerprint",
+];
+const REQUEST = [
+  "app_code", "permission_key", "operation_kind", "resource_request",
+  "requested_fields", "request_source",
+];
+const PERMISSION = [
+  "catalog_id", "catalog_version", "catalog_hash", "app_code",
+  "permission_key", "permission_status", "authorization_requirement",
+  "base_prerequisite", "operational_prerequisite", "requires_active_area",
+  "device_policy_code", "sensitivity_class", "simulation_policy",
+  "resource_contract_id", "dependency_permission_keys",
+];
+const RESOURCE = [
+  "resource_type", "request_shape", "resolution_status", "resource_ids",
+  "resource_version", "subject", "territory", "ownership",
+  "required_sides", "state_snapshot", "field_classification",
+  "concurrency",
+];
+const LANE = [
+  "lane", "outcome", "readiness", "evaluated",
+  "matched_allow_ids", "matched_deny_ids", "reason_codes",
+];
+const COMBINATION = [
+  "authorization_requirement", "base_outcome", "operational_outcome",
+  "authorizing_lanes", "blocked_lanes", "combination_rule",
+  "combination_result",
+];
+const FINAL = [
+  "outcome", "reason_category", "primary_reason_code",
+  "authorizing_lanes", "safe_message_code",
+];
+const AUDIT = [
+  "decision_id", "correlation_id", "actor_id", "principal_id", "device_id",
+  "app_code", "permission_key", "resource_type", "resource_ids",
+  "outcome", "authorizing_lanes", "context_fingerprint",
+  "resource_fingerprint", "catalog_hash", "dataset_hashes",
+  "evaluator_name", "evaluator_version",
+];
+
+const REQUIREMENTS = new Map([
+  ["BASE_ONLY", ["BASE"]],
+  ["OPERATIONAL_ONLY", ["OPERATIONAL"]],
+  ["BASE_OR_OPERATIONAL", ["BASE", "OPERATIONAL"]],
+  ["BASE_AND_OPERATIONAL", ["BASE", "OPERATIONAL"]],
+]);
+const KINDS = new Set(["READ", "CREATE", "UPDATE", "DELETE", "EXECUTE", "TRANSITION", "EXPORT", "APP_ACCESS"]);
+const SOURCES = new Set(["SERVER_ACTION", "RPC", "RLS", "API", "UI_GUARD", "JOB"]);
+const RESOURCE_SHAPES = new Set(["EXISTING", "DRAFT", "COLLECTION", "AGGREGATE", "BULK", "NON_RESOURCE"]);
+const RESOURCE_STATUSES = new Set(["RESOLVED", "MULTI_RESOLVED", "NOT_APPLICABLE", "UNRESOLVED", "CONFLICT", "ISOLATED"]);
+const LANE_OUTCOMES = new Set(["ALLOW", "DENY", "NOT_APPLICABLE"]);
+const READINESS = new Set(["READY", "UNAVAILABLE", "INVALID", "NOT_APPLICABLE"]);
+const CONSTRAINT_STATUS = new Set(["PASS", "FAIL", "NOT_APPLICABLE"]);
+const CATEGORIES = new Set([
+  "AUTHORIZED", "STRUCTURAL_DENY", "ACTOR_WIDE_DENY", "LANE_DENY",
+  "PREREQUISITE_DENY", "RESOURCE_DENY", "DEVICE_DENY", "SENSITIVITY_DENY",
+  "FIELD_POLICY_DENY", "DEFAULT_DENY", "CONTRACT_INVALID",
+]);
+const text = (v) => typeof v === "string" && v.length > 0;
+const nullableText = (v) => v === null || text(v);
+const invalid = () => { throw new TypeError("VENTO_AUTH_DECISION:ENVELOPE_INVALID"); };
+
+function exact(value, fields) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) invalid();
+  const proto = Object.getPrototypeOf(value);
+  if (proto !== null && proto !== Object.prototype) invalid();
+  const desc = Object.getOwnPropertyDescriptors(value);
+  if (Reflect.ownKeys(desc).length !== fields.length) invalid();
+  const result = Object.create(null);
+  for (const key of fields) {
+    const d = desc[key];
+    if (!d || !Object.hasOwn(d, "value") || !d.enumerable) invalid();
+    result[key] = d.value;
+  }
+  return result;
+}
+function record(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) invalid();
+  const proto = Object.getPrototypeOf(value);
+  if (proto !== null && proto !== Object.prototype) invalid();
+  const desc = Object.getOwnPropertyDescriptors(value);
+  for (const key of Reflect.ownKeys(desc)) {
+    if (typeof key !== "string" || !Object.hasOwn(desc[key], "value") || !desc[key].enumerable) invalid();
+  }
+  return Object.fromEntries(Object.entries(desc).map(([key,d]) => [key,d.value]));
+}
+function array(value, check = () => true) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) invalid();
+  const desc = Object.getOwnPropertyDescriptors(value);
+  if (Reflect.ownKeys(desc).length !== value.length + 1) invalid();
+  const result = [];
+  for (let i = 0; i < value.length; i++) {
+    const d = desc[String(i)];
+    if (!d || !Object.hasOwn(d, "value") || !d.enumerable || !check(d.value)) invalid();
+    result.push(d.value);
+  }
+  return result;
+}
+const textList = (v) => array(v, text);
+const laneList = (v) => array(v, (x) => x === "BASE" || x === "OPERATIONAL");
+const same = (a,b) => a.length === b.length && a.every((x,i) => x === b[i]);
+function lane(input, laneName) {
+  const v = exact(input, LANE);
+  if (v.lane !== laneName || !LANE_OUTCOMES.has(v.outcome)
+    || !READINESS.has(v.readiness) || typeof v.evaluated !== "boolean") invalid();
+  textList(v.matched_allow_ids); textList(v.matched_deny_ids); textList(v.reason_codes);
+  if (v.outcome === "ALLOW" && (!v.evaluated || v.readiness !== "READY"
+    || v.matched_allow_ids.length === 0 || v.matched_deny_ids.length !== 0)) invalid();
+  if (v.outcome === "NOT_APPLICABLE"
+    && (v.evaluated || v.readiness !== "NOT_APPLICABLE")) invalid();
+  return v;
+}
+function constraint(input) {
+  const v = exact(input, ["status", "policy_code", "reason_codes"]);
+  if (!CONSTRAINT_STATUS.has(v.status) || !nullableText(v.policy_code)) invalid();
+  textList(v.reason_codes);
+  return v;
+}
+
+/**
+ * Fail-closed SOURCE CANDIDATE for the root/identity/consistency ENVELOPE.
+ * Returns undefined, never a decision, a boolean permission or a capability.
+ * Resource subtypes, grants, denials, audit integrity and backend provenance
+ * still require the full E5-authorized contract validator and real backend.
+ * DO NOT use this preflight for requireAuthorization or any mutation.
+ */
+export function inspectAuthorizationDecisionEnvelopeV1(input) {
+  try {
+    const v = exact(input, ROOT);
+    if (v.contract_family !== "vento.authorization.response-contracts"
+      || v.contract_family_version !== "1.0.0"
+      || v.contract_name !== "AuthorizationDecision"
+      || v.contract_version !== "1.0.0" || v.schema_version !== "1.0.0"
+      || !text(v.decision_id) || !text(v.decided_at)
+      || !nullableText(v.correlation_id)) invalid();
+
+    const c = exact(v.access_context_ref, CONTEXT);
+    if (!text(c.context_id) || c.context_contract_version !== "1.0.0"
+      || !text(c.resolved_at) || !text(c.actor_type)
+      || !nullableText(c.actor_id) || !text(c.principal_type)
+      || !nullableText(c.principal_id) || !text(c.context_fingerprint)) invalid();
+
+    const r = exact(v.request, REQUEST);
+    if (!isAppCode(r.app_code) || !isPermissionKey(r.permission_key)
+      || PERMISSION_BY_KEY[r.permission_key]?.app_code !== r.app_code
+      || !KINDS.has(r.operation_kind) || !SOURCES.has(r.request_source)) invalid();
+    record(r.resource_request);
+    textList(r.requested_fields);
+
+    const p = exact(v.permission_contract, PERMISSION);
+    if (!text(p.catalog_id) || !text(p.catalog_version) || !text(p.catalog_hash)
+      || p.app_code !== r.app_code || p.permission_key !== r.permission_key
+      || !["ACTIVE","INACTIVE","MISSING"].includes(p.permission_status)
+      || !REQUIREMENTS.has(p.authorization_requirement)
+      || !["N","NOT_APPLICABLE"].includes(p.base_prerequisite)
+      || !["T","T+C","NOT_APPLICABLE"].includes(p.operational_prerequisite)
+      || typeof p.requires_active_area !== "boolean" || !nullableText(p.device_policy_code)
+      || !text(p.sensitivity_class) || !text(p.simulation_policy)
+      || !text(p.resource_contract_id)) invalid();
+    textList(p.dependency_permission_keys);
+
+    const resource = exact(v.resource, RESOURCE);
+    if (!text(resource.resource_type) || !RESOURCE_SHAPES.has(resource.request_shape)
+      || !RESOURCE_STATUSES.has(resource.resolution_status)
+      || !nullableText(resource.resource_version)) invalid();
+    const resourceIds = textList(resource.resource_ids);
+    record(resource.territory); record(resource.ownership);
+    record(resource.state_snapshot); record(resource.field_classification);
+    array(resource.required_sides, (x) => x !== null && typeof x === "object" && !Array.isArray(x));
+    if (resource.subject !== null) record(resource.subject);
+    if (resource.concurrency !== null) record(resource.concurrency);
+
+    const required = laneList(v.required_lanes);
+    if (!same(required, REQUIREMENTS.get(p.authorization_requirement))) invalid();
+    const base = lane(v.base_decision, "BASE");
+    const operational = lane(v.operational_decision, "OPERATIONAL");
+    if (!required.includes("BASE") && base.outcome !== "NOT_APPLICABLE") invalid();
+    if (!required.includes("OPERATIONAL") && operational.outcome !== "NOT_APPLICABLE") invalid();
+    const prerequisites = array(v.prerequisite_decisions, (x) =>
+      x !== null && typeof x === "object" && !Array.isArray(x));
+    const device = constraint(v.device_decision);
+    const sensitivity = constraint(v.sensitivity_decision);
+    const fields = exact(v.field_policy_decision, [
+      "status","visible_fields","masked_fields","mutable_fields","blocked_fields","reason_codes",
+    ]);
+    if (!["PASS","PARTIAL","FAIL"].includes(fields.status)) invalid();
+    for (const key of ["visible_fields","masked_fields","mutable_fields","blocked_fields","reason_codes"]) {
+      textList(fields[key]);
+    }
+    const allows = array(v.matched_allows, (x) =>
+      x !== null && typeof x === "object" && !Array.isArray(x));
+    const denies = array(v.matched_denies, (x) =>
+      x !== null && typeof x === "object" && !Array.isArray(x));
+    const blocked = ["structural_denies","actor_wide_denies","lane_denies","blocked_reasons"]
+      .map((k) => array(v[k], (x) =>
+        x !== null && typeof x === "object" && !Array.isArray(x)));
+
+    const combination = exact(v.combination, COMBINATION);
+    const authorizing = laneList(combination.authorizing_lanes);
+    const blockedLanes = laneList(combination.blocked_lanes);
+    if (combination.authorization_requirement !== p.authorization_requirement
+      || combination.base_outcome !== base.outcome
+      || combination.operational_outcome !== operational.outcome
+      || !REQUIREMENTS.has(combination.combination_rule === "BASE" ? "BASE_ONLY"
+        : combination.combination_rule === "OPERATIONAL" ? "OPERATIONAL_ONLY"
+        : combination.combination_rule)
+      || !["ALLOW","DENY"].includes(combination.combination_result)) invalid();
+    const expectedRule = p.authorization_requirement === "BASE_ONLY" ? "BASE"
+      : p.authorization_requirement === "OPERATIONAL_ONLY" ? "OPERATIONAL"
+      : p.authorization_requirement;
+    if (combination.combination_rule !== expectedRule) invalid();
+    if (new Set(authorizing).size !== authorizing.length || new Set(blockedLanes).size !== blockedLanes.length) invalid();
+    const baseAllow = base.outcome === "ALLOW";
+    const opAllow = operational.outcome === "ALLOW";
+    const modeAllow = p.authorization_requirement === "BASE_ONLY" ? baseAllow
+      : p.authorization_requirement === "OPERATIONAL_ONLY" ? opAllow
+      : p.authorization_requirement === "BASE_OR_OPERATIONAL" ? (baseAllow || opAllow)
+      : (baseAllow && opAllow);
+    if ((combination.combination_result === "ALLOW") !== modeAllow) invalid();
+    if (authorizing.some((x) => (x === "BASE" ? !baseAllow : !opAllow))) invalid();
+
+    const final = exact(v.final_decision, FINAL);
+    const finalLanes = laneList(final.authorizing_lanes);
+    if (final.outcome !== combination.combination_result
+      || !CATEGORIES.has(final.reason_category)
+      || !text(final.primary_reason_code) || !text(final.safe_message_code)
+      || !same(finalLanes, authorizing)) invalid();
+    if (final.outcome === "ALLOW") {
+      if (final.reason_category !== "AUTHORIZED" || authorizing.length === 0
+        || allows.length === 0 || denies.length !== 0
+        || blocked.some((x) => x.length !== 0)
+        || !["RESOLVED","MULTI_RESOLVED","NOT_APPLICABLE"].includes(resource.resolution_status)
+        || p.permission_status !== "ACTIVE"
+        || prerequisites.some((x) => x.status === "FAIL")
+        || device.status === "FAIL" || sensitivity.status === "FAIL"
+        || fields.status === "FAIL") invalid();
+      if (fields.status === "PARTIAL" && !["READ","APP_ACCESS"].includes(r.operation_kind)) invalid();
+      for (const name of authorizing) {
+        const candidate = name === "BASE" ? base : operational;
+        if (candidate.outcome !== "ALLOW") invalid();
+      }
+    } else if (final.reason_category === "AUTHORIZED") invalid();
+
+    const audit = exact(v.audit, AUDIT);
+    if (audit.decision_id !== v.decision_id || audit.correlation_id !== v.correlation_id
+      || audit.actor_id !== c.actor_id || audit.principal_id !== c.principal_id
+      || !nullableText(audit.device_id)
+      || audit.app_code !== r.app_code || audit.permission_key !== r.permission_key
+      || audit.resource_type !== resource.resource_type
+      || !same(textList(audit.resource_ids), resourceIds)
+      || audit.outcome !== final.outcome
+      || !same(laneList(audit.authorizing_lanes), authorizing)
+      || audit.context_fingerprint !== c.context_fingerprint
+      || !text(audit.resource_fingerprint)
+      || audit.catalog_hash !== p.catalog_hash
+      || !text(audit.evaluator_name) || !text(audit.evaluator_version)) invalid();
+    const datasetHashes = record(audit.dataset_hashes);
+    if (!Object.values(datasetHashes).every(text)) invalid();
+    // Intentionally NO return of decision, outcome, ALLOW flag, or capability.
+    return undefined;
+  } catch {
+    invalid();
+  }
+}
