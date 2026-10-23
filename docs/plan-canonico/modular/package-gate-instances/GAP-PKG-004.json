@@ -375,6 +375,12 @@
         "path": "packages/contracts/authorization/catalog/candidates/anima-attendance-checkout-review.json",
         "symbol_or_surface": "VPROC-0008 permiso nuevo ANIMA checkout_review.decide por sede: candidato sin publicacion, grants ni cambio a 1.0.0/1.1.0",
         "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/viso/shared-device-create-form.tsx",
+        "symbol_or_surface": "GAP-PKG-004 VISO dispositivo compartido: corregir el mensaje visible de codigo duplicado para que no prometa sufijo automatico _02 despues de la proteccion contra replay.",
+        "operation": "MODIFICAR"
       }
     ]
   },
