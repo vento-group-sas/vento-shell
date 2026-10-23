@@ -10,6 +10,11 @@ const read = (p) => readFileSync(new URL(p, root), "utf8");
 const sql = read("supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql");
 const candidate = read("packages/contracts/authorization/candidates/authorization-decision-envelope-v1.mjs");
 const pkg = JSON.parse(read("packages/contracts/package.json"));
+
+const correction = read("supabase/migrations/20260901230518_auth_db_034_corr_001_contract_conformance.sql");
+const persistence = read("supabase/migrations/20260902024254_auth_db_032_authorization_decision_persistence.sql");
+const analytics = read("supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql");
+const projectionCandidate = read("packages/contracts/authorization/candidates/safe-projections-v1.mjs");
 const RELEASE = "sha256:9e8d1d7452ed5844fa76b9c718e7bb82ae029d6031234b3b6d9a17f22c2a4359";
 const REGISTRY = "sha256:2f19d2ebabcc87f8a6bb8029da8f87e05ea86c9acb027aec134995d338604bf4";
 function cut(src, from, to) {
@@ -73,7 +78,7 @@ test("parity BLOCKED: physical combination omits canonical lane details", () => 
   for(const name of ["authorizing_lanes","blocked_lanes","combination_rule","combination_result"])
     assert.ok(required.includes(name)&&!combineFields.includes(name));
 });
-test("parity BLOCKED: SQL audit differs from required evaluator provenance", () => {
+test("parity BLOCKED: historical core audit differs before forward correction", () => {
   assert.deepEqual(auditFields,[
     "request_fingerprint","context_fingerprint","permission_contract_fingerprint",
     "resource_fingerprint","contract_release_hash","identity_registry_sha256",
@@ -189,7 +194,7 @@ test("parity BLOCKED: safe reason codes bypass V1 reason-object classification",
   // This detects missing canonical reason classification; it does not prove
   // exposure of actual confidential data or validate SQL runtime behavior.
 });
-test("safe boundary: authenticated SQL API uses only the guarded projector", () => {
+test("historical AUTH-DB-034 safe API uses guarded projector before persistence replacement", () => {
   const api = cut(sql,
     "create or replace function\n  api.get_safe_authorization_decision(",
     "$auth_db_034_api_safe$;");
@@ -199,4 +204,70 @@ test("safe boundary: authenticated SQL API uses only the guarded projector", () 
     /revoke all\s+on function\s+api\.get_safe_authorization_decision\(jsonb\)\s+from public, anon, authenticated, service_role;/u);
   assert.match(sql,
     /grant execute\s+on function\s+api\.get_safe_authorization_decision\(jsonb\)\s+to authenticated;/u);
+});
+
+// EFFECTIVE MIGRATION GRAPH: static checks include forward corrections and
+// downstream consumers. PASS is diagnostic only; no migrated database was read.
+test("parity BLOCKED: forward audit correction adds 17 canonical keys but retains 6 legacy keys", () => {
+  const amended = cut(correction,
+    "v_audit :=\n    coalesce(",
+    "  return pg_catalog.jsonb_set(");
+  assert.ok(amended.includes("v_decision -> 'audit'"));
+  assert.match(amended, /\|\|\s*pg_catalog\.jsonb_build_object\(/u);
+  const canonical = contractKeys("AUDIT");
+  const added = keys(amended, 6);
+  assert.deepEqual(added, canonical);
+  const effective = [...new Set([...auditFields, ...added])];
+  assert.equal(effective.length, 23);
+  assert.deepEqual(effective.filter((name) => !canonical.includes(name)), [
+    "request_fingerprint", "permission_contract_fingerprint",
+    "contract_release_hash", "identity_registry_sha256",
+    "dataset_evidence", "request_source",
+  ]);
+  // PgTAP 043/156 tests membership via ?&, not exact key cardinality.
+  // The forward migration is VERIFIED on source; this is not hosted-state proof.
+});
+test("parity BLOCKED: SQL safe DTO has 12 fields versus 9-field canonical client projection", () => {
+  const m = projectionCandidate.match(
+    /const DECISION_FIELDS = Object\.freeze\(\[([\s\S]*?)\]\);/u);
+  assert.ok(m, "Canonical safe decision projection list missing");
+  const fields = [...m[1].matchAll(/"([a-z][a-z0-9_]*)"/gu)].map((x) => x[1]);
+  const physical = keys(safe, 4);
+  assert.equal(fields.length, 9);
+  assert.equal(physical.length, 12);
+  assert.deepEqual(fields.filter((x) => !physical.includes(x)), [
+    "projection_version", "reason_codes", "mutable_fields",
+  ]);
+  assert.deepEqual(physical.filter((x) => !fields.includes(x)), [
+    "operation_kind", "resource_type", "safe_resource_reference",
+    "safe_reason_codes", "recovery_actions", "decided_at",
+  ]);
+  // Both surfaces remain non-authoritative. No fabricated client adapter.
+});
+test("parity BLOCKED: AUTH-DB-032 changes safe API to evaluate-and-persist and expects scalar", () => {
+  const coordinator = cut(persistence,
+    "create or replace function app_private.evaluate_and_record_authorization(",
+    "$auth_db_032_evaluate_and_record$;");
+  const api = cut(persistence,
+    "create or replace function api.get_safe_authorization_decision(",
+    "$auth_db_032_api_safe$;");
+  assert.ok(coordinator.includes(
+    "v_decision := app_private.evaluate_authorization(p_evaluation_request);"));
+  assert.ok(coordinator.includes("audit.append_authorization_decision(v_decision)"));
+  assert.match(api,
+    /app_private\.project_safe_authorization_decision\(\s*app_private\.evaluate_and_record_authorization\(p_evaluation_request\)/u);
+  assert.ok(persistence.includes(
+    "v_outcome := p_decision ->> 'final_decision';"));
+  assert.ok(persistence.includes("v_dataset_hashes := v_audit -> 'dataset_hashes';"));
+});
+test("parity BLOCKED: GAP-PKG-019 analytics reads scalar decision in normal and detail paths", () => {
+  assert.ok(analytics.includes(
+    "v_authorization ->> 'final_decision' not in ('ALLOW', 'DENY')"));
+  assert.ok(analytics.includes(
+    "v_authorization ->> 'final_decision' <> 'ALLOW'"));
+  assert.ok(analytics.includes(
+    "v_detail_authorization ->> 'final_decision' <> 'ALLOW'"));
+  assert.ok(analytics.includes(
+    "v_safe_authorization := app_private.project_safe_authorization_decision("));
+  // Dependencies are read-only here; the analytics package is not modified.
 });
