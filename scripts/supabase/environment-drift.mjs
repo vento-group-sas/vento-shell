@@ -188,11 +188,13 @@ table_grants as (
   ), '[]'::jsonb) as value
   from pg_catalog.pg_class as c
   join governed_schemas as n on n.oid = c.relnamespace
-  cross join lateral pg_catalog.aclexplode(c.relacl) as a
+  cross join lateral pg_catalog.aclexplode(
+    coalesce(c.relacl, pg_catalog.acldefault('r'::"char", c.relowner))
+  ) as a
   where c.relkind in ('r', 'p', 'v', 'm', 'f')
     and (
       case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end
-    ) in ('anon', 'authenticated', 'service_role')
+    ) in ('anon', 'authenticated', 'service_role', 'PUBLIC')
 ),
 routine_grants as (
   select coalesce(jsonb_agg(jsonb_build_object(
@@ -223,6 +225,99 @@ routine_grants as (
     and (
       case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end
     ) in ('anon', 'authenticated', 'service_role', 'PUBLIC')
+),
+-- R0 catalog: effective permissions and default ACL are distinct from
+-- explicit GRANT entries. Preserve Supabase-managed grantors as evidence.
+default_privileges as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'schema', n.nspname,
+    'owner', pg_catalog.pg_get_userbyid(d.defaclrole),
+    'kind', d.defaclobjtype,
+    'grantor', pg_catalog.pg_get_userbyid(a.grantor),
+    'grantee', case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end,
+    'privilege', a.privilege_type,
+    'grantable', a.is_grantable
+  ) order by n.nspname, d.defaclobjtype,
+    pg_catalog.pg_get_userbyid(d.defaclrole),
+    case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end,
+    a.privilege_type, pg_catalog.pg_get_userbyid(a.grantor)), '[]'::jsonb) as value
+  from pg_catalog.pg_default_acl as d
+  join governed_schemas as n on n.oid = d.defaclnamespace
+  cross join lateral pg_catalog.aclexplode(d.defaclacl) as a
+  where d.defaclobjtype in ('r', 'f', 'S')
+    and (a.grantee = 0 or exists (
+      select 1 from pg_catalog.pg_roles as recipient
+      where recipient.oid = a.grantee
+        and recipient.rolname in ('anon', 'authenticated', 'service_role')
+    ))
+),
+role_memberships as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'member', member_role.rolname,
+    'parent', parent_role.rolname,
+    'inherit', m.inherit_option,
+    'set_role', m.set_option,
+    'admin', m.admin_option
+  ) order by member_role.rolname, parent_role.rolname), '[]'::jsonb) as value
+  from pg_catalog.pg_auth_members as m
+  join pg_catalog.pg_roles as member_role on member_role.oid = m.member
+  join pg_catalog.pg_roles as parent_role on parent_role.oid = m.roleid
+  where member_role.rolname in ('anon', 'authenticated', 'service_role')
+),
+effective_schema_usage as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'schema', n.nspname,
+    'role', role_ref.rolname,
+    'usage', pg_catalog.has_schema_privilege(role_ref.oid, n.oid, 'USAGE')
+  ) order by n.nspname, role_ref.rolname), '[]'::jsonb) as value
+  from governed_schemas as n
+  cross join pg_catalog.pg_roles as role_ref
+  where role_ref.rolname in ('anon', 'authenticated', 'service_role')
+),
+effective_table_privileges as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'schema', n.nspname,
+    'relation', c.relname,
+    'role', role_ref.rolname,
+    'privilege', perm.privilege_type
+  ) order by n.nspname, c.relname, role_ref.rolname, perm.privilege_type), '[]'::jsonb) as value
+  from pg_catalog.pg_class as c
+  join governed_schemas as n on n.oid = c.relnamespace
+  cross join pg_catalog.pg_roles as role_ref
+  cross join lateral (
+    select distinct privilege_type
+    from pg_catalog.aclexplode(
+      coalesce(c.relacl, pg_catalog.acldefault('r'::"char", c.relowner))
+    )
+  ) as perm
+  where c.relkind in ('r', 'p', 'v', 'm', 'f')
+    and role_ref.rolname in ('anon', 'authenticated', 'service_role')
+    and pg_catalog.has_table_privilege(role_ref.oid, c.oid, perm.privilege_type)
+),
+effective_routine_privileges as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'schema', n.nspname,
+    'routine', p.proname,
+    'identity_args', pg_catalog.pg_get_function_identity_arguments(p.oid),
+    'role', role_ref.rolname,
+    'executable', pg_catalog.has_function_privilege(role_ref.oid, p.oid, 'EXECUTE')
+  ) order by n.nspname, p.proname,
+    pg_catalog.pg_get_function_identity_arguments(p.oid),
+    role_ref.rolname), '[]'::jsonb) as value
+  from pg_catalog.pg_proc as p
+  join governed_schemas as n on n.oid = p.pronamespace
+  cross join pg_catalog.pg_roles as role_ref
+  where p.prokind in ('f', 'p')
+    and role_ref.rolname in ('anon', 'authenticated', 'service_role')
+),
+governed_extensions as (
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'name', e.extname,
+    'schema', n.nspname,
+    'version', e.extversion
+  ) order by e.extname, n.nspname), '[]'::jsonb) as value
+  from pg_catalog.pg_extension as e
+  join governed_schemas as n on n.oid = e.extnamespace
 ),
 publications as (
   select coalesce(jsonb_agg(jsonb_build_object(
@@ -261,6 +356,12 @@ select jsonb_build_object(
   'policies', (select value from policies),
   'table_grants', (select value from table_grants),
   'routine_grants', (select value from routine_grants),
+  'default_privileges', (select value from default_privileges),
+  'role_memberships', (select value from role_memberships),
+  'effective_schema_usage', (select value from effective_schema_usage),
+  'effective_table_privileges', (select value from effective_table_privileges),
+  'effective_routine_privileges', (select value from effective_routine_privileges),
+  'governed_extensions', (select value from governed_extensions),
   'publications', (select value from publications),
   'types', (select value from types),
   'vital_boundary', jsonb_build_object(
