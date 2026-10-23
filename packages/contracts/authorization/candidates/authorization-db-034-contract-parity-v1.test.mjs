@@ -151,3 +151,52 @@ test("no accidental promotion: incompatibility is a blocker, never a passing ful
     assert.equal(Object.hasOwn(pkg.exports,subpath),false);
   assert.match(candidate,/return undefined;/u);
 });
+
+// PHYSICAL DEPENDENCY TRIPWIRES. These source-only tests deliberately detect
+// the old scalar model and must be replaced by DB-backed compatibility proof
+// during the governed AUTH-DB-034 reconciliation, not silently reclassified PASS.
+test("parity BLOCKED: SQL policy boolean still reads scalar final_decision", () => {
+  const policy = cut(sql,
+    "create or replace function\n  app_private.authorization_policy_allows(",
+    "$auth_db_034_policy$;");
+  assert.match(policy,
+    /app_private\.evaluate_authorization\(\s*p_evaluation_request\s*\)\s*->>\s*'final_decision'\s*=\s*'ALLOW'/u);
+  assert.ok(contractKeys("FINAL").includes("outcome"));
+});
+test("parity BLOCKED: safe projection validates and emits the scalar decision", () => {
+  const projector = cut(sql,
+    "create or replace function\n  app_private.project_safe_authorization_decision(",
+    "end\n$auth_db_034_safe_projection$;");
+  assert.match(projector,
+    /p_decision\s*->>\s*'final_decision'\s*not in\s*\(\s*'ALLOW',\s*'DENY'\s*\)/u);
+  assert.match(projector,
+    /'outcome',\s*p_decision\s*->>\s*'final_decision'/u);
+  assert.ok(contractKeys("FINAL").includes("safe_message_code"));
+});
+test("parity BLOCKED: safe reason codes bypass V1 reason-object classification", () => {
+  const projector = cut(sql,
+    "create or replace function\n  app_private.project_safe_authorization_decision(",
+    "end\n$auth_db_034_safe_projection$;");
+  assert.ok(full.includes(
+    "'blocked_reasons',\n    pg_catalog.to_jsonb(\n      v_blocked_codes\n    ),"));
+  assert.deepEqual(contractKeys("REASON_FIELDS"), [
+    "reason_code", "category", "severity", "lane", "source", "safe_to_expose",
+  ]);
+  assert.match(projector,
+    /'safe_message_code',\s*case[\s\S]*?else p_decision #>>\s*'\{blocked_reasons,0\}'/u);
+  assert.match(projector,
+    /'safe_reason_codes',\s*coalesce\(\s*p_decision\s*->\s*'blocked_reasons'/u);
+  // This detects missing canonical reason classification; it does not prove
+  // exposure of actual confidential data or validate SQL runtime behavior.
+});
+test("safe boundary: authenticated SQL API uses only the guarded projector", () => {
+  const api = cut(sql,
+    "create or replace function\n  api.get_safe_authorization_decision(",
+    "$auth_db_034_api_safe$;");
+  assert.match(api,
+    /app_private\.project_safe_authorization_decision\(\s*app_private\.evaluate_authorization\(\s*p_evaluation_request\s*\)\s*\)/u);
+  assert.match(sql,
+    /revoke all\s+on function\s+api\.get_safe_authorization_decision\(jsonb\)\s+from public, anon, authenticated, service_role;/u);
+  assert.match(sql,
+    /grant execute\s+on function\s+api\.get_safe_authorization_decision\(jsonb\)\s+to authenticated;/u);
+});
