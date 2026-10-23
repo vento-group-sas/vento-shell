@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { NPM_REGISTRY_URL } from './shared-package-registry-preflight.mjs';
 import zlib from 'node:zlib';
 import {
   asSha256Identity as qualityAsSha256Identity,
@@ -235,6 +235,116 @@ function compareDependencySets(left, right) {
   return stableStringify(normalizeDependencySet(left)) === stableStringify(normalizeDependencySet(right));
 }
 
+
+function previewCheck(ok, code) {
+  if (!ok) throw new Error('VENTO_NPM_RELEASE_PREP:' + code);
+}
+
+function previewExportTargets(value) {
+  if (typeof value === 'string') {
+    previewCheck(/^\.\/dist\/[A-Za-z0-9_./-]+$/u.test(value)
+      && !value.includes('..') && !value.includes('//'), 'EXPORT_OUTSIDE_DIST');
+    return [value.slice(2)];
+  }
+  previewCheck(value && typeof value === 'object' && !Array.isArray(value), 'EXPORT_INVALID');
+  return Object.values(value).flatMap(previewExportTargets);
+}
+
+// One policy for the private authoring manifest and the public-internal
+// tarball. Neither the original package.json nor any source files are edited.
+export function releasePreviewManifest(source) {
+  previewCheck(source && typeof source === 'object' && !Array.isArray(source)
+    && CANONICAL_SHARED_PACKAGES.includes(source.name), 'NONCANONICAL_PACKAGE');
+  previewCheck(source.private === true && source.type === 'module',
+    'SOURCE_MUST_REMAIN_PRIVATE');
+  previewCheck(Boolean(parseSemver(source.version)), 'VERSION_INVALID');
+  previewCheck(!Object.hasOwn(source, 'publishConfig'), 'SOURCE_PUBLISH_CONFIG_FORBIDDEN');
+  previewCheck(Array.isArray(source.files) && source.files.length === 1
+    && source.files[0] === 'dist/', 'SOURCE_FILES_UNSAFE');
+  previewCheck(source.exports && typeof source.exports === 'object'
+    && !Array.isArray(source.exports), 'EXPORTS_MISSING');
+  const targets = [...new Set(previewExportTargets(source.exports))];
+  previewCheck(targets.length > 0, 'NO_EXPORTS');
+  for (const section of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
+    for (const [name, version] of Object.entries(source[section] ?? {})) {
+      if (name.startsWith('@vento/')) previewCheck(Boolean(parseSemver(version)),
+        'INTERNAL_VERSION_NOT_EXACT');
+    }
+  }
+  const preview = {
+    name: source.name, version: source.version, type: 'module', private: false,
+    files: ['dist/'], exports: structuredClone(source.exports),
+    publishConfig: { registry: NPM_REGISTRY_URL },
+  };
+  for (const field of ['description', 'main', 'types', 'sideEffects',
+    'dependencies', 'optionalDependencies', 'peerDependencies',
+    'peerDependenciesMeta', 'engines', 'license']) {
+    if (Object.hasOwn(source, field)) preview[field] = structuredClone(source[field]);
+  }
+  return { preview, targets };
+}
+
+// CI002 attests the private-source pack. Its SHA512 deliberately differs
+// from the publishable preview, because the latter removes hooks and has
+// private:false. Verify every distributed dist byte against CI002 instead.
+export function assessPrivateReleasePreview({
+  sourceManifest, tarballBuffer, buildEvidence,
+}) {
+  const reasons = [];
+  let expected;
+  try {
+    expected = releasePreviewManifest(sourceManifest).preview;
+  } catch {
+    return ['PRIVATE_PREVIEW_SOURCE_INVALID'];
+  }
+  let entries;
+  try {
+    entries = readTarEntries(tarballBuffer);
+  } catch {
+    return ['PRIVATE_PREVIEW_ARCHIVE_INVALID'];
+  }
+  const names = entries.map((entry) => entry.path);
+  if (names.length === 0 || new Set(names).size !== names.length
+    || names.some((name) => name !== 'package/package.json'
+      && name !== 'package/README.md'
+      && (!/^package\/dist\/[A-Za-z0-9_./-]+$/u.test(name)
+        || name.includes('..')))) {
+    reasons.push('PRIVATE_PREVIEW_CONTENT_ALLOWLIST_FAILED');
+  }
+  const manifestEntries = entries.filter((entry) => entry.path === 'package/package.json');
+  if (manifestEntries.length !== 1) {
+    reasons.push('PRIVATE_PREVIEW_MANIFEST_MISSING');
+  } else {
+    let actual = null;
+    try { actual = JSON.parse(manifestEntries[0].content.toString('utf8')); } catch { /* invalid */ }
+    if (stableStringify(actual) !== stableStringify(expected)) {
+      reasons.push('PRIVATE_PREVIEW_MANIFEST_DIVERGENCE');
+    }
+  }
+  const files = buildEvidence?.artifact_file_manifest;
+  if (!Array.isArray(files) || files.length === 0
+    || files.some((item) => !/^[A-Za-z0-9_./-]+$/u.test(item?.path ?? '')
+      || item.path.includes('..')
+      || !/^sha256:[a-f0-9]{64}$/u.test(item?.sha256 ?? ''))) {
+    reasons.push('PRIVATE_PREVIEW_BUILD_MANIFEST_INVALID');
+  } else {
+    const actual = entries.filter((entry) => entry.path.startsWith('package/dist/'));
+    const expectedPaths = files.map((entry) => 'package/dist/' + entry.path);
+    if (new Set(expectedPaths).size !== expectedPaths.length
+      || actual.length !== files.length
+      || actual.some((entry) => !expectedPaths.includes(entry.path))) {
+      reasons.push('PRIVATE_PREVIEW_DIST_FILESET_DIVERGENCE');
+    }
+    for (const item of files) {
+      const entry = actual.find((candidate) => candidate.path === 'package/dist/' + item.path);
+      if (!entry || asSha256Identity(entry.content) !== item.sha256) {
+        reasons.push('PRIVATE_PREVIEW_DIST_BYTES_DIVERGENCE:' + item.path);
+      }
+    }
+  }
+  return unique(reasons);
+}
+
 export function validateReleaseContract(contract, { manifest } = {}) {
   const errors = [];
   if (!isPlainObject(contract)) return ['CONTRACT_NOT_OBJECT'];
@@ -246,6 +356,10 @@ export function validateReleaseContract(contract, { manifest } = {}) {
   if (!CHANNEL_TYPES.has(contract.release_channel_type)) errors.push('RELEASE_CHANNEL_TYPE_INVALID');
   if (!EXECUTION_MODES.has(contract.execution_mode)) errors.push('EXECUTION_MODE_INVALID');
   if (contract.distribution_change !== true) errors.push('DISTRIBUTION_CHANGE_REQUIRED');
+  if (contract.release_preview_mode !== undefined
+    && contract.release_preview_mode !== 'EPHEMERAL_PRIVATE_SOURCE') {
+    errors.push('RELEASE_PREVIEW_MODE_INVALID');
+  }
   if (contract.changelog_required === true && !nonEmptyString(contract.changelog_identity)) {
     errors.push('CHANGELOG_IDENTITY_REQUIRED');
   }
@@ -255,10 +369,18 @@ export function validateReleaseContract(contract, { manifest } = {}) {
   if (!Array.isArray(contract.approved_internal_prereleases ?? [])) errors.push('APPROVED_INTERNAL_PRERELEASES_INVALID');
   if (contract.execution_mode === 'REAL') {
     if (!nonEmptyString(contract.github_repository)) errors.push('GITHUB_REPOSITORY_REQUIRED');
+    else if (contract.github_repository !== 'vento-group-sas/vento-shell') errors.push('GITHUB_REPOSITORY_NOT_CANONICAL');
     if (!nonEmptyString(contract.registry_url)) errors.push('REGISTRY_URL_REQUIRED');
+    else if (contract.registry_url !== NPM_REGISTRY_URL) errors.push('REGISTRY_NOT_PRIVATE_GITLAB');
   }
   if (manifest) {
     if (manifest.name !== contract.package_name) errors.push('MANIFEST_PACKAGE_MISMATCH');
+    if (manifest.private === true && contract.release_preview_mode !== 'EPHEMERAL_PRIVATE_SOURCE') {
+      errors.push('PRIVATE_SOURCE_PREVIEW_REQUIRED');
+    }
+    if (manifest.private !== true && contract.release_preview_mode === 'EPHEMERAL_PRIVATE_SOURCE') {
+      errors.push('PRIVATE_PREVIEW_REQUIRES_PRIVATE_SOURCE');
+    }
     if (manifest.version !== contract.release_version) errors.push('MANIFEST_VERSION_MISMATCH');
     const semver = parseSemver(contract.release_version);
     if (semver) {
@@ -337,6 +459,11 @@ export function readTarEntries(tarballBuffer) {
     const bodyStart = offset + 512;
     const bodyEnd = bodyStart + size;
     if (bodyEnd > raw.length) throw new Error('Malformed tarball: entry exceeds archive length.');
+    // Never accept symlinks, hardlinks or device entries inside release tarballs.
+    // npm may emit PAX metadata (x/g) for long names; do not reject those.
+    if (['1', '2', '3', '4', '6', '7'].includes(type)) {
+      throw new Error('Unsafe tarball entry type.');
+    }
     if (type === '0' || type === '\0') entries.push({ path: fullName, content: raw.subarray(bodyStart, bodyEnd) });
     offset = bodyStart + Math.ceil(size / 512) * 512;
   }
@@ -410,6 +537,7 @@ export function inspectObservedState(candidate, state) {
   const registry = normalized.registry[registryKey(candidate.package_name, candidate.release_version)] ?? null;
   const conflicts = [];
   if (tag && !exactRecord(tag, expected)) conflicts.push('TAG_IDENTITY_CONFLICT');
+  if (tag && tag.annotated !== true) conflicts.push('TAG_NOT_ANNOTATED');
   if (release && !exactRecord(release, expected)) conflicts.push('REMOTE_RELEASE_IDENTITY_CONFLICT');
   if (registry && !exactRecord(registry, expected)) conflicts.push('REGISTRY_VERSION_IDENTITY_CONFLICT');
   return {
@@ -498,7 +626,13 @@ export function evaluateReleaseCandidate({
   if (packageDirty) reasons.push('PACKAGE_WORKTREE_DIRTY');
   if (duplicateImplementations.length > 0) reasons.push(`DUPLICATE_GATE_IMPLEMENTATION:${duplicateImplementations.join(',')}`);
   const tarballIntegrity = sriSha512(tarballBuffer);
-  if (buildEvidence?.pack_integrity !== tarballIntegrity) reasons.push('TARBALL_INTEGRITY_MISMATCH');
+  if (manifest?.private === true && contract?.release_preview_mode === 'EPHEMERAL_PRIVATE_SOURCE') {
+    reasons.push(...assessPrivateReleasePreview({
+      sourceManifest: manifest, tarballBuffer, buildEvidence,
+    }));
+  } else if (buildEvidence?.pack_integrity !== tarballIntegrity) {
+    reasons.push('TARBALL_INTEGRITY_MISMATCH');
+  }
   const secretFindings = detectSecretsInTarball(tarballBuffer);
   if (secretFindings.length > 0) reasons.push(`SECRET_DETECTED_IN_ARTIFACT:${secretFindings.join(',')}`);
   let candidate = null;
@@ -562,22 +696,74 @@ function loadSyntheticState(statePath) {
   return normalizeSyntheticState(readJson(statePath, 'synthetic release state').value);
 }
 
+export function parseRemoteAnnotatedTag(source, tagName) {
+  if (!source?.trim()) return null;
+  const entries = source.trim().split(/\r?\n/u).map((line) => {
+    const match = line.match(/^([a-f0-9]{40})\s+(refs\/tags\/[^\s]+)$/u);
+    if (!match) throw new Error('REMOTE_TAG_RESPONSE_INVALID');
+    return { sha: match[1], ref: match[2] };
+  });
+  const exact = 'refs/tags/' + tagName;
+  if (entries.some((entry) => entry.ref !== exact && entry.ref !== exact + '^{}')) {
+    throw new Error('REMOTE_TAG_REFERENCE_MISMATCH');
+  }
+  const ref = entries.find((entry) => entry.ref === exact);
+  if (!ref) throw new Error('REMOTE_TAG_NOT_LISTED');
+  const peeled = entries.find((entry) => entry.ref === exact + '^{}');
+  return { sha: peeled?.sha ?? ref.sha, annotated: Boolean(peeled) };
+}
+
 function realTagCommit(repositoryRoot, tagName) {
   const result = run('git', ['ls-remote', 'origin', `refs/tags/${tagName}`, `refs/tags/${tagName}^{}`], {
     cwd: repositoryRoot,
   });
-  if (result.error || result.status !== 0 || !result.stdout.trim()) return null;
-  const lines = result.stdout.trim().split(/\r?\n/u);
-  const peeled = lines.find((line) => line.endsWith(`refs/tags/${tagName}^{}`));
-  const chosen = peeled ?? lines[0];
-  return chosen.split(/\s+/u)[0] ?? null;
+  if (result.error || result.status !== 0) {
+    throw new Error('REMOTE_TAG_READ_FAILED');
+  }
+  return parseRemoteAnnotatedTag(result.stdout, tagName);
+}
+
+export function privateReleaseNotes(candidate) {
+  if (!CANONICAL_SHARED_PACKAGES.includes(candidate?.package_name)
+    || !parseSemver(candidate?.release_version)
+    || !COMMIT_PATTERN.test(String(candidate?.source_commit ?? ''))
+    || !/^sha256:[0-9a-f]{64}$/u.test(String(candidate?.tarball_sha256 ?? ''))
+    || !/^sha512-[A-Za-z0-9+/]+=*$/u.test(String(candidate?.pack_integrity ?? ''))) {
+    throw new Error('PRIVATE_RELEASE_METADATA_INVALID');
+  }
+  return [
+    'VENTO-PRIVATE-NPM-RELEASE-V1',
+    `package=${candidate.package_name}`,
+    `version=${candidate.release_version}`,
+    `source_commit=${candidate.source_commit}`,
+    `tarball_sha256=${candidate.tarball_sha256}`,
+    `npm_integrity=${candidate.pack_integrity}`,
+    `registry=${NPM_REGISTRY_URL}`,
+    'artifact=PRIVATE_GITLAB_NPM_ONLY',
+  ].join('\n');
+}
+
+export function privateReleaseCreateArgs(candidate, contract) {
+  if (contract?.github_repository !== 'vento-group-sas/vento-shell'
+    || contract?.registry_url !== NPM_REGISTRY_URL) {
+    throw new Error('PRIVATE_RELEASE_DESTINATION_INVALID');
+  }
+  const args = [
+    'release', 'create', candidate.tag_name,
+    '--repo', contract.github_repository,
+    '--title', `${candidate.package_name} ${candidate.release_version}`,
+    '--notes', privateReleaseNotes(candidate),
+    '--verify-tag',
+  ];
+  if (parseSemver(candidate.release_version).prerelease) args.push('--prerelease');
+  return args;
 }
 
 function realReleaseInfo(contract, tagName) {
   const result = run('gh', [
     'release', 'view', tagName,
     '--repo', contract.github_repository,
-    '--json', 'tagName,targetCommitish,name,assets',
+    '--json', 'tagName,targetCommitish,name,assets,body',
   ]);
   if (result.error || result.status !== 0) return null;
   try {
@@ -605,16 +791,21 @@ function realObservedState(repositoryRoot, contract, candidate) {
   const synthetic = emptySyntheticState();
   const expected = expectedPublishedIdentity(candidate);
   if (tagCommit) {
-    synthetic.tags[candidate.tag_name] = tagCommit === candidate.source_commit
-      ? { ...expected, annotated: true }
-      : { ...expected, source_commit: tagCommit, annotated: true };
+    synthetic.tags[candidate.tag_name] = tagCommit.sha === candidate.source_commit
+      ? { ...expected, annotated: tagCommit.annotated }
+      : { ...expected, source_commit: tagCommit.sha, annotated: tagCommit.annotated };
   }
   if (release) {
     if (release.ambiguous) synthetic.releases[candidate.tag_name] = { ambiguous: true };
     else {
+      const notesOk = typeof release.body === 'string'
+        && release.body.trim() === privateReleaseNotes(candidate).trim();
+      const noPublicAssets = Array.isArray(release.assets) && release.assets.length === 0;
       synthetic.releases[candidate.tag_name] = release.tagName === candidate.tag_name
+        && notesOk && noPublicAssets
         ? { ...expected, immutable: true }
-        : { ...expected, tag_name: release.tagName ?? 'UNKNOWN', immutable: true };
+        : { ambiguous: true, tag_name: release.tagName ?? 'UNKNOWN',
+          reason: 'PUBLIC_RELEASE_IDENTITY_OR_ASSETS_INVALID' };
     }
   }
   if (registry) {
@@ -643,20 +834,6 @@ function assertRealReleaseConfirmation(contract, allowRealRelease) {
   }
 }
 
-function createTempProvenance(candidate) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-release-provenance-'));
-  const filePath = path.join(directory, 'release-provenance.json');
-  writeJsonAtomic(filePath, sanitizeObject({
-    package_name: candidate.package_name,
-    release_version: candidate.release_version,
-    source_commit: candidate.source_commit,
-    artifact_sha256: candidate.tarball_sha256,
-    pack_integrity: candidate.pack_integrity,
-    material_identity_sha256: candidate.material_identity_sha256,
-  }));
-  return { directory, filePath };
-}
-
 function applyRealRelease({ repositoryRoot, contract, candidate, tarballPath, observed, allowRealRelease }) {
   assertRealReleaseConfirmation(contract, allowRealRelease);
   const phases = [];
@@ -665,30 +842,19 @@ function applyRealRelease({ repositoryRoot, contract, candidate, tarballPath, ob
     runChecked('git', ['push', 'origin', `refs/tags/${candidate.tag_name}`], { cwd: repositoryRoot });
     phases.push('TAG_CREATED');
   }
-  const provenance = createTempProvenance(candidate);
-  try {
-    if (!observed.release) {
-      runChecked('gh', [
-        'release', 'create', candidate.tag_name,
-        tarballPath,
-        provenance.filePath,
-        '--repo', contract.github_repository,
-        '--title', `${candidate.package_name} ${candidate.release_version}`,
-        '--notes', `Immutable package release for ${candidate.package_name}@${candidate.release_version}.`,
-        '--verify-tag',
-      ]);
-      phases.push('REMOTE_RELEASE_CREATED');
-    }
-    if (!observed.registry) {
-      runNpmChecked([
-        'publish', tarballPath,
-        '--tag', candidate.release_channel,
-        '--registry', contract.registry_url,
-      ]);
-      phases.push('REGISTRY_PUBLISHED');
-    }
-  } finally {
-    fs.rmSync(provenance.directory, { recursive: true, force: true });
+  // vento-shell is public: never attach private npm tarballs or provenance JSON
+  // to GitHub Releases. Only checksums and version metadata may be public.
+  if (!observed.release) {
+    runChecked('gh', privateReleaseCreateArgs(candidate, contract));
+    phases.push('REMOTE_RELEASE_METADATA_CREATED');
+  }
+  if (!observed.registry) {
+    runNpmChecked([
+      'publish', tarballPath,
+      '--tag', candidate.release_channel,
+      '--registry', contract.registry_url,
+    ]);
+    phases.push('PRIVATE_GITLAB_REGISTRY_PUBLISHED');
   }
   const verifiedState = realObservedState(repositoryRoot, contract, candidate);
   const verified = inspectObservedState(candidate, verifiedState);
@@ -893,16 +1059,27 @@ export function runGate({
         ? { ...preliminary, outcome: 'PASS', reasons: [] }
         : { ...preliminary, outcome: 'FAIL', reasons: ['SYNTHETIC_POST_READ_FAILED'] };
     } else {
-      const result = applyRealRelease({
-        repositoryRoot,
-        contract,
-        candidate: preliminary.candidate,
-        tarballPath: absoluteTarballPath,
-        observed: preliminary.observed,
-        allowRealRelease,
-      });
-      phases = result.phases;
-      finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      try {
+        const result = applyRealRelease({
+          repositoryRoot,
+          contract,
+          candidate: preliminary.candidate,
+          tarballPath: absoluteTarballPath,
+          observed: preliminary.observed,
+          allowRealRelease,
+        });
+        phases = result.phases;
+        finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      } catch {
+        // After the first remote write, failure might mean a PARTIAL release.
+        // Persist fail-closed evidence without echoing tokens or subprocess logs.
+        // Never report PASS until the tag, release and GitLab registry reconcile.
+        phases = ['REAL_RELEASE_INTERRUPTED_REMOTE_RECONCILIATION_REQUIRED'];
+        finalEvaluation = {
+          ...preliminary, outcome: 'BLOCKED',
+          reasons: ['REAL_RELEASE_NOT_CERTIFIED', 'REMOTE_STATE_RECONCILIATION_REQUIRED'],
+        };
+      }
     }
   } else if (preliminary.outcome === 'PASS' && preliminary.idempotent) {
     phases = ['IDEMPOTENT_NO_MUTATION'];

@@ -20,6 +20,12 @@
 # production
 /build
 
+# Outputs of the canonical contracts workspace (never authoring sources)
+/packages/contracts/dist/
+
+# Generated os-context build output is never an authoring source
+/packages/os-context/dist/
+
 # misc
 .DS_Store
 *.pem

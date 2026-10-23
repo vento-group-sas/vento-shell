@@ -8,7 +8,7 @@ import {
     resolveCanonicalCookieOptions,
     type CookiePolicy,
     type CookieWriteMode,
-} from './runtime';
+} from './runtime.js';
 
 export interface ServerReadableCookie {
     readonly name: string;

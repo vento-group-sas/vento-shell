@@ -3,5 +3,89 @@
   "version": "1.0.0-alpha.1",
   "private": true,
   "type": "module",
-  "description": "Raíz de contratos estáticos compartidos y versionados de Vento OS."
+  "description": "Contratos y catalogos canonicos versionados de VENTO OS; empaquetado privado en validacion.",
+  "exports": {
+    "./actions": {
+      "types": "./dist/actions/generated/index.d.ts",
+      "import": "./dist/actions/generated/index.js",
+      "default": "./dist/actions/generated/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/generated/index.d.ts",
+      "import": "./dist/events/generated/index.js",
+      "default": "./dist/events/generated/index.js"
+    },
+    "./handoffs": {
+      "types": "./dist/handoffs/generated/index.d.ts",
+      "import": "./dist/handoffs/generated/index.js",
+      "default": "./dist/handoffs/generated/index.js"
+    },
+    "./integrations": {
+      "types": "./dist/integrations/generated/index.d.ts",
+      "import": "./dist/integrations/generated/index.js",
+      "default": "./dist/integrations/generated/index.js"
+    },
+    "./ownership": {
+      "types": "./dist/ownership/generated/index.d.ts",
+      "import": "./dist/ownership/generated/index.js",
+      "default": "./dist/ownership/generated/index.js"
+    },
+    "./processes": {
+      "types": "./dist/processes/generated/index.d.ts",
+      "import": "./dist/processes/generated/index.js",
+      "default": "./dist/processes/generated/index.js"
+    },
+    "./process-states": {
+      "types": "./dist/processes/generated/states/index.d.ts",
+      "import": "./dist/processes/generated/states/index.js",
+      "default": "./dist/processes/generated/states/index.js"
+    },
+    "./screens": {
+      "types": "./dist/screens/generated/index.d.ts",
+      "import": "./dist/screens/generated/index.js",
+      "default": "./dist/screens/generated/index.js"
+    },
+    "./work-items": {
+      "types": "./dist/work-items/generated/index.d.ts",
+      "import": "./dist/work-items/generated/index.js",
+      "default": "./dist/work-items/generated/index.js"
+    },
+    "./authorization/catalog/v1": {
+      "types": "./dist/authorization/generated/versions/1.0.0/index.d.ts",
+      "import": "./dist/authorization/generated/versions/1.0.0/index.js",
+      "default": "./dist/authorization/generated/versions/1.0.0/index.js"
+    },
+    "./authorization/base-roles/v1": {
+      "types": "./dist/authorization/generated/base-roles/versions/1.1.0/index.d.ts",
+      "import": "./dist/authorization/generated/base-roles/versions/1.1.0/index.js",
+      "default": "./dist/authorization/generated/base-roles/versions/1.1.0/index.js"
+    },
+    "./authorization/operational-roles/v1": {
+      "types": "./dist/authorization/generated/operational-roles/versions/1.0.0/index.d.ts",
+      "import": "./dist/authorization/generated/operational-roles/versions/1.0.0/index.js",
+      "default": "./dist/authorization/generated/operational-roles/versions/1.0.0/index.js"
+    },
+    "./authorization/scopes/v1": {
+      "types": "./dist/authorization/generated/scopes/versions/1.0.0/index.d.ts",
+      "import": "./dist/authorization/generated/scopes/versions/1.0.0/index.js",
+      "default": "./dist/authorization/generated/scopes/versions/1.0.0/index.js"
+    },
+    "./authorization/reason-codes/v1": {
+      "types": "./dist/authorization/generated/reason-codes/versions/1.0.0/index.d.ts",
+      "import": "./dist/authorization/generated/reason-codes/versions/1.0.0/index.js",
+      "default": "./dist/authorization/generated/reason-codes/versions/1.0.0/index.js"
+    },
+    "./authorization/response-contracts/v1": {
+      "types": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.d.ts",
+      "import": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.js",
+      "default": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "validate": "node ../../scripts/quality/shared-package-distribution-gate.mjs @vento/contracts"
+  }
 }

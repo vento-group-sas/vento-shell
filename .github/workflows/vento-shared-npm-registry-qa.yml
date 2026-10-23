@@ -6,7 +6,25 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-registry-preflight.mjs"
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - ".github/workflows/vento-contracts-private-npm-reconcile.yml"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.test.mjs"
+      - "scripts/quality/shared-package-release-gate.mjs"
+      - "scripts/quality/shared-package-release-gate.test.mjs"
+      - "scripts/quality/shared-package-test-gate.mjs"
+      - "scripts/quality/shared-package-test-gate.test.mjs"
+      - "scripts/quality/shared-package-build-gate.mjs"
+      - "scripts/quality/shared-package-build-gate.test.mjs"
+      - "scripts/quality/vento-contracts-pilot-*"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.mjs"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.test.mjs"
       - "packages/**"
+      - ".gitignore"
       - "package.json"
       - "package-lock.json"
       - ".node-version"
@@ -16,7 +34,25 @@ on:
       - ".github/workflows/vento-shared-npm-registry-qa.yml"
       - "scripts/quality/shared-package-registry-preflight.mjs"
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - ".github/workflows/vento-contracts-private-npm-reconcile.yml"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.mjs"
+      - "scripts/quality/vento-contracts-private-reconcile.test.mjs"
+      - "scripts/quality/shared-package-release-gate.mjs"
+      - "scripts/quality/shared-package-release-gate.test.mjs"
+      - "scripts/quality/shared-package-test-gate.mjs"
+      - "scripts/quality/shared-package-test-gate.test.mjs"
+      - "scripts/quality/shared-package-build-gate.mjs"
+      - "scripts/quality/shared-package-build-gate.test.mjs"
+      - "scripts/quality/vento-contracts-pilot-*"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.mjs"
+      - "scripts/quality/vento-contracts-viso-consumer-probe.test.mjs"
       - "packages/**"
+      - ".gitignore"
       - "package.json"
       - "package-lock.json"
       - ".node-version"
@@ -25,6 +61,11 @@ on:
       audit_registry:
         description: "Consultar el registro privado GitLab solo por GET (requiere entorno protegido)"
         required: true
+        type: boolean
+        default: false
+      audit_protection:
+        description: "Verificar reglas @vento/* mediante GET; protegido y sin publicar"
+        required: false
         type: boolean
         default: false
 
@@ -37,17 +78,17 @@ concurrency:
 
 jobs:
   package-qa:
-    name: Inventario npm y QA de tarball UI Web
+    name: QA de distribucion de los cuatro packages
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Descargar codigo sin credenciales persistentes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Configurar Node y npm canonicos
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -61,6 +102,26 @@ jobs:
       - name: Inspeccionar los cuatro manifests sin declararlos publicables
         run: node scripts/quality/shared-package-registry-preflight.mjs inspect
 
+      - name: Compilar ESM y tipos de las tres fundaciones
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+
+      - name: Verificar las superficies privadas y tarballs npm de las fundaciones
+        run: |
+          npm run validate --workspace @vento/contracts
+          npm run validate --workspace @vento/os-context
+          npm run validate --workspace @vento/supabase
+          node --test scripts/quality/shared-package-distribution-gate.test.mjs
+
+      - name: Probar RPC de contexto, permisos y simulacion sin acceso a la base
+        run: npm run test --workspace @vento/os-context
+      - name: Revalidar fronteras Supabase y 86 casos canónicos de seguridad
+        run: |
+          node packages/supabase/scripts/validate-supabase-errors.mjs
+          node packages/supabase/scripts/validate-supabase-runtime-clients.mjs
+
       - name: Compilar candidato privado UI Web
         run: npm run build --workspace @vento/ui-web
 
@@ -70,26 +131,193 @@ jobs:
       - name: Ejecutar regresiones de distribucion UI Web
         run: npm run test --workspace @vento/ui-web
 
+      - name: Verificar gate CI003 y releases privados sin publicar
+        run: node --test scripts/quality/shared-package-release-gate.test.mjs
+
+      - name: Verificar release previews sin acceso al registry ni secretos
+        run: |
+          node --test scripts/quality/shared-package-release-preparation.test.mjs
+          node scripts/quality/shared-package-release-preparation.mjs stage
+
+      - name: Certificar CI001 real para @vento/contracts en el commit actual
+        run: |
+          node --test scripts/quality/shared-package-test-gate.test.mjs
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+
+      - name: Certificar CI002 reproducible y 15 subpaths de @vento/contracts
+        run: |
+          node --test scripts/quality/shared-package-build-gate.test.mjs
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+
+      - name: Verificar que las evidencias CI001 y CI002 siguen vigentes
+        shell: bash
+        run: |
+          set -- .delivery/shared-package-tests/vento__contracts/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --verify-evidence "$1" --json
+          set -- .delivery/shared-package-builds/vento__contracts/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --verify-evidence "$1" --json
+
+      - name: Certificar CI001 os-context con tres grupos RPC reales
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+
+      - name: Certificar CI002 os-context con build reproducible y peer v2
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+
+      - name: Verificar vigencia de las evidencias CI001 y CI002 de os-context
+        shell: bash
+        run: |
+          set -- .delivery/shared-package-tests/vento__os-context/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-test-contract.json \
+            --verify-evidence "$1" --json
+          set -- .delivery/shared-package-builds/vento__os-context/*.json
+          test "$#" -eq 1 && test -f "$1"
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/os-context \
+            --contract scripts/quality/vento-os-context-build-contract.json \
+            --verify-evidence "$1" --json
+      - name: Verificar politica de publicacion privada y preflight CI003 sin escribir
+        run: |
+          node --test scripts/quality/vento-contracts-private-release.test.mjs
+          node --test scripts/quality/vento-contracts-private-reconcile.test.mjs
+          node scripts/quality/vento-contracts-private-release.mjs --mode prepare
+
+      - name: Conservar evidencia CI001 CI002 sin tarball ni secretos
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci001-ci002-${{ github.sha }}
+          path: |
+            .delivery/shared-package-tests/vento__contracts/*.json
+            .delivery/shared-package-builds/vento__contracts/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Conservar evidencia CI001 CI002 os-context sin tarball ni secretos
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-os-context-ci001-ci002-${{ github.sha }}
+          path: |
+            .delivery/shared-package-tests/vento__os-context/*.json
+            .delivery/shared-package-builds/vento__os-context/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+  ci005-real-viso-consumer:
+    name: CI005 VISO - instalacion real de contratos y Next aislado
+    needs: package-qa
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - name: Descargar VENTO Shell sin credenciales
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Configurar Node del contrato
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Instalar dependencias y preparar mismas fundaciones que CI001 canonico
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+      - name: Generar evidencia CI001 real del mismo SHA
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Diagnosticar grupos CI001 solamente si su gate falla
+        if: failure()
+        shell: bash
+        env:
+          VENTO_PACKAGE_TEST_PACKAGE: "@vento/contracts"
+        run: |
+          mkdir -p .delivery/ci005-diag
+          export VENTO_PACKAGE_TEST_RESULT_FILE="$PWD/.delivery/ci005-diag/runner.json"
+          node scripts/quality/vento-contracts-pilot-test-runner.mjs \
+            ../../scripts/quality/vento-contracts-pilot-build-contract.json
+
+      - name: Generar evidencia CI002 reproducible del mismo SHA
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: Probar controles de integridad del consumidor aislado
+        run: node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+      - name: Instalar tarball efimero en VISO real y probar ESM TypeScript Next
+        run: node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+      - name: Guardar exclusivamente los resultados JSON sin tarballs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci005-viso-${{ github.sha }}
+          path: .delivery/shared-package-compatibility/contracts-pilot/*.json
+          if-no-files-found: warn
+          retention-days: 7
+
   gitlab-registry-readonly:
     name: GitLab npm - autenticacion y versiones (solo GET)
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.audit_registry == true }}
+    # Never expose the protected Environment to pull requests. After a
+    # successful main-branch package QA, automatically audit both registry
+    # versions and protection rules using GET only; manual dispatch remains.
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.audit_registry == true || inputs.audit_protection == true))) }}
     needs: package-qa
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: npm-packages-publish
     steps:
       - name: Descargar fuente validada sin credenciales persistentes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Configurar Node canonico
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
+          package-manager-cache: false
 
       - name: Verificar lectura autenticada y colisiones de versiones
         env:
           GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
           GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
         run: node scripts/quality/shared-package-registry-preflight.mjs registry
+
+      - name: Auditar protecciones GitLab npm para los cuatro paquetes (GET)
+        if: ${{ github.event_name == 'push' || inputs.audit_protection == true }}
+        env:
+          GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
+          GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
+        run: node scripts/quality/shared-package-release-preparation.mjs protection

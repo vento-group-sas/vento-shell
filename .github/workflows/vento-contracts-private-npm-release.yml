@@ -1,0 +1,160 @@
+name: VENTO - Publicacion npm privada contracts (manual protegida)
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: "SHA exacto de main para el prerelease"
+        required: true
+        type: string
+      operation:
+        description: "audit solo lectura; publish primera publicacion privada"
+        required: true
+        type: choice
+        default: audit
+        options: [audit, publish]
+      confirmation:
+        description: "Para publicar escribir @vento/contracts@1.0.0-alpha.1"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vento-contracts-private-npm-release
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    name: Certificar SHA y evidencias sin credenciales
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'vento-group-sas/vento-shell' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Rechazar SHA, canal o paquete no aprobado
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          OPERATION: ${{ inputs.operation }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$EXPECTED_SHA" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_REPOSITORY" = "vento-group-sas/vento-shell"
+          [[ "$OPERATION" = "audit" || "$OPERATION" = "publish" ]]
+          if [[ "$OPERATION" = "publish" ]]; then
+            test "$CONFIRMATION" = "@vento/contracts@1.0.0-alpha.1"
+          fi
+      - name: Descargar commit inmovil sin credenciales persistentes
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Configurar Node canonico sin credenciales GitLab
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Instalar dependencias exactas
+        run: npm ci --no-audit --no-fund
+      - name: Compilar los cuatro paquetes compartidos antes de CI001
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+      - name: Certificar CI001 real
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Certificar CI002 reproducible
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: Certificar preparacion CI003 sin remotos ni publicacion
+        run: node scripts/quality/vento-contracts-private-release.mjs --mode prepare
+      - name: Verificar CI005 fisico de VISO sin credenciales de publicacion
+        if: ${{ inputs.operation == 'publish' }}
+        run: |
+          node --test scripts/quality/vento-contracts-viso-consumer-probe.test.mjs
+          node scripts/quality/vento-contracts-viso-consumer-probe.mjs
+      - name: Transferir evidencia CI005 certificada del mismo SHA y workflow
+        if: ${{ inputs.operation == 'publish' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci005-protected-${{ github.sha }}-${{ github.run_id }}
+          path: .delivery/shared-package-compatibility/contracts-pilot/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+  protected-private-registry:
+    name: Auditar o publicar prerelease protegido con SHA exacto
+    needs: certify
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'vento-group-sas/vento-shell' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: npm-packages-publish
+    permissions:
+      contents: write
+    steps:
+      - name: Descargar SHA aprobado con Git write solo en modo publish
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: ${{ inputs.operation == 'publish' }}
+      - name: Configurar Node canonico sin cache de publicacion
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Instalar dependencias exactas
+        run: npm ci --no-audit --no-fund
+      - name: Compilar los cuatro paquetes compartidos sin credenciales GitLab
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+          npm run build --workspace @vento/ui-web
+      - name: Regenerar CI001 sobre SHA definitivo
+        run: |
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+      - name: Regenerar CI002 doble build
+        run: |
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+      - name: Recuperar evidencia CI005 de este run antes de publicar
+        if: ${{ inputs.operation == 'publish' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: vento-contracts-ci005-protected-${{ github.sha }}-${{ github.run_id }}
+          path: .delivery/shared-package-compatibility/contracts-pilot
+      - name: Auditar GitLab privado o publicar un unico prerelease por CI003
+        env:
+          GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
+          GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
+          GH_TOKEN: ${{ github.token }}
+          VENTO_REAL_RELEASE_CONFIRMATION: ${{ inputs.confirmation }}
+          OPERATION: ${{ inputs.operation }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          node scripts/quality/vento-contracts-private-release.mjs \
+            --mode "$OPERATION" \
+            --expected-sha "$EXPECTED_SHA" \
+            --confirmation "$VENTO_REAL_RELEASE_CONFIRMATION"
+      - name: Conservar solamente JSON del release gate
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-private-npm-contracts-${{ github.run_id }}
+          path: .delivery/shared-package-releases/vento__contracts/1.0.0-alpha.1/*.json
+          if-no-files-found: warn
+          retention-days: 14

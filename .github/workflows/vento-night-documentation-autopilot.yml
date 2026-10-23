@@ -67,16 +67,17 @@ jobs:
       phase6_execute_enabled: ${{ steps.authorization.outputs.phase6_execute_enabled }}
     steps:
       - name: Descargar main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: false
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
+          package-manager-cache: false
 
       - name: Resolver el main vigente
         shell: bash
@@ -107,7 +108,7 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=no)"
 
       - name: Publicar evidencia de autorización
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization.json
@@ -122,16 +123,17 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Descargar main para la unidad documental
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: false
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
+          package-manager-cache: false
 
       - name: Resolver main dinámico inmediatamente antes de la unidad
         shell: bash
@@ -140,7 +142,7 @@ jobs:
           git checkout --detach origin/main
 
       - name: Descargar autorización de este turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
@@ -170,7 +172,7 @@ jobs:
 
       - name: Publicar evidencia FASE 2
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-phase2-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase2
@@ -187,16 +189,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Descargar main para preflight de cierre
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: false
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
+          package-manager-cache: false
 
       - name: Resolver main dinámico antes del preflight de cierre
         shell: bash
@@ -205,13 +208,13 @@ jobs:
           git checkout --detach origin/main
 
       - name: Descargar autorización de este turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
 
       - name: Descargar evidencia FASE 2 del mismo turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-phase2-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase2
@@ -235,7 +238,7 @@ jobs:
 
       - name: Publicar evidencia FASE 3
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-phase3-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase3
@@ -255,16 +258,17 @@ jobs:
       actions: read
     steps:
       - name: Descargar main para el turno configurable
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
           persist-credentials: false
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
+          package-manager-cache: false
 
       - name: Verificar token GitHub del autopiloto
         env:
@@ -278,7 +282,7 @@ jobs:
           git config user.email "vento-documentation-autopilot@users.noreply.github.com"
 
       - name: Descargar autorización del turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
@@ -293,7 +297,7 @@ jobs:
 
       - name: Publicar evidencia completa del turno
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-turn-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/turn

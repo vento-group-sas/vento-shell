@@ -1,6 +1,15 @@
 # @vento/supabase
 
+> **Estado operativo de distribución — 2026-10-21 (PR #1021, candidato privado).**
+> Este paquete incorpora versión candidata, `dist/`, builds ESM/TypeScript y exports explícitos `./browser`, `./server`, `./native`, `./runtime`, `./errors` y `./privileged` (este último solo bajo condición Node). Validaciones: `npm run build --workspace @vento/supabase` y `npm run validate --workspace @vento/supabase`. **No hay publicación ni adopción por consumidores.** Las declaraciones posteriores de ausencia de exports corresponden a los límites históricos de `SHELL-DB-004/005`.
+
+
 Raiz privada de autoria para el acceso tecnico compartido a Supabase de Vento OS.
+
+## Normalizacion tecnica de errores — SHELL-DB-004
+
+Contrato `VENTO_SUPABASE_TECHNICAL_ERROR_NORMALIZATION@1.0.0`.
+El validador historico comprueba **4/4 capas** semanticas, **11/11 familias** y **36/36 coberturas** de escenarios. El cliente publico no debe exponer diagnósticos protegidos y el dominio VITAL permanece excluido. Estos numeros son criterios de cobertura del contrato; los resultados PASS dependen de la ejecucion efectiva de CI.
 
 ## Estado fisico
 
