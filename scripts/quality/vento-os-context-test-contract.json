@@ -23,6 +23,7 @@
     }
   ],
   "fixtures": [
-    "scripts/client.test.mjs"
+    "scripts/client.test.mjs",
+    "scripts/boundaries.test.mjs"
   ]
 }

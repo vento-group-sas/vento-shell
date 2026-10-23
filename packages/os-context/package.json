@@ -3,13 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js",
+      "default": "./dist/client/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js",
+      "default": "./dist/testing/index.js"
+    },
+    "./legacy": {
+      "types": "./dist/legacy/index.d.ts",
+      "import": "./dist/legacy/index.js",
+      "default": "./dist/legacy/index.js"
     }
   },
   "peerDependencies": {
@@ -20,7 +33,13 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "node --test scripts/client.test.mjs",
+    "test": "node --test scripts/client.test.mjs scripts/boundaries.test.mjs",
     "validate": "node ../../scripts/quality/shared-package-distribution-gate.mjs @vento/os-context"
+  },
+  "dependencies": {
+    "@vento/contracts": "1.0.0-alpha.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
