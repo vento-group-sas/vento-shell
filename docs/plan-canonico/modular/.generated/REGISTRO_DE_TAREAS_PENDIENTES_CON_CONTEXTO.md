@@ -12,17 +12,34 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `AUTH-DB-034::CORR-002`
+### 1. Termina la corrección abierta — `AUTH-DB-034::CORR-002`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO por VENTO_OWNER en esta conversacion (2026-10-23): autorizo la fase fisica de AUTH-DB-034::CORR-002 para incorporar exclusivamente la migracion forward 20261023023158_auth_db_034_corr_002_safe_projection.sql y la prueba pgTAP 048_auth_db_034_safe_projection.test.sql ya preparadas, regenerar unicamente supabase/MIGRATION_MANIFEST.md mediante el generador canonico y validar localmente seguridad, integridad y PostgreSQL en entorno aislado. Se preservan el evaluador, los contratos historicos VERIFIED y el checkout paralelo GAP-PKG-004. No se autorizan 04A/TREQ modificados, operaciones SQL hosted, deploy, publicacion, secretos, merge protegido ni reset de una base de datos compartida.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `CREATE` `supabase/migrations/20261023023158_auth_db_034_corr_002_safe_projection.sql`
+  - `CREATE` `supabase/tests/database/048_auth_db_034_safe_projection.test.sql`
+  - `MODIFY` `supabase/MIGRATION_MANIFEST.md`
+  - `EXECUTE_ONLY` `scripts/docs/repair-working-copy.mjs`
+  - `EXECUTE_ONLY` `scripts/supabase/migration-manifest.mjs`
+  - `EXECUTE_ONLY` `scripts/quality/supabase-db-harness.mjs`
+  - `EXECUTE_ONLY` `scripts/supabase/recovery-drill.mjs`
+  - `EXECUTE_ONLY` `scripts/supabase/environment-drift.mjs`
+  - `EXECUTE_ONLY` `scripts/quality/lint-ratchet.mjs`
+  - `EXECUTE_ONLY` `scripts/docs/correction-branch-lifecycle.mjs`
+  - `EXECUTE_ONLY` `scripts/docs/correction-control.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm run supabase:migrations:manifest:check`
+  2. `npm run supabase:db:test:clean`
+  3. `npm run supabase:recovery:local`
+  4. `node scripts/supabase/environment-drift.mjs local --strict`
+  5. `npm run quality:lint:ratchet`
+  6. `npm run docs:correction:check`
+  7. `npm run docs:correction:test`
+  8. `git --no-pager diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id AUTH-DB-034::CORR-002`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
