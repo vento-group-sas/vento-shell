@@ -947,6 +947,85 @@ test('MRP015-040 SQL fingerprint: separa version de PostgreSQL y extensiones adm
 });
 
 
+test('AUTH-DB-028 catalog: captura grants predeterminados y PUBLIC sin inferir seguridad por count', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /default_privileges as \(/u);
+  assert.match(sql, /pg_catalog\.pg_default_acl/u);
+  assert.match(sql, /pg_catalog\.aclexplode\(d\.defaclacl\)/u);
+  assert.match(sql, /'default_privileges', \(select value from default_privileges\)/u);
+  assert.match(sql, /\('anon', 'authenticated', 'service_role', 'PUBLIC'\)/u);
+  assert.match(sql, /coalesce\(c\.relacl, pg_catalog\.acldefault/u);
+  assert.match(sql, /MANAGED_SCHEMAS_PLACEHOLDER_WILL_NOT_BE_EMITTED|join governed_schemas as n on n\.oid = d\.defaclnamespace/u);
+});
+
+test('AUTH-DB-028 catalog: registra roles y permisos efectivos por identidad', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /pg_catalog\.pg_auth_members/u);
+  assert.match(sql, /member_role\.rolname in \('anon', 'authenticated', 'service_role'\)/u);
+  assert.match(sql, /pg_catalog\.has_schema_privilege/u);
+  assert.match(sql, /pg_catalog\.has_table_privilege/u);
+  assert.match(sql, /pg_catalog\.has_function_privilege/u);
+  for (const key of [
+    'role_memberships',
+    'effective_schema_usage',
+    'effective_table_privileges',
+    'effective_routine_privileges',
+  ]) {
+    assert.ok(sql.includes("'" + key + "', (select value from " + key + ")"), key);
+  }
+});
+
+test('AUTH-DB-028 catalog: version de extension solo de esquemas gobernados', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  const capabilities = __test.EXTENSION_CAPABILITIES_SQL;
+  assert.match(sql, /governed_extensions as \(/u);
+  assert.match(sql, /pg_catalog\.pg_extension as e\s+join governed_schemas as n on n\.oid = e\.extnamespace/u);
+  assert.match(sql, /'version', e\.extversion/u);
+  assert.match(sql, /'governed_extensions', \(select value from governed_extensions\)/u);
+  assert.doesNotMatch(capabilities, /extversion/u);
+});
+
+test('AUTH-DB-028 catalog: grants predeterminados divergentes bloquean paridad', () => {
+  const cron = [{ jobname: 'anima_shift_runtime_processor_every_5m', schedule: '*/5 * * * *', active: true }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const local = {
+      functions: [],
+      default_privileges: [{
+        schema: 'public', owner: 'postgres', kind: 'r',
+        grantor: 'postgres', grantee: 'anon', privilege: 'SELECT', grantable: false,
+      }],
+    };
+    const remote = structuredClone(local);
+    remote.default_privileges = [];
+    fixture.localObserved.sql_fingerprint = local;
+    fixture.remoteObserved.surfaces.find((row) => row.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
+test('AUTH-DB-028 catalog: rol efectivo y version gobernada divergentes bloquean paridad', () => {
+  const cron = [{ jobname: 'anima_shift_runtime_processor_every_5m', schedule: '*/5 * * * *', active: true }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const local = {
+      functions: [],
+      role_memberships: [{ member: 'anon', parent: 'authenticated', inherit: true }],
+      effective_routine_privileges: [{ schema: 'public', routine: 'critical', role: 'anon', executable: false }],
+      governed_extensions: [{ name: 'unaccent', schema: 'public', version: '1.1' }],
+    };
+    const remote = structuredClone(local);
+    remote.role_memberships = [];
+    remote.effective_routine_privileges[0].executable = true;
+    remote.governed_extensions[0].version = '1.2';
+    fixture.localObserved.sql_fingerprint = local;
+    fixture.remoteObserved.surfaces.find((row) => row.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
 test('MRP015-040 SQL fingerprint: excluye _realtime y pgbouncer administrados por Supabase', () => {
   assert.equal(
     __test.MANAGED_SCHEMAS.has('_realtime'),
