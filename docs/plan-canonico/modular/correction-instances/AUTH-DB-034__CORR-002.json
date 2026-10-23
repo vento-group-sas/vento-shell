@@ -11,7 +11,7 @@
   "baseline": {
     "main_commit": "bc420d238028831af21f314648698796dab59915",
     "target_task_path": "docs/plan-canonico/modular/bloques/R_SUPABASE/02_R1_FUNDACION_FISICA_CANONICA.md",
-    "target_task_sha256": "e59ea06e181fab0d663a6d061eef09f73cc85888a161cc19a36c1d8e949431c6",
+    "target_task_sha256": "b428724a67032dfd1238e7537679c0bffcf62deddaff440b191c753506e696b7",
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-034__GLOBAL.json",
     "target_instance_record_sha256": "2cc1f08036e8c886681a17b5a37f68c0d78cf288627fbbf36b98280b3901c83b"
   },
