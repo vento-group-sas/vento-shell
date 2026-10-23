@@ -1,0 +1,113 @@
+{
+  "process_id": "VPROC-0008",
+  "app_code": "anima",
+  "permission_key": "anima.attendance.checkout_review.decide",
+  "lifecycle_status": "reserved",
+  "candidate_status": "PENDING_CANONICAL_AUTHORIZATION",
+  "catalog_version": null,
+  "title": "Decidir revisión administrativa de salida de asistencia",
+  "owner_app": "anima",
+  "consumer_apps": [
+    "viso"
+  ],
+  "authorization_requirement": "EXPLICIT_PERMISSION_GRANT",
+  "permission_audience": "active_employee_reviewer",
+  "grant_defaults": {
+    "base_roles": [],
+    "operational_roles": [],
+    "individual_grants": [],
+    "auto_seed": false
+  },
+  "allowed_scope_codes": [
+    "SS"
+  ],
+  "maximum_scope_code": "SS",
+  "runtime_grant_scope_type": "site",
+  "requires_authenticated_actor": true,
+  "requires_active_employee": true,
+  "requires_reviewer_check_in": false,
+  "is_operational": false,
+  "is_sensitive": true,
+  "is_read_only": false,
+  "is_configuration": false,
+  "allow_shared_device": false,
+  "allow_simulation": false,
+  "tenant_boundary": "organization",
+  "target_resource": {
+    "table": "public.support_tickets",
+    "required_category": "attendance",
+    "required_title": "Revisión de salida sin ubicación",
+    "required_site_field": "site_id",
+    "allowed_statuses": [
+      "open",
+      "in_progress"
+    ],
+    "employee_identity_rule": "coalesce(target_employee_id,created_by)",
+    "check_in_identity_field": "attendance_logs.id",
+    "check_in_action": "check_in",
+    "check_in_site_rule": "must equal ticket.site_id",
+    "check_in_shift_rule": "must reference active published employee shift",
+    "ticket_created_after_check_in": true,
+    "require_support_message": true
+  },
+  "decisions": [
+    "approve",
+    "reject"
+  ],
+  "decision_conditions": {
+    "explicit_actor_site_grant": true,
+    "reject_self_approval": true,
+    "forbid_untrusted_client_claims": true,
+    "approved_checkout_at_required_for_approval": true,
+    "approved_checkout_at_must_not_precede_check_in": true,
+    "closed_case_replay_conflict": true,
+    "preserve_original_event": true,
+    "serialize_by_employee": true,
+    "idempotent_by_ticket": true,
+    "resolution_and_notification_atomic": true
+  },
+  "implementation": {
+    "rpc": "public.decide_attendance_checkout_review_v1(uuid,uuid,text,text,timestamptz)",
+    "gate": "GAP-PKG-004",
+    "dossier_status": "MATURATION_DRAFT",
+    "candidate_not_published": true,
+    "apply_remote_migration": false,
+    "register_permission_remote": false,
+    "grant_permission_remote": false,
+    "merge_or_deploy": false
+  },
+  "e2e_acceptance": {
+    "required": "PENDING",
+    "coverage": [
+      "site-specific grant positive",
+      "no grant negative",
+      "foreign site negative",
+      "self approval negative",
+      "shared device negative",
+      "generic ticket negative",
+      "stale ticket negative",
+      "approve once and replay",
+      "reject without exit",
+      "parallel close race",
+      "CORRECT/REVERSE provenance",
+      "outbox consumers and reconciliation",
+      "STAGING actor-site acceptance",
+      "no residual legacy cron"
+    ],
+    "cross_apps": [
+      "ANIMA",
+      "VISO",
+      "NUMERA",
+      "SHELL"
+    ],
+    "status": "BLOCKED_PENDING_GOVERNANCE"
+  },
+  "source_contracts": [
+    "INT-WORK-003",
+    "PROC-COVER-007",
+    "AUTH-CAT-017",
+    "AUTH-CAT-024",
+    "AUTH-CAT-025",
+    "SHELL-CON-003::GLOBAL"
+  ]
+}

@@ -329,6 +329,60 @@ async function handleRequest(req: Request) {
   }
   // GAP-PKG-001:CRON_AUTHORIZATION_END
 
+  // Geofence closure is server-only and opt-in. A verified-evidence ledger,
+  // database migration, and QA certification must exist before enabling.
+  // The schedule itself NEVER manufactures an attendance check-out.
+  const geofenceAutoCloseEnabled =
+    Deno.env.get("GEOFENCE_AUTO_CLOSE_ENABLED") === "true"
+  let geofenceAutoClosedCount = 0
+
+  if (geofenceAutoCloseEnabled) {
+    const { data: candidates, error: candidateError } = await supabase
+      .from("attendance_geofence_verified_evidence")
+      .select("id")
+      .eq("status", "verified")
+      .order("verified_at", { ascending: true })
+      .limit(100)
+
+    if (candidateError) {
+      console.error("[shift-runtime-processor] geofence_evidence_unavailable")
+      return new Response(JSON.stringify({ error: "geofence_authority_unavailable" }), {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      })
+    }
+
+    for (const evidence of candidates ?? []) {
+      const { data: result, error: closeError } = await supabase
+        .rpc("apply_geofence_auto_checkout_v1", { p_evidence_id: evidence.id })
+
+      if (closeError || !["closed", "duplicate", "review"].includes(String(result))) {
+        console.error("[shift-runtime-processor] geofence_close_denied_or_unavailable")
+        return new Response(JSON.stringify({ error: "geofence_authority_unavailable" }), {
+          status: 503,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        })
+      }
+      // A failed/ambiguous proof becomes a review case, never a retry loop
+      // that could starve newer verified geofence evidence.
+      if (result === "review") {
+        const { error: reviewError } = await supabase
+          .from("attendance_geofence_verified_evidence")
+          .update({ status: "review" })
+          .eq("id", evidence.id)
+          .eq("status", "verified")
+        if (reviewError) {
+          console.error("[shift-runtime-processor] geofence_review_unavailable")
+          return new Response(JSON.stringify({ error: "geofence_authority_unavailable" }), {
+            status: 503,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          })
+        }
+      }
+      if (result === "closed") geofenceAutoClosedCount += 1
+    }
+  }
+
   const now = new Date()
   const nowIso = now.toISOString()
   const todayKey = formatDateKeyInTimeZone(now, timeZone)
@@ -370,7 +424,7 @@ async function handleRequest(req: Request) {
   const autoCloseEnabled = false
 
   if (!reminderEnabled && !autoCloseEnabled) {
-    return new Response(JSON.stringify({ processed: 0, reason: "runtime_disabled" }), {
+    return new Response(JSON.stringify({ processed: 0, autoClosed: geofenceAutoClosedCount, reason: "reminders_disabled" }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
@@ -396,7 +450,7 @@ async function handleRequest(req: Request) {
 
   const shiftRows = (shifts ?? []) as ShiftRow[]
   if (shiftRows.length === 0) {
-    return new Response(JSON.stringify({ processed: 0, reminders: 0, autoClosed: 0 }), {
+    return new Response(JSON.stringify({ processed: 0, reminders: 0, autoClosed: geofenceAutoClosedCount }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
@@ -467,7 +521,7 @@ async function handleRequest(req: Request) {
   })
 
   let reminderCount = 0
-  const autoClosedCount = 0
+  const autoClosedCount = geofenceAutoClosedCount
   let skippedCount = 0
   const pushMessages: { to: string; title: string; body: string; data?: Record<string, unknown> }[] = []
   const pendingRuntimeInserts: Array<Record<string, unknown>> = []

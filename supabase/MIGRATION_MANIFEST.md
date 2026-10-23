@@ -33,10 +33,12 @@ Regenerate with `npm run supabase:migrations:manifest:build` and validate with `
 | 20260902183434 | 20260902183434_auth_db_013_authorization_simulation_audit.sql | 8dd71dddf305f543717853d87e5efa9fd326e99de09cd4de0beaa2b081c3d97b | 132384 | STANDARD |  |  | SIN_HALLAZGO |
 | 20260902212940 | 20260902212940_auth_db_014_authorization_device_audit.sql | f8b4d2556403ee012e5b22550bb0349a2748b21d853a01ba99582a70a5a7d3ea | 104869 | STANDARD |  |  | SIN_HALLAZGO |
 | 20260913131524 | 20260913131524_gap_pkg_019_governed_analytics.sql | 8972233233852f8316327b58b2306e02d3089beaa7f86224d5a814ec2e96ece8 | 23168 | STANDARD |  |  | SIN_HALLAZGO |
+| 20261012173553 | 20261012173553_gap_pkg_004_rpc_acl_hardening.sql | 41d3e58e54d931e111e8dc9ddd78723087e8ccaa16a1b5eee01a97cb08443706 | 32249 | STANDARD |  |  | SIN_HALLAZGO |
+| 20261020223916 | 20261020223916_attendance_geofence_authority.sql | 788f43fc43363e2a50494c29ca655901896fe4df9361aa397dbc5a6862455b72 | 18721 | STANDARD |  |  | SIN_HALLAZGO |
 
 ## Inventory summary
 
-- Physical files: 22
+- Physical files: 24
 - Empty files: 0
 - Content-duplicate groups: 0
 - Same-logical-family groups: 0
