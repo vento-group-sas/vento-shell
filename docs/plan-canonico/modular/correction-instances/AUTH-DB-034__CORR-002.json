@@ -5,7 +5,7 @@
   "target_instance_id": "AUTH-DB-034::GLOBAL",
   "correction_type": "PHYSICAL",
   "reason_code": "SECURITY_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,88 @@
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-034__GLOBAL.json",
     "target_instance_record_sha256": "7b804a71b2cd24339159b591512a836befbdffd70ab42cf31a0567dcd0770f5c"
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20261023023158_auth_db_034_corr_002_safe_projection.sql",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/048_auth_db_034_safe_projection.test.sql",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/MIGRATION_MANIFEST.md",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/migration-manifest.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/recovery-drill.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/lint-ratchet.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-control.mjs",
+      "change": "EXECUTE_ONLY"
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:migrations:manifest:check",
+    "npm run supabase:db:test:clean",
+    "npm run supabase:recovery:local",
+    "node scripts/supabase/environment-drift.mjs local --strict",
+    "npm run quality:lint:ratchet",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [
+    "TREQ-AUTH-015"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-23T19:15:41.792Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO por VENTO_OWNER en esta conversacion (2026-10-23): autorizo la fase fisica de AUTH-DB-034::CORR-002 para incorporar exclusivamente la migracion forward 20261023023158_auth_db_034_corr_002_safe_projection.sql y la prueba pgTAP 048_auth_db_034_safe_projection.test.sql ya preparadas, regenerar unicamente supabase/MIGRATION_MANIFEST.md mediante el generador canonico y validar localmente seguridad, integridad y PostgreSQL en entorno aislado. Se preservan el evaluador, los contratos historicos VERIFIED y el checkout paralelo GAP-PKG-004. No se autorizan 04A/TREQ modificados, operaciones SQL hosted, deploy, publicacion, secretos, merge protegido ni reset de una base de datos compartida.",
+    "source_contract_sha256": "b428724a67032dfd1238e7537679c0bffcf62deddaff440b191c753506e696b7"
+  },
   "evidence": [],
   "opened_at": "2026-10-23T14:53:08.273Z"
 }
