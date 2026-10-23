@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { inspectDeclaredResourceFactCoverageV1 as coverage } from "./resource-contract-fact-coverage-v1.mjs";
 import { createHash } from "node:crypto";
 import { inspectAuthorizationResourceFingerprintBindingV1 as binding } from "./authorization-resource-fingerprint-binding-v1.mjs";
 import { inspectAuthorizationDecisionEnvelopeV1 as inspect } from "./authorization-decision-envelope-v1.mjs";
@@ -1661,6 +1662,173 @@ test("binding: forged fields and accessors fail, and module is not a public auth
   assert.deepEqual(Object.keys(m), ["inspectAuthorizationResourceFingerprintBindingV1"]);
   const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
   assert.equal(Object.hasOwn(pkg.exports, "./authorization/resource-binding/v1"), false);
+});
+
+// Coverage requirements below are caller-supplied diagnostic declarations,
+// NOT a verified AUTH-CAT-016 resource-contract registry or authorization proof.
+function coverageEvidence(d = allowed()) {
+  const base = bindingEvidence(d);
+  return {
+    ...base,
+    declared_resource_contract: {
+      resource_contract_id: d.permission_contract.resource_contract_id,
+      resource_type: d.resource.resource_type,
+      request_shape: d.resource.request_shape,
+      required_resource_fields: [
+        "field_classification", "ownership", "state_snapshot", "territory",
+      ],
+      required_state_keys: [],
+      required_classification_keys: [],
+    },
+  };
+}
+function coverageError(e) {
+  assert.throws(() => coverage(e),
+    (err) => err instanceof TypeError
+      && err.message === "VENTO_AUTH_RESOURCE_COVERAGE:DIAGNOSTIC_INVALID");
+}
+function coverageRehash(e, snapshot) {
+  e.canonical_preimage_json = bindingCanonical(snapshot);
+  e.decision.audit.resource_fingerprint = "sha256:" +
+    createHash("sha256").update(e.canonical_preimage_json).digest("hex");
+}
+test("coverage: ALLOW and DENY both compare the declared subset without granting", () => {
+  for (const decision of [allowed(), denied()]) {
+    const e = coverageEvidence(decision);
+    assert.equal(coverage(e), undefined);
+  }
+});
+test("coverage: missing declared territory fails even after legitimate SHA rehash", () => {
+  const e = coverageEvidence();
+  const p = JSON.parse(e.canonical_preimage_json);
+  delete p.resource.territory;
+  coverageRehash(e, p);
+  assert.equal(binding({ decision: e.decision,
+    canonical_preimage_json: e.canonical_preimage_json }), undefined);
+  coverageError(e);
+});
+test("coverage: required status key must exist in a declared state snapshot", () => {
+  const d = allowed();
+  d.resource.state_snapshot = { status: "OPEN" };
+  const e = coverageEvidence(d);
+  e.declared_resource_contract.required_state_keys = ["status"];
+  assert.equal(coverage(e), undefined);
+  const absent = coverageEvidence();
+  absent.declared_resource_contract.required_state_keys = ["status"];
+  coverageError(absent);
+  const orphan = coverageEvidence(d);
+  orphan.declared_resource_contract.required_resource_fields = ["territory"];
+  orphan.declared_resource_contract.required_state_keys = ["status"];
+  coverageError(orphan);
+});
+test("coverage: classification keys require their declared classification map", () => {
+  const d = allowed();
+  d.resource.field_classification = { amount: "SENSITIVE" };
+  const e = coverageEvidence(d);
+  e.declared_resource_contract.required_classification_keys = ["amount"];
+  assert.equal(coverage(e), undefined);
+  const absent = coverageEvidence();
+  absent.declared_resource_contract.required_classification_keys = ["amount"];
+  coverageError(absent);
+  const unlinked = coverageEvidence(d);
+  unlinked.declared_resource_contract.required_resource_fields = ["territory"];
+  unlinked.declared_resource_contract.required_classification_keys = ["amount"];
+  coverageError(unlinked);
+});
+test("coverage: declaration contract, resource type and request shape must match", () => {
+  for (const [key, value] of [
+    ["resource_contract_id", "nonresource:foreign"],
+    ["resource_type", "another-type"],
+    ["request_shape", "BULK"],
+  ]) {
+    const e = coverageEvidence();
+    e.declared_resource_contract[key] = value;
+    coverageError(e);
+  }
+});
+test("coverage: duplicate, unsorted and unrecognized fact selectors rejected", () => {
+  for (const names of [
+    ["territory", "ownership"],
+    ["territory", "territory"],
+    ["unknown_field"],
+    ["state_snapshot.*"],
+    ["__proto__"],
+    ["resource_type"],
+  ]) {
+    const e = coverageEvidence();
+    e.declared_resource_contract.required_resource_fields = names;
+    coverageError(e);
+  }
+  const extra = coverageEvidence();
+  extra.declared_resource_contract.required_resource_fields.extra = true;
+  coverageError(extra);
+});
+test("coverage: sorted state keys are exact and never wildcard selectors", () => {
+  for (const keys of [
+    ["z", "a"], ["status", "status"], ["status.*"], ["__proto__"],
+    ["status", "status_2", "status"], ["fiscal-year"],
+  ]) {
+    const e = coverageEvidence();
+    e.declared_resource_contract.required_state_keys = keys;
+    coverageError(e);
+  }
+  const missing = coverageEvidence();
+  missing.declared_resource_contract.required_classification_keys = ["missing"];
+  coverageError(missing);
+});
+test("coverage: null and empty collections are present but do not imply wildcards", () => {
+  const e = coverageEvidence();
+  e.declared_resource_contract.required_resource_fields = [
+    "concurrency", "field_classification", "ownership", "required_sides",
+    "state_snapshot", "subject", "territory",
+  ];
+  assert.equal(coverage(e), undefined);
+  const omitted = coverageEvidence();
+  const snapshot = JSON.parse(omitted.canonical_preimage_json);
+  delete snapshot.resource.concurrency;
+  coverageRehash(omitted, snapshot);
+  omitted.declared_resource_contract.required_resource_fields = ["concurrency"];
+  coverageError(omitted);
+});
+test("coverage: undeclared and omitted optional fields are NOT certified", () => {
+  const e = coverageEvidence();
+  e.declared_resource_contract.required_resource_fields = [];
+  const p = JSON.parse(e.canonical_preimage_json);
+  delete p.resource.territory;
+  coverageRehash(e, p);
+  assert.equal(coverage(e), undefined);
+  // No certificate, status, permission or completeness value is ever returned.
+});
+test("coverage: injected authority, inherited objects and getters fail without evaluation", () => {
+  const e = coverageEvidence();
+  coverageError({ ...e, allowed: true });
+  coverageError({ ...e, [Symbol("proof")]: true });
+  const inherited = coverageEvidence();
+  inherited.declared_resource_contract = Object.assign(
+    Object.create({ verified_by_backend: true }), inherited.declared_resource_contract);
+  coverageError(inherited);
+  const forged = coverageEvidence();
+  forged.declared_resource_contract.authenticated = true;
+  coverageError(forged);
+  let calls = 0;
+  const accessor = coverageEvidence();
+  Object.defineProperty(accessor.declared_resource_contract.required_resource_fields, "0", {
+    enumerable: true, configurable: true,
+    get() { calls++; throw Error("UNTRUSTED_GETTER"); },
+  });
+  coverageError(accessor);
+  assert.equal(calls, 0);
+});
+test("coverage: no public import, no backend adapter, no authorization surface", async () => {
+  const e = coverageEvidence();
+  assert.equal(coverage(e), undefined);
+  const mod = await import("./resource-contract-fact-coverage-v1.mjs");
+  assert.deepEqual(Object.keys(mod), ["inspectDeclaredResourceFactCoverageV1"]);
+  const pkg = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8"));
+  assert.equal(Object.hasOwn(pkg.exports, "./authorization/resource-fact-coverage/v1"), false);
+  assert.equal(pkg.version, "1.0.0-alpha.1");
+  const src = readFileSync(new URL("./resource-contract-fact-coverage-v1.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /@supabase|(?:\bfetch\s*\(|globalThis\.)|requireAuthorization/u);
 });
 
 test("security: no runtime/backend/registry import and no authority-returning surface", async () => {
