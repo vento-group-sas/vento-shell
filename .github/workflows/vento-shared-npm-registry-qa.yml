@@ -113,6 +113,7 @@ jobs:
           node --test packages/contracts/authorization/candidates/safe-projections-v1.test.mjs
           node --test packages/contracts/authorization/candidates/authorization-decision-envelope-v1.test.mjs
           node --test packages/contracts/authorization/candidates/resource-fingerprint-diagnostic-v1.test.mjs
+          node --test packages/contracts/authorization/candidates/authorization-resource-registry-concordance-v1.test.mjs
 
       - name: Verificar las superficies privadas y tarballs npm de las fundaciones
         run: |
