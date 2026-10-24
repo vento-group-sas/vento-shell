@@ -319,6 +319,36 @@ governed_extensions as (
   from pg_catalog.pg_extension as e
   join governed_schemas as n on n.oid = e.extnamespace
 ),
+-- Static app/permission definitions are a catalog surface, not transactional
+-- business rows. Assignment COUNTS expose drift without actor/role identifiers.
+authorization_catalog as (
+  select jsonb_build_object(
+    'apps', (
+      select coalesce(jsonb_agg(a.code order by a.code), '[]'::jsonb)
+      from public.apps as a
+    ),
+    'permissions', (
+      select coalesce(jsonb_agg(jsonb_build_object(
+        'app_code', a.code,
+        'permission_code', p.code,
+        'active', p.is_active,
+        'audience', p.permission_audience,
+        'operational', p.is_operational,
+        'requires_active_work_context', p.requires_active_work_context,
+        'role_assignment_count', (
+          select count(*) from public.role_permissions as rp
+          where rp.permission_id = p.id
+        ),
+        'employee_assignment_count', (
+          select count(*) from public.employee_permissions as ep
+          where ep.permission_id = p.id
+        )
+      ) order by a.code, p.code), '[]'::jsonb)
+      from public.app_permissions as p
+      join public.apps as a on a.id = p.app_id
+    )
+  ) as value
+),
 publications as (
   select coalesce(jsonb_agg(jsonb_build_object(
     'publication', p.pubname,
@@ -362,6 +392,7 @@ select jsonb_build_object(
   'effective_table_privileges', (select value from effective_table_privileges),
   'effective_routine_privileges', (select value from effective_routine_privileges),
   'governed_extensions', (select value from governed_extensions),
+  'authorization_catalog', (select value from authorization_catalog),
   'publications', (select value from publications),
   'types', (select value from types),
   'vital_boundary', jsonb_build_object(
