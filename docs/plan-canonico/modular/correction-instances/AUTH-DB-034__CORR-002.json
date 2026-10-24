@@ -36,6 +36,21 @@
     },
     {
       "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-qa-baseline.mjs",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-qa-baseline.test.mjs",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
       "path": "scripts/docs/repair-working-copy.mjs",
       "change": "EXECUTE_ONLY"
     },
@@ -77,6 +92,8 @@
   ],
   "validation_commands": [
     "npm run supabase:migrations:manifest:check",
+    "npm run supabase:qa:baseline:test",
+    "npm run supabase:qa:baseline:replay",
     "npm run supabase:db:test:clean",
     "npm run supabase:recovery:local",
     "node scripts/supabase/environment-drift.mjs local --strict",
@@ -97,6 +114,20 @@
     "approval_statement": "APROBADO por VENTO_OWNER en esta conversacion (2026-10-23): autorizo la fase fisica de AUTH-DB-034::CORR-002 para incorporar exclusivamente la migracion forward 20261023023158_auth_db_034_corr_002_safe_projection.sql y la prueba pgTAP 048_auth_db_034_safe_projection.test.sql ya preparadas, regenerar unicamente supabase/MIGRATION_MANIFEST.md mediante el generador canonico y validar localmente seguridad, integridad y PostgreSQL en entorno aislado. Se preservan el evaluador, los contratos historicos VERIFIED y el checkout paralelo GAP-PKG-004. No se autorizan 04A/TREQ modificados, operaciones SQL hosted, deploy, publicacion, secretos, merge protegido ni reset de una base de datos compartida.",
     "source_contract_sha256": "b428724a67032dfd1238e7537679c0bffcf62deddaff440b191c753506e696b7"
   },
+  "authorization_addenda": [
+    {
+      "date": "2026-10-23",
+      "approved_by": "VENTO_OWNER",
+      "approval_source": "Conversacion VENTO OS: LISTO HAZLOOO; ampliacion de fase QA tras el bloqueo AUTH_DB_005_ANON_DML_IDENTITY_DRIFT:246",
+      "scope": "LOCAL_DISPOSABLE_QA_BOOTSTRAP_ONLY",
+      "authorized_paths": [
+        "scripts/quality/supabase-qa-baseline.mjs",
+        "scripts/quality/supabase-qa-baseline.test.mjs",
+        "package.json"
+      ],
+      "restrictions": "Sin modificar migraciones historicas ni roles.sql canonico, sin datos compartidos o hosted, sin merge protegido ni deploy. El preflight generado en copia QA no constituye paridad directa sin adaptaciones."
+    }
+  ],
   "evidence": [],
   "opened_at": "2026-10-23T14:53:08.273Z"
 }
