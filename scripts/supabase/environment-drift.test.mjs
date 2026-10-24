@@ -985,6 +985,79 @@ test('AUTH-DB-028 catalog: version de extension solo de esquemas gobernados', ()
   assert.doesNotMatch(capabilities, /extversion/u);
 });
 
+test('AUTH-DB-028: el catalogo de autorizacion no expone identificadores personales', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /authorization_catalog as \(/u);
+  assert.match(sql, /from public\.apps as a/u);
+  assert.match(sql, /from public\.app_permissions as p/u);
+  assert.match(sql, /from public\.role_permissions as rp/u);
+  assert.match(sql, /from public\.employee_permissions as ep/u);
+  assert.match(sql, /'authorization_catalog', \(select value from authorization_catalog\)/u);
+  assert.match(sql, /'role_assignment_count'/u);
+  assert.match(sql, /'employee_assignment_count'/u);
+  assert.doesNotMatch(sql.slice(sql.indexOf('authorization_catalog as ('), sql.indexOf('publications as (')), /'employee_id'|'role_id'|'email'|'user_id'/u);
+});
+
+test('AUTH-DB-028: faltante de permiso VISO bloquea certificacion aunque DDL coincida', () => {
+  const cron = [{
+    jobname: 'anima_shift_runtime_processor_every_5m',
+    schedule: '*/5 * * * *',
+    active: true,
+  }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const baseline = {
+      functions: [],
+      authorization_catalog: {
+        apps: ['viso'],
+        permissions: [{
+          app_code: 'viso',
+          permission_code: 'workforce.employees.view',
+          active: true,
+          audience: 'administrative',
+          operational: false,
+          requires_active_work_context: false,
+          role_assignment_count: 0,
+          employee_assignment_count: 0,
+        }],
+      },
+    };
+    const remote = structuredClone(baseline);
+    remote.authorization_catalog.permissions = [];
+    fixture.localObserved.sql_fingerprint = baseline;
+    fixture.remoteObserved.surfaces.find((entry) => entry.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
+test('AUTH-DB-028: asignaciones heredadas difieren sin publicar identidad de actor', () => {
+  const cron = [{
+    jobname: 'anima_shift_runtime_processor_every_5m',
+    schedule: '*/5 * * * *',
+    active: true,
+  }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const baseline = {
+      functions: [],
+      authorization_catalog: {
+        apps: ['viso'],
+        permissions: [{
+          app_code: 'viso', permission_code: 'staff.read',
+          role_assignment_count: 4, employee_assignment_count: 1,
+        }],
+      },
+    };
+    const remote = structuredClone(baseline);
+    remote.authorization_catalog.permissions[0].role_assignment_count = 0;
+    fixture.localObserved.sql_fingerprint = baseline;
+    fixture.remoteObserved.surfaces.find((entry) => entry.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
 test('AUTH-DB-028 catalog: grants predeterminados divergentes bloquean paridad', () => {
   const cron = [{ jobname: 'anima_shift_runtime_processor_every_5m', schedule: '*/5 * * * *', active: true }];
   const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
