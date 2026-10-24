@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { checkManifest } from './migration-manifest.mjs';
+import { readEnvironmentBindings } from './hosted-replay-precondition.mjs';
 import { resolveNpmInvocation, runHarness } from '../quality/supabase-db-harness.mjs';
 import {
   assessImplementationCandidateLifecycleDelta,
@@ -1734,6 +1735,59 @@ async function remoteReadOnlySql(projectRef, token, query, fetchImpl) {
   return extractSqlScalar(payload);
 }
 
+// The visible Supabase project name is NOT its environment role.
+// This binding is a versioned part of the canonical package-readiness contract.
+// In particular, the legacy AS-IS production project is named "vento-os-dev".
+// Never infer a fifth DEV environment or use production as local QA target.
+export function assertCanonicalRemoteEnvironmentBinding({
+  environmentRole,
+  projectRef,
+  owner,
+  bindings,
+} = {}) {
+  const role = String(environmentRole ?? '').trim().toUpperCase();
+  const ref = String(projectRef ?? '').trim();
+  const actualOwner = String(owner ?? '').trim();
+  const staging = bindings?.staging;
+  const production = bindings?.production;
+
+  if (!staging?.project_ref || !production?.project_ref
+    || !staging?.owner || !production?.owner
+    || staging.project_ref === production.project_ref
+    || String(staging.classification).toUpperCase() !== 'STAGING'
+    || String(production.classification).toUpperCase() !== 'PRODUCTION') {
+    fail('CANONICAL_HOSTED_BINDINGS_MISSING_OR_INVALID');
+  }
+  if (!['STAGING', 'PRODUCTION'].includes(role)) {
+    fail('CANONICAL_HOSTED_ROLE_NOT_ALLOWED', role || 'EMPTY');
+  }
+  if (role === 'STAGING' && ref === production.project_ref) {
+    fail('PRODUCTION_REF_MISCLASSIFIED_AS_STAGING');
+  }
+  if (role === 'PRODUCTION' && ref === staging.project_ref) {
+    fail('STAGING_REF_MISCLASSIFIED_AS_PRODUCTION');
+  }
+
+  const binding = role === 'STAGING' ? staging : production;
+  if (ref !== binding.project_ref) {
+    fail('CANONICAL_HOSTED_PROJECT_REF_MISMATCH', role);
+  }
+  if (actualOwner !== binding.owner) {
+    fail('CANONICAL_HOSTED_OWNER_MISMATCH', role);
+  }
+  // Identity validation is not permission to compare production's legacy
+  // contents against the intended local target or copy them into QA.
+  return {
+    environment_role: role.toLowerCase(),
+    project_ref: ref,
+    owner: actualOwner,
+    observation_purpose: role === 'PRODUCTION'
+      ? 'LEGACY_AS_IS_OBSERVATION_ONLY'
+      : 'STAGING_OBSERVATION_ONLY',
+    target_authority: 'VENTO_SHELL_VERSIONED_LOCAL_CANDIDATE',
+  };
+}
+
 export async function observeRemoteEnvironment({
   projectRef,
   environmentRole,
@@ -2760,6 +2814,16 @@ async function main() {
   try {
     args = parseArgs(process.argv.slice(2));
     validatePackageScripts(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')));
+    // Fail closed BEFORE local harness or any hosted Management API read.
+    // Bound from the existing VERIFIED readiness contract, never project names.
+    if (args.mode === 'remote') {
+      assertCanonicalRemoteEnvironmentBinding({
+        environmentRole: args.environmentRole,
+        projectRef: args.projectRef,
+        owner: args.owner,
+        bindings: readEnvironmentBindings({ root }),
+      });
+    }
     const expected = buildExpectedBaseline({ root, instanceId: args.instanceId });
     const allowlist = loadAllowlist(root, args.allowlist);
 
