@@ -109,7 +109,28 @@ function assertNoSymbolicLinks(directory) {
         else if (!entry.isFile()) fail('SOURCE_FILE_TYPE_FORBIDDEN');
     }
 }
-function assertQaMarker(qaRoot, projectId) {
+export function fingerprintQaTree(directory) {
+    if (!fs.statSync(directory).isDirectory()) fail('QA_TREE_NOT_DIRECTORY');
+    const entries = [];
+    function visit(folder, prefix = '') {
+        for (const entry of fs.readdirSync(folder, { withFileTypes: true })
+            .sort((left, right) => left.name.localeCompare(right.name, 'en'))) {
+            if (entry.isSymbolicLink()) fail('SOURCE_SYMLINK_FORBIDDEN');
+            const relative = prefix ? prefix + '/' + entry.name : entry.name;
+            const absolute = path.join(folder, entry.name);
+            if (entry.isDirectory()) visit(absolute, relative);
+            else if (entry.isFile()) {
+                const bytes = fs.readFileSync(absolute);
+                entries.push([relative, bytes.length, sha256(bytes)]);
+            } else fail('QA_TREE_ENTRY_INVALID');
+        }
+    }
+    visit(directory);
+    if (entries.length === 0) fail('QA_TREE_EMPTY');
+    return sha256(JSON.stringify(entries));
+}
+
+export function assertQaMarker(qaRoot, projectId) {
     const marker = JSON.parse(fs.readFileSync(path.join(qaRoot, QA_MARKER), 'utf8'));
     const config = fs.readFileSync(path.join(qaRoot, 'supabase', 'config.toml'), 'utf8');
     if (marker.project_id !== projectId || marker.scope !== 'QA_LOCAL_ONLY'
@@ -120,7 +141,9 @@ function assertQaMarker(qaRoot, projectId) {
     if (fs.existsSync(path.join(qaRoot, 'supabase', '.temp', 'project-ref'))
         || fs.existsSync(path.join(qaRoot, 'supabase', '.temp', 'linked-project.json'))
         || sha256(fs.readFileSync(path.join(qaRoot, 'supabase', 'roles.sql'))) !== marker.qa_roles_sha256
-        || sha256(canonicalMigrationBytes(fs.readFileSync(path.join(qaRoot, 'supabase', 'migrations', BASELINE)))) !== marker.source_baseline_sha256) {
+        || sha256(canonicalMigrationBytes(fs.readFileSync(path.join(qaRoot, 'supabase', 'migrations', BASELINE)))) !== marker.source_baseline_sha256
+        || fingerprintQaTree(path.join(qaRoot, 'supabase', 'migrations')) !== marker.source_migration_tree_sha256
+        || fingerprintQaTree(path.join(qaRoot, 'supabase', 'tests')) !== marker.source_tests_tree_sha256) {
         fail('QA_SOURCE_INTEGRITY_MISMATCH');
     }
     return marker;
@@ -164,7 +187,9 @@ export function prepareIsolatedQaReplay({
         scope: 'QA_LOCAL_ONLY',
         project_id: projectId,
         source_migration_count: manifest.summary.files,
-        source_baseline_sha256: sha256(originalBaseline),
+        source_baseline_sha256: sha256(canonicalMigrationBytes(originalBaseline)),
+        source_migration_tree_sha256: fingerprintQaTree(migrations),
+        source_tests_tree_sha256: fingerprintQaTree(tests),
         source_roles_sha256: sha256(canonicalRoles),
         qa_roles_sha256: sha256(combinedRoles),
         prebaseline_acl_override: true,

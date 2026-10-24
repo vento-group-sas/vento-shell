@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 import {
     FROZEN_BASELINE_SHA256,
     QA_ONLY_ROLES_SQL,
+    assertQaMarker,
+    fingerprintQaTree,
     availableQaPorts,
     isolateQaConfig,
     prepareIsolatedQaReplay,
@@ -78,6 +80,34 @@ test('QA prepared copy preserves every canonical migration byte, never copies re
             assert.equal(copy.equals(original), true, name + ' must remain byte-identical');
         }
         assert.equal(sha256(canonicalMigrationBytes(fs.readFileSync(path.join(sourceMigrations, '00000000000000_baseline.sql')))), baselineHash);
+        assert.equal(session.marker.source_migration_tree_sha256, fingerprintQaTree(sourceMigrations));
+        assert.equal(session.marker.source_tests_tree_sha256, fingerprintQaTree(path.join(ROOT, 'supabase', 'tests')));
+        assert.doesNotThrow(() => assertQaMarker(session.qaRoot, TEST_PROJECT));
+        assert.throws(() => assertQaMarker(session.qaRoot, 'vento-shell-qa-ffffffffffffffff'), /QA_IDENTITY_MISMATCH/u);
+
+        for (const relative of [
+            'migrations/20260827153413_auth_db_005_anon_grant_containment.sql',
+            'tests/database/024_auth_db_005_anon_grant_containment.test.sql',
+            'roles.sql',
+        ]) {
+            const candidate = path.join(qaSupabase, ...relative.split('/'));
+            const original = fs.readFileSync(candidate);
+            try {
+                fs.appendFileSync(candidate, '\n-- unauthorized QA mutation\n');
+                assert.throws(() => assertQaMarker(session.qaRoot, TEST_PROJECT), /QA_SOURCE_INTEGRITY_MISMATCH/u, relative);
+            } finally {
+                fs.writeFileSync(candidate, original);
+            }
+            assert.doesNotThrow(() => assertQaMarker(session.qaRoot, TEST_PROJECT), relative);
+        }
+        const linked = path.join(qaSupabase, '.temp', 'project-ref');
+        try {
+            fs.mkdirSync(path.dirname(linked), { recursive: true });
+            fs.writeFileSync(linked, 'disallowed-linked-ref', 'utf8');
+            assert.throws(() => assertQaMarker(session.qaRoot, TEST_PROJECT), /QA_SOURCE_INTEGRITY_MISMATCH/u);
+        } finally {
+            fs.rmSync(path.dirname(linked), { recursive: true, force: true });
+        }
     } finally {
         // Test removes only the uniquely named scratch directory it created.
         assert.equal(session.qaRoot.startsWith(fs.realpathSync(os.tmpdir()) + path.sep), true);
