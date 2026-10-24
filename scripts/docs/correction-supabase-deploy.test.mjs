@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
   assertNonProductionEnvironment,
+  assertCanonicalLinkedStagingTarget,
   classifyDryRun,
   classifyLegacyQualityRepairAdoption,
   parsePendingMigrations,
@@ -231,4 +235,71 @@ test('legacy exige deploy y drift PASS sin mutaciones de production', () => {
     }),
     /LEGACY_QUALITY_REPAIR_DRIFT_EVIDENCE_NOT_PASS/u,
   );
+});
+
+function withLinkedProject({ ref, metadataRef }, callback) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-correction-target-'));
+  const temp = path.join(root, 'supabase', '.temp');
+  try {
+    fs.mkdirSync(temp, { recursive: true });
+    if (ref !== undefined) fs.writeFileSync(path.join(temp, 'project-ref'), ref, 'utf8');
+    if (metadataRef !== undefined) {
+      fs.writeFileSync(path.join(temp, 'linked-project.json'), JSON.stringify({ ref: metadataRef }), 'utf8');
+    }
+    return callback(root);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
+const targetBindings = {
+  staging: { classification: 'STAGING', project_ref: 'staging-target', owner: 'SUPA-TRANS-015' },
+  production: { classification: 'PRODUCTION', project_ref: 'production-legacy', owner: 'SUPA-TRANS-015' },
+};
+const validTarget = {
+  environmentRole: 'STAGING',
+  projectRef: 'staging-target',
+  owner: 'SUPA-TRANS-015',
+  bindings: targetBindings,
+};
+
+test('linked deployment: only canonical STAGING may reach CLI', () => {
+  withLinkedProject({ ref: 'staging-target', metadataRef: 'staging-target' }, (root) => {
+    assert.equal(assertCanonicalLinkedStagingTarget({ ...validTarget, root }).project_ref, 'staging-target');
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root, environmentRole: 'DEV',
+    }), /ONLY_STAGING_IS_ALLOWED/u);
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root, projectRef: 'production-legacy',
+    }), /PRODUCTION_TARGET_FORBIDDEN/u);
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root, owner: 'OTHER',
+    }), /STAGING_OWNER_MISMATCH/u);
+  });
+});
+
+test('linked deployment: conflicting effective CLI project-ref blocks even with staging arguments', () => {
+  withLinkedProject({ ref: 'production-legacy', metadataRef: 'production-legacy' }, (root) => {
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root,
+    }), /SUPABASE_LINKED_PROJECT_REF_MISMATCH/u);
+  });
+  withLinkedProject({ ref: undefined, metadataRef: undefined }, (root) => {
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root,
+    }), /SUPABASE_LINKED_PROJECT_REF_MISSING/u);
+  });
+});
+
+test('linked deployment: stale auxiliary metadata blocks a staging push, not reclassified as DEV', () => {
+  withLinkedProject({ ref: 'staging-target', metadataRef: 'production-legacy' }, (root) => {
+    assert.throws(() => assertCanonicalLinkedStagingTarget({
+      ...validTarget, root,
+    }), /SUPABASE_LINKED_PROJECT_METADATA_MISMATCH/u);
+  });
+  withLinkedProject({ ref: 'staging-target', metadataRef: undefined }, (root) => {
+    assert.equal(assertCanonicalLinkedStagingTarget({
+      ...validTarget, root,
+    }).environment_role, 'STAGING');
+  });
 });
