@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import {
   __test,
   applyAllowlist,
+  assertCanonicalRemoteEnvironmentBinding,
   assertManagementRequest,
   compareFunctionSets,
   compareLocal,
@@ -28,6 +29,7 @@ import {
   validateAllowlist,
   validatePackageScripts,
 } from './environment-drift.mjs';
+import { readEnvironmentBindings } from './hosted-replay-precondition.mjs';
 
 function withTempRoot(callback) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-environment-drift-'));
@@ -376,6 +378,71 @@ test('CORR-011 multipart Edge Function body: rechaza rutas multipart que escapen
     ),
     /REMOTE_FUNCTION_FILE_PATH_UNSAFE/u,
   );
+});
+
+// Canonical project IDs, NOT the historical display name "vento-os-dev".
+function canonicalBindings() {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  return readEnvironmentBindings({ root });
+}
+
+test('AUTH-DB-028: production/staging are exactly bound by the canonical readiness contract', () => {
+  const bindings = canonicalBindings();
+  assert.equal(bindings.production.project_ref, 'clzdpinthhtknkmefsxx');
+  assert.equal(bindings.production.classification, 'PRODUCTION');
+  assert.equal(bindings.staging.project_ref, 'rcrxixmqhrndcervbllp');
+  assert.equal(bindings.staging.classification, 'STAGING');
+  for (const [role, b] of [['production', bindings.production], ['staging', bindings.staging]]) {
+    const result = assertCanonicalRemoteEnvironmentBinding({
+      environmentRole: role, projectRef: b.project_ref, owner: b.owner, bindings,
+    });
+    assert.equal(result.environment_role, role);
+    assert.equal(result.target_authority, 'VENTO_SHELL_VERSIONED_LOCAL_CANDIDATE');
+    assert.equal(result.observation_purpose,
+      role === 'production' ? 'LEGACY_AS_IS_OBSERVATION_ONLY' : 'STAGING_OBSERVATION_ONLY');
+  }
+});
+
+test('AUTH-DB-028: rejects swapped identities, DEV role, alien ref and missing binding', () => {
+  const bindings = canonicalBindings();
+  const correct = { environmentRole: 'staging', projectRef: bindings.staging.project_ref,
+    owner: bindings.staging.owner, bindings };
+  const negatives = [
+    [{ ...correct, projectRef: bindings.production.project_ref }, /PRODUCTION_REF_MISCLASSIFIED_AS_STAGING/u],
+    [{ ...correct, environmentRole: 'production' }, /STAGING_REF_MISCLASSIFIED_AS_PRODUCTION/u],
+    [{ ...correct, environmentRole: 'dev' }, /CANONICAL_HOSTED_ROLE_NOT_ALLOWED/u],
+    [{ ...correct, projectRef: 'noncanonical-ref' }, /CANONICAL_HOSTED_PROJECT_REF_MISMATCH/u],
+    [{ ...correct, owner: 'UNAUTHORIZED_OWNER' }, /CANONICAL_HOSTED_OWNER_MISMATCH/u],
+    [{ ...correct, bindings: null }, /CANONICAL_HOSTED_BINDINGS_MISSING_OR_INVALID/u],
+    [{ ...correct, bindings: {
+      staging: bindings.staging,
+      production: { ...bindings.production, project_ref: bindings.staging.project_ref },
+    } }, /CANONICAL_HOSTED_BINDINGS_MISSING_OR_INVALID/u],
+  ];
+  for (const [input, regex] of negatives) {
+    assert.throws(() => assertCanonicalRemoteEnvironmentBinding(input), regex);
+  }
+});
+
+test('AUTH-DB-028: remote CLI fails before any remote read for mislabeled production', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const { staging, production } = canonicalBindings();
+  for (const [role, ref, code] of [
+    ['staging', production.project_ref, 'PRODUCTION_REF_MISCLASSIFIED_AS_STAGING'],
+    ['production', staging.project_ref, 'STAGING_REF_MISCLASSIFIED_AS_PRODUCTION'],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      'scripts/supabase/environment-drift.mjs', 'remote',
+      '--environment-role', role, '--project-ref', ref,
+      '--owner', staging.owner, '--scope', 'environment',
+    ], { cwd: root, encoding: 'utf8', timeout: 15000,
+      env: { ...process.env, SUPABASE_ACCESS_TOKEN: '' } });
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, new RegExp(code, 'u'));
+    assert.match(result.stdout, /REMOTE_MUTATIONS: NO/u);
+    assert.doesNotMatch(result.stdout, /SUPABASE_ACCESS_TOKEN_MISSING/u);
+  }
 });
 
 test('Management API queda cerrada a GET y SQL read-only', () => {
