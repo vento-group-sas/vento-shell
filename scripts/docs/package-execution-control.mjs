@@ -671,9 +671,17 @@ export function readPackageExecutionPolicy(root = process.cwd()) {
   if (policy?.physical_authorization_required !== true) {
     errors.push('physical_authorization_required debe ser true.');
   }
-  if (policy?.authorization_granularity !== undefined
-    && !['PACKAGE_PHASE', 'PER_INSTANCE'].includes(policy.authorization_granularity)) {
-    errors.push('authorization_granularity debe ser PACKAGE_PHASE o PER_INSTANCE.');
+  if (policy?.authorization_granularity !== 'PACKAGE_PHASE') {
+    errors.push('authorization_granularity debe ser PACKAGE_PHASE; no pedir aprobaciones por instancia.');
+  }
+  if (policy?.local_package_readonly_requires_instance_id !== false) {
+    errors.push('consultas de paquetes no deben exigir instance_id.');
+  }
+  if (policy?.local_package_validation_requires_instance_id !== false) {
+    errors.push('validaciones locales de paquetes no deben exigir instance_id.');
+  }
+  if (policy?.local_package_edit_authority !== 'BRANCH_AND_EXACT_PATH_SCOPE') {
+    errors.push('ediciones locales exigen rama y alcance de rutas explícitos.');
   }
   if (policy?.defer_without_canonical_order !== true) {
     errors.push('defer_without_canonical_order debe ser true.');
