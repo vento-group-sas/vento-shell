@@ -21,6 +21,10 @@ const policy = {
   terminal_statuses: ['CLOSED'],
   stop_on_blocked_current: false,
   physical_authorization_required: true,
+  authorization_granularity: 'PACKAGE_PHASE',
+  local_package_readonly_requires_instance_id: false,
+  local_package_validation_requires_instance_id: false,
+  local_package_edit_authority: 'BRANCH_AND_EXACT_PATH_SCOPE',
   defer_without_canonical_order: true,
   current_package_semantics: 'DETERMINISTIC_PRIMARY_FRONTIER_MEMBER',
   current_executable_work_semantics: 'FIRST_SCHEDULABLE_FRONTIER_WORK',
@@ -99,6 +103,10 @@ test('la política versionada habilita frontier gobernada sin selección humana'
   assert.equal(loaded.mode, 'DETERMINISTIC_GOVERNED_FRONTIER');
   assert.equal(loaded.automatic_next, true);
   assert.equal(loaded.human_package_selection, false);
+  assert.equal(loaded.authorization_granularity, 'PACKAGE_PHASE');
+  assert.equal(loaded.local_package_readonly_requires_instance_id, false);
+  assert.equal(loaded.local_package_validation_requires_instance_id, false);
+  assert.equal(loaded.local_package_edit_authority, 'BRANCH_AND_EXACT_PATH_SCOPE');
   assert.equal(loaded.stop_on_blocked_current, false);
   assert.equal(loaded.long_observation_holds_global_turn, false);
   assert.equal(loaded.serialized_close, true);
