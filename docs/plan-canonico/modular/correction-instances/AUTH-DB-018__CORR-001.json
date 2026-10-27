@@ -13,7 +13,7 @@
     "target_task_path": "docs/plan-canonico/modular/bloques/R_SUPABASE/02_R1_FUNDACION_FISICA_CANONICA.md",
     "target_task_sha256": "4dae1cc4fccb7ab719927ecda789948f4481f78cb82d733c3a857c2425a38a73",
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-018__GLOBAL.json",
-    "target_instance_record_sha256": "ab735f938ca29f4da87567a3def9a4d6dc9460356f96640a33b937271611c04f"
+    "target_instance_record_sha256": "063f56d32f114c52128226c1b68f70dc10d3f19a9cd4747f04ab63e2cabd3047"
   },
   "target_repositories": [
     "vento-group-sas/vento-shell"
