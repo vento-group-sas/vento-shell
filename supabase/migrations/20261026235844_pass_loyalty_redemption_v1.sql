@@ -147,7 +147,11 @@ begin
   if v_request.status='reserved' and v_request.redemption_id is not null then
     select * into v_redemption from pass.loyalty_redemptions r
       where r.id=v_request.redemption_id;
-    if not found then raise exception 'REDEMPTION_INCONSISTENT'; end if;
+    if not found or v_redemption.status <> 'pending'
+       or v_request.expires_at <= pg_catalog.now()
+       or v_redemption.expires_at <= pg_catalog.now() then
+      raise exception 'REDEMPTION_EXPIRED_OR_INCONSISTENT' using errcode='42501';
+    end if;
     return pg_catalog.jsonb_build_object(
       'redemption_id',v_redemption.id,'qr_code',v_redemption.qr_code,
       'status','pending','expires_at',v_redemption.expires_at,
@@ -351,8 +355,8 @@ begin
     if p_signature_id is null then
       raise exception 'ACTOR_SIGNATURE_REQUIRED' using errcode='42501';
     end if;
-    select s.actor_employee_id,e.role
-      into v_actor_id,v_actor_role
+    select s.actor_employee_id
+      into v_actor_id
       from public.shared_device_actor_signatures s
       join public.employees e on e.id=s.actor_employee_id and e.is_active is true
       where s.id=p_signature_id and s.shared_device_id=v_device_id
@@ -364,7 +368,14 @@ begin
         and s.expires_at > pg_catalog.now()
         and s.signature_method='pin';
 
-    if v_actor_id is null
+    if v_actor_id is not null then
+      select c.active_operational_role into v_actor_role
+        from public.get_operational_context(v_actor_id,p_site_id,'pulso') c
+        where c.employee_id=v_actor_id and c.can_operate
+          and c.active_site_id=p_site_id;
+    end if;
+
+    if v_actor_id is null or v_actor_role is null
        or not public.shared_device_actor_is_allowed_v1(
          v_device_id,v_actor_id,p_site_id,null
        )
@@ -375,7 +386,12 @@ begin
     end if;
   else
     if p_signature_id is not null
-       or not public.has_permission('pulso.loyalty.points.redeem',p_site_id,null)
+       or not (
+         public.has_permission('pulso.loyalty.points.redeem',p_site_id,null)
+         or public.has_operational_permission(
+           'pulso.loyalty.points.redeem',p_site_id,null,'pulso'
+         )
+       )
        or not exists (
          select 1 from public.employees e
          where e.id=v_principal and e.is_active is true
@@ -532,13 +548,13 @@ $cancel$;
 -- checks. They live outside the configured PostgREST exposed schemas.
 revoke all on function pass.pass_issue_redemption_request_v1(uuid,uuid,integer) from public,anon,authenticated,service_role;
 revoke all on function pass.pass_create_redemption_intent_v1(uuid,uuid,uuid,integer) from public,anon,authenticated,service_role;
-revoke all on function pass.pass_validate_redemption_v1(text,uuid) from public,anon,authenticated,service_role;
+revoke all on function pass.pass_validate_redemption_v1(text,uuid,uuid) from public,anon,authenticated,service_role;
 revoke all on function pass.pass_consume_redemption_v1(uuid,uuid,uuid,uuid) from public,anon,authenticated,service_role;
 revoke all on function pass.pass_cancel_redemption_intent_v1(uuid) from public,anon,authenticated,service_role;
 
 grant execute on function pass.pass_issue_redemption_request_v1(uuid,uuid,integer) to authenticated;
 grant execute on function pass.pass_create_redemption_intent_v1(uuid,uuid,uuid,integer) to authenticated;
-grant execute on function pass.pass_validate_redemption_v1(text,uuid) to authenticated;
+grant execute on function pass.pass_validate_redemption_v1(text,uuid,uuid) to authenticated;
 grant execute on function pass.pass_consume_redemption_v1(uuid,uuid,uuid,uuid) to authenticated;
 grant execute on function pass.pass_cancel_redemption_intent_v1(uuid) to authenticated;
 
@@ -554,9 +570,9 @@ create or replace function api.pass_create_redemption_intent_v1(
 as $$ select pass.pass_create_redemption_intent_v1(p_request_id,p_reward_id,p_site_id,p_expected_points_cost) $$;
 
 create or replace function api.pass_validate_redemption_v1(
-  p_qr_code text,p_site_id uuid
-) returns jsonb language sql stable security invoker set search_path=pg_catalog
-as $$ select pass.pass_validate_redemption_v1(p_qr_code,p_site_id) $$;
+  p_qr_code text,p_site_id uuid,p_signature_id uuid default null
+) returns jsonb language sql security invoker set search_path=pg_catalog
+as $$ select pass.pass_validate_redemption_v1(p_qr_code,p_site_id,p_signature_id) $$;
 
 create or replace function api.pass_consume_redemption_v1(
   p_redemption_id uuid,p_site_id uuid,p_order_id uuid,p_signature_id uuid
@@ -570,12 +586,12 @@ as $$ select pass.pass_cancel_redemption_intent_v1(p_request_id) $$;
 
 revoke all on function api.pass_issue_redemption_request_v1(uuid,uuid,integer) from public,anon,authenticated,service_role;
 revoke all on function api.pass_create_redemption_intent_v1(uuid,uuid,uuid,integer) from public,anon,authenticated,service_role;
-revoke all on function api.pass_validate_redemption_v1(text,uuid) from public,anon,authenticated,service_role;
+revoke all on function api.pass_validate_redemption_v1(text,uuid,uuid) from public,anon,authenticated,service_role;
 revoke all on function api.pass_consume_redemption_v1(uuid,uuid,uuid,uuid) from public,anon,authenticated,service_role;
 revoke all on function api.pass_cancel_redemption_intent_v1(uuid) from public,anon,authenticated,service_role;
 grant execute on function api.pass_issue_redemption_request_v1(uuid,uuid,integer) to authenticated;
 grant execute on function api.pass_create_redemption_intent_v1(uuid,uuid,uuid,integer) to authenticated;
-grant execute on function api.pass_validate_redemption_v1(text,uuid) to authenticated;
+grant execute on function api.pass_validate_redemption_v1(text,uuid,uuid) to authenticated;
 grant execute on function api.pass_consume_redemption_v1(uuid,uuid,uuid,uuid) to authenticated;
 grant execute on function api.pass_cancel_redemption_intent_v1(uuid) to authenticated;
 
