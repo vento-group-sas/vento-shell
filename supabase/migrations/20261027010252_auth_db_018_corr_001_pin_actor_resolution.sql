@@ -18,8 +18,19 @@ begin
     and pg_catalog.pg_get_function_identity_arguments(p.oid) like 'p_actor_employee_id uuid%';
 
   if v_def is null or pg_catalog.md5(v_def) <>
-    '6dd2f8b5d93d303da5a7d48f22b889ad' then
-    raise exception 'AUTH_DB_018_PIN_SOURCE_STAGING_MISMATCH'
+    '6dd2f8b5d93d303da5a7d48f22b889ad'
+     or coalesce(pg_catalog.md5(pg_catalog.pg_get_functiondef(
+       pg_catalog.to_regprocedure(
+         'public.current_actor_shift_for_shared_device_v1(uuid,uuid,uuid)'
+       )
+     )), '') <> 'e8adacaa9508aacbd5d6687468e96218'
+     or coalesce(pg_catalog.md5(pg_catalog.pg_get_functiondef(
+       pg_catalog.to_regprocedure(
+         'public.shared_device_actor_is_allowed_v1(uuid,uuid,uuid,uuid)'
+       )
+     )), '') <> '2b86eb4c52753f41e5dc4fdeb09429de'
+  then
+    raise exception 'AUTH_DB_018_PIN_STAGING_CONTRACT_DRIFT'
       using errcode = '55000';
   end if;
 end;
