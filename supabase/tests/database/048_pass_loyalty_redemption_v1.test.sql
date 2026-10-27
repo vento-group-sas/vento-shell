@@ -39,7 +39,7 @@ create temporary table pass_redemption_v1_fixture(
 ) on commit drop;
 grant select,insert,update on table pass_redemption_v1_fixture to authenticated;
 
-select plan(21);
+select plan(23);
 
 select ok(to_regclass('pass.redemption_requests') is not null,
   'server-issued redemption requests are stored durably');
@@ -56,7 +56,7 @@ select ok(to_regprocedure('api.pass_issue_redemption_request_v1(uuid,uuid,intege
   'public API can issue request identifiers');
 select ok(to_regprocedure('api.pass_create_redemption_intent_v1(uuid,uuid,uuid,integer)') is not null,
   'public API can create a pending ticket');
-select ok(to_regprocedure('api.pass_validate_redemption_v1(text,uuid)') is not null,
+select ok(to_regprocedure('api.pass_validate_redemption_v1(text,uuid,uuid)') is not null,
   'PULSO can validate via API facade');
 select ok(to_regprocedure('api.pass_consume_redemption_v1(uuid,uuid,uuid,uuid)') is not null,
   'PULSO can consume via API facade');
@@ -72,6 +72,9 @@ select ok(has_function_privilege(
 select ok(not has_table_privilege(
   'authenticated','pass.redemption_requests','INSERT'
 ), 'the mobile cannot create request rows directly');
+select ok(not has_function_privilege(
+  'anon','api.pass_validate_redemption_v1(text,uuid,uuid)','EXECUTE'
+), 'anon cannot inspect QR/customer details');
 select ok(exists(
   select 1 from pg_indexes
   where schemaname='pass' and tablename='loyalty_redemptions'
@@ -123,6 +126,16 @@ select is(
    where id='b0080000-0000-0000-0000-000000000001'),
   80,
   'reserving points does not debit before POS confirms consumption'
+);
+
+select throws_ok(
+  format(
+    'select api.pass_validate_redemption_v1(%L::text,%L::uuid,NULL::uuid)',
+    (select ticket->>'qr_code' from pass_redemption_v1_fixture limit 1),
+    'b0081000-0000-0000-0000-000000000001'
+  ),
+  '42501','PERMISSION_DENIED',
+  'ordinary PASS client cannot inspect or validate a POS ticket'
 );
 
 select is(
