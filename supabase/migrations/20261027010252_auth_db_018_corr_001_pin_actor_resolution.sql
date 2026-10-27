@@ -263,9 +263,10 @@ begin
 
   if v_oid is null
      or pg_catalog.strpos(v_def,
-       E'current_actor_shift_for_shared_device_v1(\\n    v_actor.id,')=0
+       'current_actor_shift_for_shared_device_v1(' ||
+       pg_catalog.chr(10) || '    v_actor.id,')=0
      or pg_catalog.strpos(v_def,
-       E'v_device.id,\\n    v_actor.id,')=0
+       'v_device.id,' || pg_catalog.chr(10) || '    v_actor.id,')=0
      or not (select p.prosecdef from pg_catalog.pg_proc p where p.oid=v_oid)
      or not pg_catalog.has_function_privilege('authenticated',v_oid,'EXECUTE')
      or pg_catalog.has_function_privilege('anon',v_oid,'EXECUTE') then
