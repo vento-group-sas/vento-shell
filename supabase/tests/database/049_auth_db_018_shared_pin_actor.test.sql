@@ -12,6 +12,10 @@ values
   ('a0180000-0000-4000-8000-000000000001','qa-shared-device-owner@test.invalid'),
   ('a0180000-0000-4000-8000-000000000002','qa-shared-device-actor@test.invalid');
 
+insert into public.apps(code,name,is_active)
+values ('pulso','PULSO',true)
+on conflict (code) do nothing;
+
 insert into public.roles(code,name,is_active)
 values ('qa_shared_pin_worker','QA Shared PIN Worker',true);
 
@@ -39,7 +43,7 @@ insert into public.shared_operational_devices(
   'QA_A018_PIN_DEVICE','QA Synthetic POS Terminal','pos_terminal',
   'a0180000-0000-4000-8000-000000000001',
   'a0181000-0000-4000-8000-000000000001',
-  'pulso',true,false,false,'active',true
+  'pulso',true,false,true,'active',true
 );
 
 insert into public.shared_operational_device_apps(device_id,app_code,is_active)
@@ -54,14 +58,26 @@ insert into public.shared_operational_device_actor_policies(
   true
 );
 
-insert into public.attendance_logs(employee_id,site_id,action,source)
+insert into public.employee_shifts(
+  id,employee_id,site_id,shift_date,start_time,end_time,
+  published_at,status
+) values (
+  'a0183000-0000-4000-8000-000000000001',
+  'a0180000-0000-4000-8000-000000000002',
+  'a0181000-0000-4000-8000-000000000001',
+  (now() at time zone 'America/Bogota')::date,
+  '00:00'::time,'23:59'::time,now(),'scheduled'
+);
+
+insert into public.attendance_logs(employee_id,site_id,shift_id,action,source)
 values (
   'a0180000-0000-4000-8000-000000000002',
   'a0181000-0000-4000-8000-000000000001',
+  'a0183000-0000-4000-8000-000000000001',
   'check_in','system'
 );
 
-select extensions.plan(16);
+select extensions.plan(17);
 
 select extensions.ok(
   pg_catalog.to_regprocedure(
@@ -139,6 +155,12 @@ select extensions.ok(
   (select signature_id is not null and expires_at > pg_catalog.now()
    from qa_auth_018_pin_result),
   'result provides durable signature id and expiration'
+);
+
+select extensions.is(
+  (select actor_shift_id from qa_auth_018_pin_result),
+  'a0183000-0000-4000-8000-000000000001'::uuid,
+  'PIN-resolved actor keeps active shift on shift-required POS'
 );
 
 select extensions.is(
