@@ -39,7 +39,7 @@ create temporary table pass_redemption_v1_fixture(
 ) on commit drop;
 grant select,insert,update on table pass_redemption_v1_fixture to authenticated;
 
-select plan(20);
+select plan(21);
 
 select ok(to_regclass('pass.redemption_requests') is not null,
   'server-issued redemption requests are stored durably');
