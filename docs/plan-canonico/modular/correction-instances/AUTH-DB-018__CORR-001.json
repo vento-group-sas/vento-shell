@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "correction_id": "AUTH-DB-018::CORR-001",
+  "task_id": "AUTH-DB-018",
+  "target_instance_id": "AUTH-DB-018::GLOBAL",
+  "correction_type": "PHYSICAL",
+  "reason_code": "SECURITY_NON_CONFORMANCE",
+  "status": "IN_PROGRESS",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "a42f8107fdc72904af54da01f00dddc8800b431c",
+    "target_task_path": "docs/plan-canonico/modular/bloques/R_SUPABASE/02_R1_FUNDACION_FISICA_CANONICA.md",
+    "target_task_sha256": "4dae1cc4fccb7ab719927ecda789948f4481f78cb82d733c3a857c2425a38a73",
+    "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-018__GLOBAL.json",
+    "target_instance_record_sha256": "ab735f938ca29f4da87567a3def9a4d6dc9460356f96640a33b937271611c04f"
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20261027010252_auth_db_018_corr_001_pin_actor_resolution.sql",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/049_auth_db_018_shared_pin_actor.test.sql",
+      "change": "CREATE"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/MIGRATION_MANIFEST.md",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/migration-manifest.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY"
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:migrations:manifest:check",
+    "npm run supabase:db:test:clean",
+    "node scripts/supabase/environment-drift.mjs local --strict",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [
+    "TREQ-AUTH-011",
+    "TREQ-AUTH-013",
+    "TREQ-AUTH-015"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-26T19:34:00-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "Fase local autorizada por el responsable en conversación 2026-10-26: 'Toca solucionar el tema del 034 ... Eso también influye en pulso, si toca hagámoslo'. Diagnóstico: el defecto concreto del PIN pertenece a AUTH-DB-018, no a CORR-002 de AUTH-DB-034. Se autoriza exclusivamente preparación de código correctivo, pruebas y revisión QA staging-fiel en rama aislada. No autoriza SQL remoto sobre STAGING/producción, cambios de datos sensibles, merge protegido, secretos, despliegue, alteración de 04A ni reactivación de AUTH-DB-034.",
+    "source_contract_sha256": "4dae1cc4fccb7ab719927ecda789948f4481f78cb82d733c3a857c2425a38a73"
+  },
+  "evidence": [
+    "Read-only staging source function md5=6dd2f8b5d93d303da5a7d48f22b889ad; dependent function md5=e8adacaa9508aacbd5d6687468e96218 and 2b86eb4c52753f41e5dc4fdeb09429de.",
+    "SHA-candidate SQL source was compared byte-for-byte with staging pg_get_functiondef and differs in exactly two p_actor_employee_id to v_actor.id substitutions.",
+    "Staging retains 22 migrations; prior AUTH-DB-034 QA had 25 including two temporary adapters, without direct staging parity. The proposed preflight rejects non-matching function sources.",
+    "17 pgTAP assertions prepared with synthetic actor/device/site/shift/PIN and transaction rollback; NOT executed. The Supabase CLI migration generator was unavailable in this session.",
+    "Production and staging remain untouched; no merge or deployment."
+  ],
+  "opened_at": "2026-10-27T01:02:52Z"
+}
