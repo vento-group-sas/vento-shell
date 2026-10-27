@@ -216,32 +216,78 @@ $create_intent$;
 
 create or replace function pass.pass_validate_redemption_v1(
   p_qr_code text,
-  p_site_id uuid
-) returns jsonb language plpgsql stable security definer
+  p_site_id uuid,
+  p_signature_id uuid default null
+) returns jsonb language plpgsql security definer
 set search_path = pg_catalog
 as $validate$
 declare
   v_user uuid := auth.uid();
   v_redemption record;
-  v_shared_device boolean;
+  v_device_id uuid;
+  v_actor_id uuid;
+  v_actor_role text;
+  v_signed_target uuid;
 begin
   if v_user is null or p_site_id is null or
      pg_catalog.btrim(coalesce(p_qr_code,'')) = '' then
     raise exception 'INVALID_REQUEST' using errcode='42501';
   end if;
 
-  select exists (
-    select 1 from public.shared_operational_devices d
-      join public.shared_operational_device_apps da on da.device_id=d.id
+  -- Require an authorized human before returning any customer data.
+  select d.id into v_device_id
+    from public.shared_operational_devices d
+    join public.shared_operational_device_apps da on da.device_id=d.id
     where d.auth_user_id=v_user and d.site_id=p_site_id
       and d.is_active and d.activation_status='active'
       and da.app_code='pulso' and da.is_active
-  ) into v_shared_device;
+    limit 1;
 
-  if not v_shared_device and not public.has_permission(
-    'pulso.loyalty.points.redeem',p_site_id,null
-  ) then
-    raise exception 'PERMISSION_DENIED' using errcode='42501';
+  if v_device_id is not null then
+    if p_signature_id is null then
+      raise exception 'ACTOR_SIGNATURE_REQUIRED' using errcode='42501';
+    end if;
+    select sig.actor_employee_id,sig.target_id into v_actor_id,v_signed_target
+      from public.shared_device_actor_signatures sig
+      join public.employees e on e.id=sig.actor_employee_id and e.is_active is true
+      where sig.id=p_signature_id and sig.shared_device_id=v_device_id
+        and sig.auth_user_id=v_user and sig.site_id=p_site_id
+        and sig.app_code='pulso'
+        and sig.action_code='pos.loyalty.validate_redemption'
+        and sig.target_table='pass.loyalty_redemptions'
+        and sig.signature_method='pin' and sig.expires_at > pg_catalog.now();
+    if v_actor_id is null or not public.shared_device_actor_is_allowed_v1(
+      v_device_id,v_actor_id,p_site_id,null
+    ) then
+      raise exception 'ACTOR_NOT_AUTHORIZED' using errcode='42501';
+    end if;
+    select c.active_operational_role into v_actor_role
+      from public.get_operational_context(v_actor_id,p_site_id,'pulso') c
+      where c.employee_id=v_actor_id and c.can_operate
+        and c.active_site_id=p_site_id;
+    if v_actor_role is null or not public.has_operational_role_permission(
+      v_actor_role,'pulso.loyalty.points.redeem',p_site_id,null,'pulso'
+    ) then
+      raise exception 'ACTOR_PERMISSION_DENIED' using errcode='42501';
+    end if;
+  else
+    if p_signature_id is not null
+       or not (
+         public.has_permission('pulso.loyalty.points.redeem',p_site_id,null)
+         or public.has_operational_permission(
+           'pulso.loyalty.points.redeem',p_site_id,null,'pulso'
+         )
+       )
+       or not exists (
+         select 1 from public.employees e
+         where e.id=v_user and e.is_active is true
+           and (e.site_id=p_site_id or exists (
+             select 1 from public.employee_sites es
+             where es.employee_id=e.id and es.site_id=p_site_id and es.is_active
+           ))
+       ) then
+      raise exception 'PERMISSION_DENIED' using errcode='42501';
+    end if;
   end if;
 
   select r.id,r.user_id,r.reward_id,r.points_spent,r.status,r.created_at,
@@ -255,6 +301,10 @@ begin
      or v_redemption.request_status <> 'reserved'
      or v_redemption.expires_at <= pg_catalog.now() then
     raise exception 'REDEMPTION_NOT_CONSUMABLE' using errcode='42501';
+  end if;
+
+  if v_signed_target is not null and v_signed_target <> v_redemption.id then
+    raise exception 'SIGNATURE_BOUND_TO_OTHER_TICKET' using errcode='42501';
   end if;
 
   return pg_catalog.jsonb_build_object('success',true,'redemption',
