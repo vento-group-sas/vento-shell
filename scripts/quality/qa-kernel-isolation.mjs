@@ -168,8 +168,12 @@ export function classifyLocalStatus({ context, status } = {}) {
     if (status.running !== false) deny('STATUS_RECEIPT_MISMATCH');
     const code = typeof status.code === 'string' && ERROR_CODE.test(status.code)
       ? status.code : 'UNCLASSIFIED_RUNTIME_FAILURE';
-    const category = ['MIGRATION', 'POSTGRES', 'DOCKER', 'AUTH', 'PGTAP']
-      .includes(status.diagnostic?.category) ? status.diagnostic.category : 'OTHER';
+    // A cancelled/aborted bootstrap without a SQLSTATE is a process failure,
+    // not evidence that a migration SQL invariant failed.
+    const category = code === 'ABORTED' && status.diagnostic?.sqlstate == null
+      ? 'PROCESS'
+      : ['MIGRATION', 'POSTGRES', 'DOCKER', 'AUTH', 'PGTAP']
+        .includes(status.diagnostic?.category) ? status.diagnostic.category : 'OTHER';
     return {
       status: 'FAIL', stage: status.stage, category, code,
       qa_executed: (status.tests_completed ?? 0) > 0,
@@ -186,9 +190,28 @@ export function buildEndRequest(context) {
   return { session_id: context.session_id, cleanup_files: false };
 }
 
-// Only exact SQL PASS + no adapters + STOPPED postflight may certify F1.
-// An ERROR or an unverified bootstrap remains FAIL/BLOCKED even after STOPPED.
-export function attestTerminalEvidence({ context, artifact, end } = {}) {
+// STOPPED is only a lifecycle receipt, not independent proof of Docker
+// ownership, stopped processes or absence of residual consumers. Never turn
+// that receipt into cleanup_attested without separately verified postflight.
+function independentPostflightVerified(context, end, postflight) {
+  return end.cleanup === 'RETAINED' &&
+    record(postflight) &&
+    postflight.session_id === context.session_id &&
+    postflight.source_head === context.source.head &&
+    postflight.source_fingerprint === context.source_fingerprint &&
+    postflight.docker_inspected === true &&
+    postflight.owner_verified === true &&
+    postflight.process_termination_verified === true &&
+    postflight.running_owned_containers === 0 &&
+    postflight.unverified_consumers === 0 &&
+    postflight.persistent_stack_modified === false &&
+    postflight.remote_mutations === false &&
+    postflight.docker_volumes_deleted === false;
+}
+
+// Only exact SQL PASS + no adapters + independently verified postflight may
+// certify F1. A failed run remains FAIL even if STOPPED was received.
+export function attestTerminalEvidence({ context, artifact, end, postflight } = {}) {
   assertContext(context);
   if (!record(artifact) || artifact.session_id !== context.session_id
     || artifact.source_head !== context.source.head
@@ -197,20 +220,23 @@ export function attestTerminalEvidence({ context, artifact, end } = {}) {
     end.status !== 'STOPPED' || end.docker_volumes_deleted !== false) {
     deny('TERMINAL_PROVENANCE_UNVERIFIED');
   }
+  const cleanupAttested = independentPostflightVerified(context, end, postflight);
   if (artifact.terminal === 'FAIL') {
     const last = Array.isArray(artifact.events) ? artifact.events.at(-1) : null;
+    const code = typeof last?.code === 'string' && ERROR_CODE.test(last.code)
+      ? last.code : 'UNCLASSIFIED_RUNTIME_FAILURE';
     return {
-      status: 'FAIL', stage: last?.stage ?? 'UNKNOWN',
-      code: typeof last?.code === 'string' && ERROR_CODE.test(last.code)
-        ? last.code : 'UNCLASSIFIED_RUNTIME_FAILURE',
+      status: 'FAIL', stage: last?.stage ?? 'UNKNOWN', code,
+      failure_type: code === 'ABORTED' && last?.diagnostic?.sqlstate == null
+        ? 'PROCESS_INTERRUPTED' : 'EXECUTION_FAILURE',
       qa_executed: Number.isSafeInteger(artifact.pgTap_summary?.files_completed)
         && artifact.pgTap_summary.files_completed > 0,
-      pg_tap_certified: false, cleanup_attested: true,
+      pg_tap_certified: false, cleanup_attested: cleanupAttested,
       direct_parity: false, session_id: context.session_id,
     };
   }
   const pgtap = artifact.pgTap_summary;
-  const complete = artifact.terminal === 'PASS' &&
+  const replayPassed = artifact.terminal === 'PASS' &&
     artifact.direct_parity_without_adapters === true &&
     artifact.prebaseline_acl_override === false &&
     artifact.qa_acl_compat_profile === false &&
@@ -223,11 +249,14 @@ export function attestTerminalEvidence({ context, artifact, end } = {}) {
     pgtap.files_fail === 0 && pgtap.files_blocked === 0 &&
     pgtap.files_pending === 0 &&
     pgtap.direct_parity_without_adapters === true;
+  const certified = replayPassed && cleanupAttested;
   return {
-    status: complete ? 'PASS' : 'BLOCKED',
-    reason: complete ? 'DIRECT_REPLAY_AND_TESTS_CERTIFIED' : 'DIRECT_REPLAY_NOT_CERTIFIED',
-    qa_executed: complete, pg_tap_certified: complete,
-    cleanup_attested: true, direct_parity: complete,
+    status: certified ? 'PASS' : 'BLOCKED',
+    reason: certified ? 'DIRECT_REPLAY_AND_TESTS_CERTIFIED'
+      : replayPassed ? 'POSTFLIGHT_OWNER_ATTESTATION_MISSING'
+        : 'DIRECT_REPLAY_NOT_CERTIFIED',
+    qa_executed: replayPassed, pg_tap_certified: certified,
+    cleanup_attested: cleanupAttested, direct_parity: certified,
     session_id: context.session_id,
   };
 }

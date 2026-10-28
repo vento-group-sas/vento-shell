@@ -65,6 +65,14 @@ const ended=(change={})=>({
   session_id:sessionId,status:'STOPPED',cleanup:'RETAINED',
   docker_volumes_deleted:false,...change,
 });
+const postflight=(change={})=>({
+  session_id:sessionId,source_head:source.head,
+  source_fingerprint:inventory.source_sha256,
+  docker_inspected:true,owner_verified:true,
+  process_termination_verified:true,running_owned_containers:0,
+  unverified_consumers:0,persistent_stack_modified:false,
+  remote_mutations:false,docker_volumes_deleted:false,...change,
+});
 
 test('foundation F1 baseline requires one real SQL test in own source',()=>{
   const v=beginPlan();
@@ -176,6 +184,23 @@ test('observed AUTH_DB_005 replay error returns FAIL with original classificatio
     qa_executed:false,pg_tap_certified:false,
   });
 });
+test('aborted bootstrap without SQLSTATE is a PROCESS failure, not migration SQL drift',()=>{
+  const c=context();
+  const observed=status({status:'FAIL',running:false,code:'ABORTED',
+    diagnostic:{category:'MIGRATION',sqlstate:null}});
+  const classified=classifyLocalStatus({context:c,status:observed});
+  assert.equal(classified.status,'FAIL');
+  assert.equal(classified.category,'PROCESS');
+  assert.equal(classified.qa_executed,false);
+  const terminated=attestTerminalEvidence({context:c,
+    artifact:artifact({terminal:'FAIL',events:[{stage:'BOOTSTRAP',status:'FAIL',
+      code:'ABORTED',diagnostic:{category:'MIGRATION',sqlstate:null}}]}),
+    end:ended()});
+  assert.equal(terminated.status,'FAIL');
+  assert.equal(terminated.failure_type,'PROCESS_INTERRUPTED');
+  assert.equal(terminated.cleanup_attested,false);
+});
+
 test('status from another session and untrusted diagnostics fail closed',()=>{
   assert.throws(()=>classifyLocalStatus({context:context(),status:status({
     head:'e'.repeat(40),
@@ -215,7 +240,8 @@ test('first real failure remains FAIL after STOPPED and no SQL test executed',()
   });
   assert.equal(result.status,'FAIL');
   assert.equal(result.code,'AUTH_DB_005_ANON_DML_IDENTITY_DRIFT:246');
-  assert.equal(result.cleanup_attested,true);
+  assert.equal(result.cleanup_attested,false);
+  assert.equal(result.failure_type,'EXECUTION_FAILURE');
   assert.equal(result.pg_tap_certified,false);
   assert.equal(result.qa_executed,false);
 });
@@ -230,11 +256,43 @@ test('partial SQL FAIL acknowledges executed pgTAP but never certifies',()=>{
   assert.equal(result.pg_tap_certified,false);
 });
 test('synthetic all-PASS receipt certifies only when direct and cleaned',()=>{
-  const result=attestTerminalEvidence({context:context(),artifact:artifact(),end:ended()});
+  const result=attestTerminalEvidence({context:context(),artifact:artifact(),
+    end:ended(),postflight:postflight()});
   assert.equal(result.status,'PASS');
   assert.equal(result.pg_tap_certified,true);
   assert.equal(result.direct_parity,true);
+  assert.equal(result.cleanup_attested,true);
 });
+test('STOPPED without independent Docker postflight blocks certification',()=>{
+  const missing=attestTerminalEvidence({context:context(),artifact:artifact(),end:ended()});
+  assert.equal(missing.status,'BLOCKED');
+  assert.equal(missing.reason,'POSTFLIGHT_OWNER_ATTESTATION_MISSING');
+  assert.equal(missing.cleanup_attested,false);
+  assert.equal(missing.qa_executed,true);
+  assert.equal(missing.pg_tap_certified,false);
+  for (const bad of [
+    postflight({session_id:'LOCAL-QA::'+'E'.repeat(32)}),
+    postflight({source_head:'e'.repeat(40)}),
+    postflight({source_fingerprint:'e'.repeat(64)}),
+    postflight({docker_inspected:false}),
+    postflight({owner_verified:false}),
+    postflight({process_termination_verified:false}),
+    postflight({running_owned_containers:1}),
+    postflight({unverified_consumers:1}),
+    postflight({persistent_stack_modified:true}),
+    postflight({remote_mutations:true}),
+    postflight({docker_volumes_deleted:true}),
+  ]) {
+    const result=attestTerminalEvidence({context:context(),artifact:artifact(),
+      end:ended(),postflight:bad});
+    assert.equal(result.status,'BLOCKED');
+    assert.equal(result.cleanup_attested,false);
+  }
+  const wrongEnd=attestTerminalEvidence({context:context(),artifact:artifact(),
+    end:ended({cleanup:'UNVERIFIED'}),postflight:postflight()});
+  assert.equal(wrongEnd.cleanup_attested,false);
+});
+
 test('adapted run, missing tests, incomplete cleanup and spoofed PASS block certification',()=>{
   for (const changes of [
     {direct_parity_without_adapters:false},
@@ -249,6 +307,7 @@ test('adapted run, missing tests, incomplete cleanup and spoofed PASS block cert
   ]) {
     const result=attestTerminalEvidence({
       context:context(),artifact:artifact(changes),end:ended(),
+      postflight:postflight(),
     });
     assert.equal(result.status,'BLOCKED');
     assert.equal(result.pg_tap_certified,false);
