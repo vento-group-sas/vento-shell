@@ -70,6 +70,17 @@
   ],
   "profiles": [
     {
+      "id": "foundation-baseline",
+      "owner": "QA-KERNEL",
+      "requires": [
+        "pgtap",
+        "rollback"
+      ],
+      "test_files": [
+        "supabase/tests/database/000_schema_harness.test.sql"
+      ]
+    },
+    {
       "id": "auth-db-034",
       "owner": "AUTH-DB-034",
       "requires": [

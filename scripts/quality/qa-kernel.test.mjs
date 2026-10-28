@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
+// Aggregate all QA Kernel phase suites behind the stable, approved npm command.
+import './qa-kernel-isolation.test.mjs';
 import {
   KERNEL_ID,
   TARGET_ENVIRONMENT,
@@ -36,12 +38,12 @@ const baseline = [
   file('20260913131524_gap_pkg_019_governed_analytics.sql', 'b'),
 ];
 
-test('catalog is PLAN_ONLY and owns three explicitly named independent lanes', () => {
+test('catalog is PLAN_ONLY and owns baseline plus three independent lanes', () => {
   assert.equal(validateCatalog(catalog), true);
   assert.equal(catalog.kernel_id, KERNEL_ID);
   assert.equal(catalog.execution_mode, 'PLAN_ONLY');
   assert.deepEqual(catalog.profiles.map((p) => p.id), [
-    'auth-db-034', 'gap-pkg-004', 'pass-redemption',
+    'foundation-baseline', 'auth-db-034', 'gap-pkg-004', 'pass-redemption',
   ]);
   assert.equal(catalog.capabilities.length, 9);
 });
