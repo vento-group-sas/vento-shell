@@ -20,10 +20,6 @@ function exact(value, keys, code) {
 function positiveInteger(value) {
   return Number.isSafeInteger(value) && value > 0;
 }
-function sameList(a, b) {
-  return Array.isArray(a) && Array.isArray(b) &&
-    a.length === b.length && a.every((value, i) => value === b[i]);
-}
 function validSession(sessionId) {
   return typeof sessionId === 'string' && SESSION_ID.test(sessionId);
 }
