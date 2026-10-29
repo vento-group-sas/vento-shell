@@ -189,7 +189,7 @@ export function buildEndRequest(context) {
 // The MCP can close an abandoned voucher when its stack never existed.
 // That is a lifecycle outcome, NOT durable Docker cleanup or SQL evidence.
 // No caller-supplied flags may promote this legacy receipt to PASS.
-export function classifyNoStackRecovery({ context, inspection, closure } = {}) {
+export function classifyNoStackRecovery({ context, inspection, closure, postflight } = {}) {
   assertContext(context);
   const candidates = inspection?.candidates;
   const candidate = Array.isArray(candidates) && candidates.length === 1
@@ -209,6 +209,7 @@ export function classifyNoStackRecovery({ context, inspection, closure } = {}) {
     'status', 'session_id', 'cleanup', 'stack_absence_verified',
     'stop_executed', 'docker_containers_inspected',
     'docker_volumes_deleted', 'remote_mutations', 'pgTap_certified',
+    'durable_absence_proof_recorded',
   ], 'RECOVERY_RECEIPT_KEYS_INVALID');
   if (closure.status !== 'CLOSED_NO_STACK' ||
     closure.session_id !== context.session_id ||
@@ -219,14 +220,46 @@ export function classifyNoStackRecovery({ context, inspection, closure } = {}) {
     closure.docker_containers_inspected < 0 ||
     closure.docker_volumes_deleted !== false ||
     closure.remote_mutations !== false ||
-    closure.pgTap_certified !== false) {
+    closure.pgTap_certified !== false ||
+    (closure.durable_absence_proof_recorded !== undefined &&
+      closure.durable_absence_proof_recorded !== true)) {
     deny('RECOVERY_RECEIPT_INVALID');
   }
+  const keys = [
+    'status', 'lifecycle', 'session_id', 'source_head',
+    'source_fingerprint', 'durable_absence_proof_verified',
+    'docker_inspected', 'docker_containers_inspected',
+    'stack_absence_verified', 'process_quiescence_verified',
+    'owner_verified', 'cleanup_attested', 'pg_tap_certified',
+    'replay_certified', 'remote_mutations', 'docker_volumes_deleted',
+  ];
+  const reviewed = closure.durable_absence_proof_recorded === true &&
+    record(postflight) &&
+    Object.keys(postflight).length === keys.length &&
+    Object.keys(postflight).every(key => keys.includes(key)) &&
+    postflight.status === 'ATTESTED_NO_STACK' &&
+    postflight.lifecycle === 'CLOSED_NO_STACK' &&
+    postflight.session_id === context.session_id &&
+    postflight.source_head === context.source.head &&
+    postflight.source_fingerprint === context.source_fingerprint &&
+    postflight.durable_absence_proof_verified === true &&
+    postflight.docker_inspected === true &&
+    Number.isSafeInteger(postflight.docker_containers_inspected) &&
+    postflight.docker_containers_inspected >= 0 &&
+    postflight.stack_absence_verified === true &&
+    postflight.process_quiescence_verified === true &&
+    postflight.owner_verified === false &&
+    postflight.cleanup_attested === false &&
+    postflight.pg_tap_certified === false &&
+    postflight.replay_certified === false &&
+    postflight.remote_mutations === false &&
+    postflight.docker_volumes_deleted === false;
   return Object.freeze({
-    status: 'BLOCKED',
+    status: reviewed ? 'ATTESTED_NO_STACK' : 'BLOCKED',
     lifecycle: 'CLOSED_NO_STACK',
-    reason: 'END_POSTFLIGHT_PROOF_MISSING',
+    reason: reviewed ? 'NO_STACK_ABSENCE_ATTESTED' : 'END_POSTFLIGHT_PROOF_MISSING',
     closure_reported: true,
+    no_stack_absence_attested: reviewed,
     cleanup_attested: false,
     qa_executed: false,
     pg_tap_certified: false,

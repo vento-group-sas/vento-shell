@@ -90,6 +90,72 @@ const noStackClosure=(ctx=context(),changes={})=>({
   remote_mutations:false,pgTap_certified:false,...changes,
 });
 
+const durableNoStackClosure=(ctx=context(),change={})=>
+  noStackClosure(ctx,{durable_absence_proof_recorded:true,...change});
+const durableNoStackPostflight=(ctx=context(),change={})=>({
+  status:'ATTESTED_NO_STACK',lifecycle:'CLOSED_NO_STACK',
+  session_id:ctx.session_id,source_head:ctx.source.head,
+  source_fingerprint:ctx.source_fingerprint,
+  durable_absence_proof_verified:true,docker_inspected:true,
+  docker_containers_inspected:16,stack_absence_verified:true,
+  process_quiescence_verified:true,owner_verified:false,
+  cleanup_attested:false,pg_tap_certified:false,replay_certified:false,
+  remote_mutations:false,docker_volumes_deleted:false,...change,
+});
+test('v134 no-stack postflight establishes absence without cleanup or SQL PASS',()=>{
+  const ctx=context();
+  const result=classifyNoStackRecovery({context:ctx,
+    inspection:recoveryInspection(ctx),
+    closure:durableNoStackClosure(ctx),
+    postflight:durableNoStackPostflight(ctx)});
+  assert.equal(result.status,'ATTESTED_NO_STACK');
+  assert.equal(result.reason,'NO_STACK_ABSENCE_ATTESTED');
+  assert.equal(result.no_stack_absence_attested,true);
+  assert.equal(result.cleanup_attested,false);
+  assert.equal(result.pg_tap_certified,false);
+  assert.equal(result.direct_parity,false);
+  assert.equal(result.qa_executed,false);
+});
+test('v134 postflight classification generalizes across independent sources',()=>{
+  const second={...context(),session_id:'LOCAL-QA::'+'F'.repeat(32),
+    source:{...context().source,head:'f'.repeat(40)},
+    source_fingerprint:'e'.repeat(64),project_fingerprint:'f'.repeat(64)};
+  for(const ctx of [context(),second]){
+    const x=classifyNoStackRecovery({context:ctx,
+      inspection:recoveryInspection(ctx),
+      closure:durableNoStackClosure(ctx),
+      postflight:durableNoStackPostflight(ctx,{docker_containers_inspected:0})});
+    assert.equal(x.status,'ATTESTED_NO_STACK');
+    assert.equal(x.pg_tap_certified,false);
+  }
+});
+test('v134 no-stack receipt fails closed on absent, unrelated or forged postflight',()=>{
+  const ctx=context();
+  const classify=(receipt,closure=durableNoStackClosure(ctx))=>
+    classifyNoStackRecovery({context:ctx,inspection:recoveryInspection(ctx),
+      closure,postflight:receipt});
+  assert.equal(classify(undefined).status,'BLOCKED');
+  assert.equal(classify(durableNoStackPostflight(ctx),noStackClosure(ctx)).status,'BLOCKED');
+  for(const variant of [
+    {status:'PASS'}, {lifecycle:'STOPPED'},
+    {session_id:'LOCAL-QA::'+'E'.repeat(32)},
+    {source_head:'e'.repeat(40)}, {source_fingerprint:'e'.repeat(64)},
+    {durable_absence_proof_verified:false}, {docker_inspected:false},
+    {docker_containers_inspected:-1}, {stack_absence_verified:false},
+    {process_quiescence_verified:false}, {owner_verified:true},
+    {cleanup_attested:true}, {pg_tap_certified:true}, {replay_certified:true},
+    {remote_mutations:true}, {docker_volumes_deleted:true},
+    {host_authorization:true}, {credential:'fake'},
+  ]){
+    const result=classify(durableNoStackPostflight(ctx,variant));
+    assert.equal(result.status,'BLOCKED');
+    assert.equal(result.pg_tap_certified,false);
+    assert.equal(result.cleanup_attested,false);
+  }
+  assert.throws(()=>classify(undefined,durableNoStackClosure(ctx,{
+    durable_absence_proof_recorded:false})),/QA_KERNEL_F1_RECOVERY_RECEIPT_INVALID/u);
+});
+
 test('no-stack recovery acknowledges closure but not Docker or SQL certification',()=>{
   const result=classifyNoStackRecovery({
     context:context(),inspection:recoveryInspection(),closure:noStackClosure(),
