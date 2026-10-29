@@ -4,6 +4,7 @@ import { loadCatalog, TARGET_ENVIRONMENT } from './qa-kernel.mjs';
 import {
   planIsolatedBegin, attestAuthorizedSession, buildRunRequest,
   attestRunReceipt, classifyLocalStatus, buildEndRequest, attestTerminalEvidence,
+  classifyNoStackRecovery,
 } from './qa-kernel-isolation.mjs';
 
 const catalog = loadCatalog();
@@ -72,6 +73,85 @@ const postflight=(change={})=>({
   process_termination_verified:true,running_owned_containers:0,
   unverified_consumers:0,persistent_stack_modified:false,
   remote_mutations:false,docker_volumes_deleted:false,...change,
+});
+
+const recoveryInspection=(ctx=context(),changes={})=>({
+  status:'PASS',branch:ctx.source.branch,head:ctx.source.head,
+  registered_count:1,candidates:[{
+    session_id:ctx.session_id,mode:'STOP_ONLY_FROM_VOUCHER',
+    source_identity_verified:true,process_quiescence_verified:true,
+    sensitive_recovery_blocked:false,docker_owner_verified:false,
+  }],...changes,
+});
+const noStackClosure=(ctx=context(),changes={})=>({
+  status:'CLOSED_NO_STACK',session_id:ctx.session_id,cleanup:'RETAINED',
+  stack_absence_verified:true,stop_executed:false,
+  docker_containers_inspected:16,docker_volumes_deleted:false,
+  remote_mutations:false,pgTap_certified:false,...changes,
+});
+
+test('no-stack recovery acknowledges closure but not Docker or SQL certification',()=>{
+  const result=classifyNoStackRecovery({
+    context:context(),inspection:recoveryInspection(),closure:noStackClosure(),
+  });
+  assert.equal(result.status,'BLOCKED');
+  assert.equal(result.lifecycle,'CLOSED_NO_STACK');
+  assert.equal(result.reason,'END_POSTFLIGHT_PROOF_MISSING');
+  assert.equal(result.closure_reported,true);
+  for(const key of ['cleanup_attested','qa_executed','pg_tap_certified','direct_parity'])
+    assert.equal(result[key],false);
+});
+test('no-stack classification works for two independent source identities',()=>{
+  const second={...context(),session_id:'LOCAL-QA::'+'F'.repeat(32),
+    source:{...context().source,head:'f'.repeat(40)},
+    source_fingerprint:'e'.repeat(64),project_fingerprint:'f'.repeat(64)};
+  for(const ctx of [context(),second]){
+    const result=classifyNoStackRecovery({context:ctx,
+      inspection:recoveryInspection(ctx),closure:noStackClosure(ctx,{docker_containers_inspected:0})});
+    assert.equal(result.session_id,ctx.session_id);
+    assert.equal(result.status,'BLOCKED');
+    assert.equal(result.pg_tap_certified,false);
+  }
+});
+test('no-stack recovery rejects foreign or unverified inspected vouchers',()=>{
+  const base=recoveryInspection();
+  const candidate=base.candidates[0];
+  for(const bad of [
+    {status:'FAIL'},{branch:'foreign'},{head:'f'.repeat(40)},
+    {registered_count:2},{candidates:[]},{candidates:[candidate,candidate]},
+    {candidates:[{...candidate,session_id:'other'}]},
+    {candidates:[{...candidate,mode:'FORCE_STOP'}]},
+    {candidates:[{...candidate,source_identity_verified:false}]},
+    {candidates:[{...candidate,process_quiescence_verified:false}]},
+    {candidates:[{...candidate,sensitive_recovery_blocked:true}]},
+  ]) assert.throws(()=>classifyNoStackRecovery({context:context(),
+    inspection:recoveryInspection(context(),bad),closure:noStackClosure()}),
+    /QA_KERNEL_F1_RECOVERY_SCOPE_UNVERIFIED/u);
+});
+test('no-stack closure rejects dangerous operations and forged PASS',()=>{
+  for(const bad of [
+    {status:'PASS'},{session_id:'other'},{cleanup:'DELETED'},
+    {stack_absence_verified:false},{stop_executed:true},
+    {docker_containers_inspected:-1},{docker_containers_inspected:1.5},
+    {docker_volumes_deleted:true},{remote_mutations:true},{pgTap_certified:true},
+  ]) assert.throws(()=>classifyNoStackRecovery({context:context(),
+    inspection:recoveryInspection(),closure:noStackClosure(context(),bad)}),
+    /QA_KERNEL_F1_RECOVERY_RECEIPT_INVALID/u);
+  for(const forged of [{cleanup_attested:true},{host_authorization:true},
+    {password:'private'}]) assert.throws(()=>classifyNoStackRecovery({
+    context:context(),inspection:recoveryInspection(),
+    closure:noStackClosure(context(),forged)}),
+    /QA_KERNEL_F1_RECOVERY_RECEIPT_KEYS_INVALID/u);
+});
+test('claimed postflight PASS cannot compensate for missing durable end proof',()=>{
+  const result=classifyNoStackRecovery({context:context(),
+    inspection:recoveryInspection(),closure:noStackClosure(),
+    postflight:{status:'PASS',owner_verified:true,cleanup_attested:true}});
+  assert.equal(result.cleanup_attested,false);
+  assert.equal(result.pg_tap_certified,false);
+  assert.throws(()=>attestTerminalEvidence({
+    context:context(),artifact:artifact(),end:noStackClosure(),postflight:postflight(),
+  }),/QA_KERNEL_F1_TERMINAL_PROVENANCE_UNVERIFIED/u);
 });
 
 test('foundation F1 baseline requires one real SQL test in own source',()=>{

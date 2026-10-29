@@ -186,6 +186,55 @@ export function buildEndRequest(context) {
   return { session_id: context.session_id, cleanup_files: false };
 }
 
+// The MCP can close an abandoned voucher when its stack never existed.
+// That is a lifecycle outcome, NOT durable Docker cleanup or SQL evidence.
+// No caller-supplied flags may promote this legacy receipt to PASS.
+export function classifyNoStackRecovery({ context, inspection, closure } = {}) {
+  assertContext(context);
+  const candidates = inspection?.candidates;
+  const candidate = Array.isArray(candidates) && candidates.length === 1
+    ? candidates[0] : null;
+  if (!record(inspection) || inspection.status !== 'PASS' ||
+    inspection.branch !== context.source.branch ||
+    inspection.head !== context.source.head ||
+    inspection.registered_count !== 1 ||
+    !record(candidate) || candidate.session_id !== context.session_id ||
+    candidate.mode !== 'STOP_ONLY_FROM_VOUCHER' ||
+    candidate.source_identity_verified !== true ||
+    candidate.process_quiescence_verified !== true ||
+    candidate.sensitive_recovery_blocked !== false) {
+    deny('RECOVERY_SCOPE_UNVERIFIED');
+  }
+  exact(closure, [
+    'status', 'session_id', 'cleanup', 'stack_absence_verified',
+    'stop_executed', 'docker_containers_inspected',
+    'docker_volumes_deleted', 'remote_mutations', 'pgTap_certified',
+  ], 'RECOVERY_RECEIPT_KEYS_INVALID');
+  if (closure.status !== 'CLOSED_NO_STACK' ||
+    closure.session_id !== context.session_id ||
+    closure.cleanup !== 'RETAINED' ||
+    closure.stack_absence_verified !== true ||
+    closure.stop_executed !== false ||
+    !Number.isSafeInteger(closure.docker_containers_inspected) ||
+    closure.docker_containers_inspected < 0 ||
+    closure.docker_volumes_deleted !== false ||
+    closure.remote_mutations !== false ||
+    closure.pgTap_certified !== false) {
+    deny('RECOVERY_RECEIPT_INVALID');
+  }
+  return Object.freeze({
+    status: 'BLOCKED',
+    lifecycle: 'CLOSED_NO_STACK',
+    reason: 'END_POSTFLIGHT_PROOF_MISSING',
+    closure_reported: true,
+    cleanup_attested: false,
+    qa_executed: false,
+    pg_tap_certified: false,
+    direct_parity: false,
+    session_id: context.session_id,
+  });
+}
+
 // STOPPED is only a lifecycle receipt, not independent proof of Docker
 // ownership, stopped processes or absence of residual consumers. Never turn
 // that receipt into cleanup_attested without separately verified postflight.
