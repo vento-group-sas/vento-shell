@@ -125,7 +125,8 @@
             ],
             "min_connections": 2,
             "set_roles": [
-              "vento_context_freshness_owner"
+              "vento_context_freshness_owner",
+              "vento_ddl_owner"
             ],
             "fixtures": "SYNTHETIC_ONLY",
             "bootstrap": "PRIVILEGED_SETUP_REQUIRED"
