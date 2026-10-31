@@ -78,6 +78,24 @@
       ],
       "test_files": [
         "supabase/tests/database/000_schema_harness.test.sql"
+      ],
+      "test_contracts": [
+        {
+          "file": "supabase/tests/database/000_schema_harness.test.sql",
+          "requires": [
+            "pgtap",
+            "rollback"
+          ],
+          "probes": {
+            "extensions": [
+              "pgtap"
+            ],
+            "min_connections": 1,
+            "set_roles": [],
+            "fixtures": "NONE",
+            "bootstrap": "PRIVILEGED_SETUP_REQUIRED"
+          }
+        }
       ]
     },
     {
@@ -91,6 +109,28 @@
       "test_files": [
         "supabase/tests/database/042_auth_db_035_context_freshness.test.sql",
         "supabase/tests/database/048_auth_db_034_safe_projection.test.sql"
+      ],
+      "test_contracts": [
+        {
+          "file": "supabase/tests/database/042_auth_db_035_context_freshness.test.sql",
+          "requires": [
+            "pgtap",
+            "scram_loopback",
+            "rollback"
+          ],
+          "probes": {
+            "extensions": [
+              "pgtap",
+              "dblink"
+            ],
+            "min_connections": 2,
+            "set_roles": [
+              "vento_context_freshness_owner"
+            ],
+            "fixtures": "SYNTHETIC_ONLY",
+            "bootstrap": "PRIVILEGED_SETUP_REQUIRED"
+          }
+        }
       ]
     },
     {
