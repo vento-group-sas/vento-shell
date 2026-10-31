@@ -13,8 +13,8 @@ const esc = (v: unknown) => String(v ?? "")
   .replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;");
 
-const obj = (v: unknown): Record<string, any> =>
-  v && typeof v === "object" && !Array.isArray(v) ? v as Record<string, any> : {};
+const obj = (v: unknown): Record<string, unknown> =>
+  v && typeof v === "object" && !Array.isArray(v) ? v as Record<string, unknown> : {};
 
 const messageFor = (code: string, remaining?: number) => ({
   invalid_token: "El enlace no es válido.",
@@ -28,10 +28,11 @@ const messageFor = (code: string, remaining?: number) => ({
   issue_code_required: "Selecciona una novedad.",
 }[code] ?? "No fue posible completar la operación.");
 
-function page(token: string, data: any) {
-  const order = obj(data.order);
-  const session = obj(data.session);
-  const gift = data.gift ? obj(data.gift) : null;
+function page(token: string, data: unknown) {
+  const payload = obj(data);
+  const order = obj(payload.order);
+  const session = obj(payload.session);
+  const gift = payload.gift ? obj(payload.gift) : null;
   const address = obj(order.delivery_address);
   const addressLine = address.address_line || address.line || address.address || address.formatted_address || "Dirección no registrada";
   const detail = address.reference || address.address_reference || address.details || "";
