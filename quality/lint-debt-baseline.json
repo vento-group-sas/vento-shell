@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "baseline_id": "VENTO-SHELL-LINT-DEBT-CLEARED-2026-10-31",
+  "previous_baseline_id": "VENTO-SHELL-LINT-DEBT-2026-09-06",
   "policy": "NO_NEW_DEBT_AND_TOUCHED_FILES_CLEAN",
   "issues": []
 }
