@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 // Aggregate all QA Kernel phase suites behind the stable, approved npm command.
@@ -206,12 +207,23 @@ test('F2 preflight isolates 042 SCRAM/dblink and refuses to infer 048 requiremen
   assert.deepEqual(preflight.test_preflights[0].probes.extensions, ['pgtap', 'dblink']);
   assert.equal(preflight.test_preflights[0].probes.min_connections, 2);
   assert.deepEqual(preflight.test_preflights[0].probes.set_roles,
-    ['vento_context_freshness_owner']);
+    ['vento_context_freshness_owner', 'vento_ddl_owner']);
   assert.equal(preflight.test_preflights[0].probes.fixtures, 'SYNTHETIC_ONLY');
   assert.ok(!preflight.test_preflights[0].requires.includes('fdw_server'));
   assert.equal(preflight.runner_non_admin_attested, false);
   assert.equal(preflight.runtime_probes_executed, false);
   assert.equal(preflight.pg_tap_certified, false);
+});
+
+test('F2 contract tracks actual SET ROLE actors in 042 source SQL', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const contract = profile.test_contracts[0];
+  const sql = fs.readFileSync(contract.file, 'utf8');
+  const used = [...sql.matchAll(/\bset\s+(?:local\s+)?role\s+([a-z][a-z0-9_]*)/giu)]
+    .map((match) => match[1].toLowerCase());
+  assert.deepEqual([...new Set(used)].sort(), [...contract.probes.set_roles].sort());
+  assert.deepEqual([...new Set(used)].sort(),
+    ['vento_context_freshness_owner', 'vento_ddl_owner'].sort());
 });
 
 test('F2 preflight never turns a full plan into runtime PASS', () => {
