@@ -34,6 +34,7 @@ export const SHELL_REQUIRED_QUALITY_TEST_FILES = Object.freeze([
   'scripts/quality/repository-rollback-gate.test.mjs',
   'scripts/quality/deployment-independence-gate.test.mjs',
   'scripts/quality/quality-primitives.test.mjs',
+  'scripts/quality/qa-kernel.test.mjs',
   'scripts/quality/repository-test-command-gate.test.mjs',
 ]);
 
