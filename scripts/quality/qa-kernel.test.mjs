@@ -97,7 +97,8 @@ test('capabilities resolve dependencies in correct order', () => {
   assert.ok(names.indexOf('source_attestation') < names.indexOf('isolated_postgres'));
   assert.ok(names.indexOf('migration_manifest') < names.indexOf('migration_replay'));
   assert.ok(names.indexOf('isolated_postgres') < names.indexOf('scram_loopback'));
-  assert.ok(names.indexOf('scram_loopback') < names.indexOf('fdw_server'));
+  assert.ok(names.includes('scram_loopback'));
+  assert.ok(!names.includes('fdw_server'), 'AUTH 042 usa SCRAM/BIND sin foreign server ni GRANT FDW');
   assert.ok(names.indexOf('migration_replay') < names.indexOf('pgtap'));
   assert.ok(names.indexOf('rollback') >= 0);
   assert.equal(new Set(names).size, names.length);

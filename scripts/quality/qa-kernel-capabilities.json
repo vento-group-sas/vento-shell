@@ -85,7 +85,7 @@
       "owner": "AUTH-DB-034",
       "requires": [
         "pgtap",
-        "fdw_server",
+        "scram_loopback",
         "rollback"
       ],
       "test_files": [
