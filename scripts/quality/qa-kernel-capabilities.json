@@ -131,6 +131,24 @@
             "fixtures": "SYNTHETIC_ONLY",
             "bootstrap": "PRIVILEGED_SETUP_REQUIRED"
           }
+        },
+        {
+          "file": "supabase/tests/database/048_auth_db_034_safe_projection.test.sql",
+          "requires": [
+            "pgtap",
+            "rollback"
+          ],
+          "probes": {
+            "extensions": [
+              "pgtap"
+            ],
+            "min_connections": 1,
+            "set_roles": [
+              "vento_authorization_owner"
+            ],
+            "fixtures": "SYNTHETIC_ONLY",
+            "bootstrap": "PRIVILEGED_SETUP_REQUIRED"
+          }
         }
       ]
     },

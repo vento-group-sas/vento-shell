@@ -195,23 +195,52 @@ test('planner refuses invented test inventories and unknown lane', () => {
 });
 
 
-test('F2 preflight isolates 042 SCRAM/dblink and refuses to infer 048 requirements', () => {
+test('F2 preflight separates actual 042 SCRAM and 048 private projection requirements', () => {
   const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
   const preflight = planTestPreflight({
     catalog, profileId: profile.id, source: source(),
     availableTests: profile.test_files,
   });
-  assert.equal(preflight.status, 'BLOCKED');
-  assert.equal(preflight.reason, 'TEST_CONTRACTS_MISSING');
-  assert.deepEqual(preflight.missing_test_contracts, [profile.test_files[1]]);
-  assert.deepEqual(preflight.test_preflights[0].probes.extensions, ['pgtap', 'dblink']);
-  assert.equal(preflight.test_preflights[0].probes.min_connections, 2);
-  assert.deepEqual(preflight.test_preflights[0].probes.set_roles,
+  assert.equal(preflight.status, 'PENDING');
+  assert.equal(preflight.reason, 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.deepEqual(preflight.missing_test_contracts, []);
+  assert.deepEqual(preflight.test_preflights.map((x) => x.file), profile.test_files);
+  const [context, projection] = preflight.test_preflights;
+  assert.deepEqual(context.probes.extensions, ['pgtap', 'dblink']);
+  assert.equal(context.probes.min_connections, 2);
+  assert.deepEqual(context.probes.set_roles,
     ['vento_context_freshness_owner', 'vento_ddl_owner']);
-  assert.equal(preflight.test_preflights[0].probes.fixtures, 'SYNTHETIC_ONLY');
-  assert.ok(!preflight.test_preflights[0].requires.includes('fdw_server'));
+  assert.deepEqual(context.requires, ['pgtap', 'scram_loopback', 'rollback']);
+  assert.deepEqual(projection.probes.extensions, ['pgtap']);
+  assert.equal(projection.probes.min_connections, 1);
+  assert.deepEqual(projection.probes.set_roles, ['vento_authorization_owner']);
+  assert.deepEqual(projection.requires, ['pgtap', 'rollback']);
+  assert.equal(projection.probes.fixtures, 'SYNTHETIC_ONLY');
+  assert.equal(projection.probes.bootstrap, 'PRIVILEGED_SETUP_REQUIRED');
+  for (const item of [context, projection]) {
+    assert.ok(!item.requires.includes('fdw_server'));
+    assert.equal(item.probes.fixtures, 'SYNTHETIC_ONLY');
+  }
+  assert.equal(preflight.bootstrap_attested, false);
   assert.equal(preflight.runner_non_admin_attested, false);
   assert.equal(preflight.runtime_probes_executed, false);
+  assert.equal(preflight.qa_executed, false);
+  assert.equal(preflight.pg_tap_certified, false);
+});
+
+test('F2 AUTH source inventory blocks absent 048 even when its contract is declared', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const availableTests = profile.test_files.filter((file) => fs.existsSync(file));
+  const preflight = planTestPreflight({
+    catalog, profileId: profile.id, source: source(), availableTests,
+  });
+  assert.deepEqual(preflight.missing_test_contracts, []);
+  assert.deepEqual(preflight.missing_test_files,
+    profile.test_files.filter((file) => !availableTests.includes(file)));
+  assert.equal(preflight.status, preflight.missing_test_files.length ? 'BLOCKED' : 'PENDING');
+  assert.equal(preflight.reason, preflight.missing_test_files.length
+    ? 'TEST_FILES_NOT_IN_SOURCE' : 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.equal(preflight.qa_executed, false);
   assert.equal(preflight.pg_tap_certified, false);
 });
 
