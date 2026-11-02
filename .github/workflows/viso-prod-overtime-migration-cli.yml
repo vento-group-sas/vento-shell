@@ -31,8 +31,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes --package supabase@2.121.0 -- supabase migration new viso_prod_monthly_overtime_publish
-          mapfile -t generated < <(find supabase/migrations -maxdepth 1 -type f -name '*_viso_prod_monthly_overtime_publish.sql')
+          npx --yes --package supabase@2.121.0 -- supabase migration new viso_employee_labor_terms_week_authorizations
+          mapfile -t generated < <(find supabase/migrations -maxdepth 1 -type f -name '*_viso_employee_labor_terms_week_authorizations.sql')
           if [ "${#generated[@]}" -ne 1 ]; then
             echo "FAIL: migration new did not create exactly one candidate SQL file" >&2
             exit 1
