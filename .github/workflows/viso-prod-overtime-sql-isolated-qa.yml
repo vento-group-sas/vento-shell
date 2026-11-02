@@ -53,3 +53,9 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/viso-overtime-candidate.sql"
       - name: Verify weekly, daily, multsite and rollback-safe corrections
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_assertions.sql
+      - name: Restore original trigger function in ephemeral database
+        run: |
+          node scripts/quality/viso-overtime-extract-sql.mjs --rollback > "$RUNNER_TEMP/viso-overtime-original.sql"
+          psql -X -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/viso-overtime-original.sql"
+          psql -X -v ON_ERROR_STOP=1 -tAc "select pg_get_functiondef('public.viso_enforce_monthly_schedule_publish_limit()'::regprocedure) like '%v_limit_minutes constant integer := 11160%';" | grep -qx t
+          psql -X -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_trigger where tgname = 'trg_viso_monthly_schedule_publish_limit';" | grep -qx 1
