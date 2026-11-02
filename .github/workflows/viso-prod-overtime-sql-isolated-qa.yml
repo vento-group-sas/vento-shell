@@ -43,7 +43,7 @@ jobs:
           node-version: "22"
       - name: Verify ephemeral PostgreSQL identity
         run: |
-          psql -X -v ON_ERROR_STOP=1 -c "select current_database(), current_user(), version();"
+          psql -X -v ON_ERROR_STOP=1 -c "select current_database(), current_user, version();"
           test "$PGDATABASE" = "viso_qa"
       - name: Load synthetic employee_shifts schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_fixture.sql
