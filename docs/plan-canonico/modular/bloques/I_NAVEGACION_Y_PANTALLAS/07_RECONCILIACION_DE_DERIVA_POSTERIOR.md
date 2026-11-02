@@ -9,7 +9,8 @@
 **Estado:** RECONCILIACIÓN ESTÁTICA REALIZADA; CIERRE AUTH/E2E BLOQUEADO  
 **Delta:** `DELTA-VISO-SCHEDULE-20260731-001`  
 **Snapshot base:** `AUTH-UI-005`  
-**Dependencias:** `CODE-AUD-021`, commit estable y evidencia de inventario; **`VISO-SCH-008` consume la salida de esta tarea, NO es prerrequisito**  
+**Dependencias:** `CODE-AUD-021`, commit estable y evidencia de inventario  
+**Consumidor posterior de la salida:** `VISO-SCH-008` (no es prerrequisito de `AUTH-UI-061`)  
 **Salida:** `VISO-ROUTE-DELTA-001`
 
 #### Ruta esperada
