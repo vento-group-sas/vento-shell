@@ -1,0 +1,55 @@
+name: VISO overtime SQL candidate isolated QA
+
+on:
+  push:
+    branches:
+      - hotfix/viso-prod-overtime-sql-20261102
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: synthetic-qa-only-20261102
+          POSTGRES_DB: viso_qa
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d viso_qa"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: synthetic-qa-only-20261102
+      PGDATABASE: viso_qa
+    steps:
+      - name: Checkout only reviewed SQL candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: Verify ephemeral PostgreSQL identity
+        run: |
+          psql -X -v ON_ERROR_STOP=1 -c "select current_database(), current_user(), version();"
+          test "$PGDATABASE" = "viso_qa"
+      - name: Load synthetic employee_shifts schema
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_fixture.sql
+      - name: Extract and execute candidate function
+        run: |
+          node scripts/quality/viso-overtime-extract-sql.mjs > "$RUNNER_TEMP/viso-overtime-candidate.sql"
+          psql -X -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/viso-overtime-candidate.sql"
+      - name: Verify weekly, daily, multsite and rollback-safe corrections
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_assertions.sql
