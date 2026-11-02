@@ -3,7 +3,7 @@ CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
 CREATE ROLE service_role NOLOGIN BYPASSRLS;
 
-CREATE TABLE public.employees (id uuid PRIMARY KEY);
+CREATE TABLE public.employees (id uuid PRIMARY KEY, full_name text NOT NULL DEFAULT 'QA SINTÉTICO', alias text);
 INSERT INTO public.employees (id) VALUES
  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'),
  ('11111111-1111-4111-8111-111111111111'),
