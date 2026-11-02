@@ -241,9 +241,76 @@ export function planWorkload({
   };
 }
 
+// Compare an externally DECLARED runner envelope against per-test contracts.
+// Never infer capabilities from a passing test or from a caller-provided flag:
+// even compatible envelopes remain PENDING until owner/physical QA attestation.
+export function compareRunnerEnvelope(probes, offered) {
+  closed(probes, [
+    'extensions', 'min_connections', 'set_roles', 'fixtures', 'bootstrap',
+  ], 'RUNNER_PROBES_INVALID');
+  if (!Array.isArray(probes.extensions) || probes.extensions.length === 0
+    || probes.extensions.some((x) => typeof x !== 'string' || !CAPABILITY.test(x))
+    || new Set(probes.extensions).size !== probes.extensions.length
+    || !Number.isInteger(probes.min_connections)
+    || probes.min_connections < 1 || probes.min_connections > 16
+    || !Array.isArray(probes.set_roles)
+    || probes.set_roles.some((x) => typeof x !== 'string'
+      || !/^[a-z][a-z0-9_]{1,62}$/u.test(x))
+    || new Set(probes.set_roles).size !== probes.set_roles.length
+    || !['NONE', 'SYNTHETIC_ONLY'].includes(probes.fixtures)
+    || probes.bootstrap !== 'PRIVILEGED_SETUP_REQUIRED') {
+    fail('RUNNER_PROBES_INVALID');
+  }
+  closed(offered, [
+    'extensions', 'max_connections', 'set_roles', 'fixture_modes',
+    'bootstrap_separated',
+  ], 'RUNNER_ENVELOPE_INVALID');
+  if (!Array.isArray(offered.extensions) || offered.extensions.length === 0
+    || offered.extensions.some((value) => typeof value !== 'string'
+      || !CAPABILITY.test(value))
+    || new Set(offered.extensions).size !== offered.extensions.length
+    || !Number.isInteger(offered.max_connections)
+    || offered.max_connections < 1 || offered.max_connections > 16
+    || !Array.isArray(offered.set_roles)
+    || offered.set_roles.some((value) => typeof value !== 'string'
+      || !/^[a-z][a-z0-9_]{1,62}$/u.test(value))
+    || new Set(offered.set_roles).size !== offered.set_roles.length
+    || !Array.isArray(offered.fixture_modes)
+    || offered.fixture_modes.length === 0
+    || offered.fixture_modes.some((x) => !['NONE', 'SYNTHETIC_ONLY'].includes(x))
+    || new Set(offered.fixture_modes).size !== offered.fixture_modes.length
+    || typeof offered.bootstrap_separated !== 'boolean') {
+    fail('RUNNER_ENVELOPE_INVALID');
+  }
+  const gaps = [];
+  if (probes.extensions.some((x) => !offered.extensions.includes(x)))
+    gaps.push('REQUIRED_EXTENSION_UNSUPPORTED');
+  if (probes.min_connections > offered.max_connections)
+    gaps.push('MIN_CONNECTIONS_UNSUPPORTED');
+  if (probes.set_roles.some((x) => !offered.set_roles.includes(x)))
+    gaps.push('SET_ROLE_UNSUPPORTED');
+  if (!offered.fixture_modes.includes(probes.fixtures))
+    gaps.push('FIXTURE_MODE_UNSUPPORTED');
+  if (probes.bootstrap === 'PRIVILEGED_SETUP_REQUIRED'
+    && !offered.bootstrap_separated)
+    gaps.push('PRIVILEGED_BOOTSTRAP_SEPARATION_UNDECLARED');
+  return {
+    status: gaps.length ? 'BLOCKED' : 'PENDING',
+    reason: gaps.length ? 'RUNNER_DECLARED_CAPABILITIES_INSUFFICIENT'
+      : 'PHYSICAL_RUNNER_AND_OWNER_ATTESTATION_REQUIRED',
+    gaps,
+    offered_capabilities_attested: false,
+    role_authorization_attested: false,
+    qa_executed: false,
+    pg_tap_certified: false,
+  };
+}
+
 // F2: read-only, per-test requirements for a separately authorized MCP runner.
 // This is NOT a physical probe, permission grant, SQL execution or QA certification.
-export function planTestPreflight({ catalog, profileId, source, availableTests } = {}) {
+export function planTestPreflight({
+  catalog, profileId, source, availableTests, offeredRunner,
+} = {}) {
   const plan = planWorkload({ catalog, profileId, source, availableTests });
   const profile = catalog.profiles.find((item) => item.id === profileId);
   const contracts = new Map((profile.test_contracts || []).map((item) => [item.file, item]));
@@ -261,6 +328,8 @@ export function planTestPreflight({ catalog, profileId, source, availableTests }
           fixtures: item.probes.fixtures,
           bootstrap: item.probes.bootstrap,
         },
+        ...(offeredRunner === undefined ? {}
+          : { runner_compatibility: compareRunnerEnvelope(item.probes, offeredRunner) }),
       };
     });
   const status = plan.missing_test_files.length || missingContracts.length
