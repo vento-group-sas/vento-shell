@@ -1,12 +1,12 @@
 -- QA SQL EFIMERA: no apunta a Supabase, no contiene empleados reales.
-BEGIN;
-
+-- El trigger persiste hasta la prueba posterior de rollback de la funcion.
 CREATE TRIGGER trg_viso_monthly_schedule_publish_limit
 BEFORE INSERT OR UPDATE OF published_at, employee_id, shift_date, start_time,
   end_time, break_minutes, shift_kind, status
 ON public.employee_shifts
 FOR EACH ROW EXECUTE FUNCTION public.viso_enforce_monthly_schedule_publish_limit();
 
+BEGIN;
 DO $test$
 DECLARE
   v_e1 uuid := '11111111-1111-4111-8111-111111111111';
