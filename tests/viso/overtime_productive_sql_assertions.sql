@@ -70,7 +70,7 @@ BEGIN
     v_rejected := true;
     GET STACKED DIAGNOSTICS v_error = MESSAGE_TEXT;
   END;
-  IF NOT v_rejected OR v_error NOT LIKE '%11 h%' THEN
+  IF NOT v_rejected OR v_error NOT LIKE 'Publicacion rechazada: dia 2026-11-10 acumula 12%' THEN
     RAISE EXCEPTION 'FAIL: 12 h diarias no fueron rechazadas (mensaje %)', v_error;
   END IF;
   RAISE NOTICE 'PASS: 12 h diarias rechazadas';
