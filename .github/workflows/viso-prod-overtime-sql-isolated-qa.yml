@@ -12,9 +12,13 @@ jobs:
   postgres-isolated:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres_major: ["16", "17"]
     services:
       postgres:
-        image: postgres:16
+        image: postgres:${{ matrix.postgres_major }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: synthetic-qa-only-20261102
