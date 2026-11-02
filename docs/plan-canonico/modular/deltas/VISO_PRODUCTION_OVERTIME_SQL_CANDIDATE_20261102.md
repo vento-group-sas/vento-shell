@@ -1,6 +1,6 @@
 # VISO — expediente SQL para hotfix exclusivo en producción
 
-**Estado: CANDIDATO NO APLICADO.** Fuente productiva `clzdpinthhtknkmefsxx`, Vercel `8cf7c49a593c748cb6c99dd9b919b6947bcfec14`. No se alteró STAGING ni se ejecutó DDL en producción. **Este archivo es documentación del SQL, no una migración creada por CLI.** Para aplicar: crear previamente la migración real con `supabase migration new` en checkout autorizado de vento-shell, validar nombre y manifest, obtener gate E5 y prueba de restore.
+**Estado: CANDIDATO NO APLICADO.** Fuente productiva `clzdpinthhtknkmefsxx`, Vercel `8cf7c49a593c748cb6c99dd9b919b6947bcfec14`. No se alteró STAGING ni se ejecutó DDL en producción. **Migración física generada mediante Supabase CLI 2.121.0** en la rama Shell: `supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql` (origen de nombre: [GitHub Actions #41501042061](https://github.com/vento-group-sas/vento-shell/actions/runs/41501042061)). Se ha registrado el contenido SQL forward de este expediente. **NO se ha aplicado** a ninguna base de datos. Para ejecutar: validar correspondencia exacta, gobernar el gate E5, respaldos/restauración y autoridad productiva.
 
 ## Alcance estrictamente productivo
 
@@ -9,7 +9,7 @@
 - La excepción de corrección reductora sólo se aplica a turnos previamente **publicados, laborales y activos**. Una reactivación de un turno cancelado o de descanso vuelve a validar los topes; de lo contrario podría eludir la defensa semanal.
 - **No certifica** jornada ordinaria individual menor de 42 h, consentimiento flexible, autorización de extras, nómina ni registro de horas efectivamente trabajadas. Por tanto E5, rollback probado y aceptación operativa están **BLOCKED**; no desplegar aun.
 
-## SQL forward (pendiente de generar/registrar migración CLI)
+## SQL forward (registrado en migración CLI candidata, no aplicada)
 
 ```sql
 CREATE OR REPLACE FUNCTION public.viso_enforce_monthly_schedule_publish_limit()
@@ -207,4 +207,4 @@ $function$
 
 ## Gate de aplicación
 
-`CODE-AUD-021`, `AUTH-UI-061`, `VISO-SCH-001..008`, `DELIV-PKG-001..025`, `E5-GATE-008::VISO-SCHEDULE-MONTHLY-001` y aceptación funcional no están cerrados. Falta pgTAP aislado con 42/54/54+1 h semanales, 11/11+1 h diarios, cruce de mes, multisedes, descanso, borrador, concurrencia, corrección, RLS y prueba de rollback; QA VISO final del mismo SHA y liberación autorizada. **No utilizar `apply_migration` ni `execute_sql` en producción antes de estos controles.**
+`CODE-AUD-021`, `AUTH-UI-061`, `VISO-SCH-001..008`, `DELIV-PKG-001..025`, `E5-GATE-008::VISO-SCHEDULE-MONTHLY-001` y aceptación funcional no están cerrados. QA sintética PostgreSQL 16 acreditó 7 escenarios y reversión de la función con trigger presente en [#41499473686](https://github.com/vento-group-sas/vento-shell/actions/runs/41499473686); la prueba **del archivo físico exacto** queda enlazada a su CI de rama. Aún faltan pgTAP/RLS/contrato individual/concurrencia, cruce de medianoche, datos reales minimizados, recuperación de respaldo hospedado, QA/E2E con actores y gate E5. La prueba aislada no autoriza liberación. **No utilizar `apply_migration` ni `execute_sql` en producción antes de estos controles.**
