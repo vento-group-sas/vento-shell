@@ -10,6 +10,7 @@ on:
       - supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql
       - tests/viso/overtime_labor_terms_fixture.sql
       - tests/viso/overtime_labor_terms_contract.sql
+      - tests/viso/overtime_labor_terms_batch_publish.sql
   workflow_dispatch:
 
 permissions:
@@ -62,3 +63,12 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261102184824_viso_employee_labor_terms_week_authorizations.sql
       - name: Verify authorization, effective terms, limits, revocation and RLS
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_labor_terms_contract.sql
+      - name: Verify bulk monthly update transaction with missing and approved extras
+        run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_labor_terms_batch_publish.sql
+      - name: Verify rollback to prior VISO trigger guard without deleting labor evidence
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql
+          psql -X -v ON_ERROR_STOP=1 -tAc "select pg_get_functiondef('public.viso_enforce_monthly_schedule_publish_limit()'::regprocedure) like '%v_week_minutes > 54 * 60%';" | grep -qx t
+          psql -X -v ON_ERROR_STOP=1 -tAc "select to_regclass('public.viso_labor_terms') is not null;" | grep -qx t
+          psql -X -v ON_ERROR_STOP=1 -tAc "select count(*) from pg_trigger where tgname = 'trg_viso_monthly_schedule_publish_limit' and not tgisinternal;" | grep -qx 1
