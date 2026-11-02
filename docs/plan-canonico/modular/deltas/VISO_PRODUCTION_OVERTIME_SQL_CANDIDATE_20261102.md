@@ -6,6 +6,7 @@
 
 - Conserva la función y trigger existentes, sin DROP ni datos alterados; sustituye límite fijo de 186 h/mes por defensas generales de 54 h/semana y 11 h/día bajo acuerdo flexible. No convierte 210 h del divisor salarial en tope.
 - Conteo por empleado **todas las sedes** y semana ISO; únicamente turnos publicados y no cancelados/descanso, bloqueos por empleado/semana para serializar publicación.
+- La excepción de corrección reductora sólo se aplica a turnos previamente **publicados, laborales y activos**. Una reactivación de un turno cancelado o de descanso vuelve a validar los topes; de lo contrario podría eludir la defensa semanal.
 - **No certifica** jornada ordinaria individual menor de 42 h, consentimiento flexible, autorización de extras, nómina ni registro de horas efectivamente trabajadas. Por tanto E5, rollback probado y aceptación operativa están **BLOCKED**; no desplegar aun.
 
 ## SQL forward (pendiente de generar/registrar migración CLI)
@@ -43,6 +44,8 @@ begin
   -- Permitir corregir/reducir tiempo publicado del mismo empleado y fecha.
   if tg_op = 'UPDATE' then
     if old.published_at is not null
+      and coalesce(old.status, '') <> 'cancelled'
+      and coalesce(old.shift_kind, 'laboral') <> 'descanso'
       and old.employee_id = new.employee_id
       and old.shift_date = new.shift_date
       and v_new_minutes <= greatest(
