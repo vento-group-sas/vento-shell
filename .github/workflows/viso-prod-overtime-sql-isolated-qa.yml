@@ -58,6 +58,8 @@ jobs:
           psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql
       - name: Verify weekly, daily, multsite and rollback-safe corrections
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_assertions.sql
+      - name: Concurrent publish across two sites on identical employee and week
+        run: bash tests/viso/overtime_publication_concurrency.sh
       - name: Restore original trigger function in ephemeral database
         run: |
           node scripts/quality/viso-overtime-extract-sql.mjs --rollback > "$RUNNER_TEMP/viso-overtime-original.sql"
