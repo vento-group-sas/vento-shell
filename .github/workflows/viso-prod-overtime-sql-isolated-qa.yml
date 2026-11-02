@@ -47,10 +47,11 @@ jobs:
           test "$PGDATABASE" = "viso_qa"
       - name: Load synthetic employee_shifts schema
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_fixture.sql
-      - name: Extract and execute candidate function
+      - name: Verify canonical CLI migration equals tested candidate SQL and execute it
         run: |
-          node scripts/quality/viso-overtime-extract-sql.mjs > "$RUNNER_TEMP/viso-overtime-candidate.sql"
-          psql -X -v ON_ERROR_STOP=1 -f "$RUNNER_TEMP/viso-overtime-candidate.sql"
+          node scripts/quality/viso-overtime-extract-sql.mjs --forward > "$RUNNER_TEMP/viso-overtime-candidate.sql"
+          diff -u "$RUNNER_TEMP/viso-overtime-candidate.sql" supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql
       - name: Verify weekly, daily, multsite and rollback-safe corrections
         run: psql -X -v ON_ERROR_STOP=1 -f tests/viso/overtime_productive_sql_assertions.sql
       - name: Restore original trigger function in ephemeral database
