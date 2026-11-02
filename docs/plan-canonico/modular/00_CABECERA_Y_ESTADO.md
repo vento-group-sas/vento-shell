@@ -17,7 +17,7 @@
 | Estado documental             | **VIGENTE**                                                                                     |
 | Arquitectura documental       | **MODULAR CANÓNICA**                                                                            |
 | Fuente de orden canónico      | `manifest.json`                                                                                 |
-| Fragmentos canónicos | **315** |
+| Fragmentos canónicos | **316** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
 | Tareas aprobadas | **1585** |
