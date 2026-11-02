@@ -7,7 +7,18 @@
 - Conserva la función y trigger existentes, sin DROP ni datos alterados; sustituye límite fijo de 186 h/mes por defensas generales de 54 h/semana y 11 h/día bajo acuerdo flexible. No convierte 210 h del divisor salarial en tope.
 - Conteo por empleado **todas las sedes** y semana ISO; únicamente turnos publicados y no cancelados/descanso, bloqueos por empleado/semana para serializar publicación.
 - La excepción de corrección reductora sólo se aplica a turnos previamente **publicados, laborales y activos**. Una reactivación de un turno cancelado o de descanso vuelve a validar los topes; de lo contrario podría eludir la defensa semanal.
-- **No certifica** jornada ordinaria individual menor de 42 h, consentimiento flexible, autorización de extras, nómina ni registro de horas efectivamente trabajadas. Por tanto E5, rollback probado y aceptación operativa están **BLOCKED**; no desplegar aun.
+- **No certifica** jornada ordinaria individual menor de 42 h, consentimiento flexible, autorización de extras, nómina ni registro de horas efectivamente trabajadas. La restauración **sintética** del trigger ya se probó; el respaldo/restauración de producción, E5 y aceptación operativa siguen **BLOCKED**; no desplegar aún.
+
+### Preflight productivo de datos (solo lectura; 2026-11-02)
+- `public.employee_shifts`: 4.815 registros, 4.373 turnos publicados, 49 trabajadores y 6 sedes (agregados sin identidades).
+- En los turnos **publicados e históricos**, 26 semanas superan 54 h programadas y 90 días superan 11 h programadas; 37 semanas incluyen turnos en más de una sede. No equivale a horas trabajadas ni a un dictamen de ilegalidad.
+- Los límites semanales/diarios nuevos solo se validan al publicar, modificar o reactivar turnos. Conservar el histórico, permitir reducciones y planear el tratamiento de ediciones heredadas sin borrados.
+- La base productiva registra solo la migración `00000000000000_baseline`, mientras Shell contiene otras 21 migraciones pendientes. **Prohibido aplicar `supabase db push` global** para este hotfix; exigir una vía específica y gobernada.
+
+### QA de la migración exacta, sin entornos remotos
+- Supabase CLI v2.121.0 [generó el nombre](https://github.com/vento-group-sas/vento-shell/actions/runs/41501042061), y el archivo SQL versionado está en `supabase/migrations/20261102182951_viso_prod_monthly_overtime_publish.sql`.
+- [GitHub Actions #41501914550](https://github.com/vento-group-sas/vento-shell/actions/runs/41501914550): **SUCCESS PostgreSQL 16 y 17**; comparación exacta migración↔SQL ensayado, siete casos funcionales, dos sesiones concurrentes de dos sedes (máximo 54 h) y recuperación de función original/trigger. Todos son datos sintéticos.
+- No existe evidencia de backup/PITR restaurado del proyecto productivo ni E2E de publicación real con actores; la liberación sigue **NO-GO**.
 
 ## SQL forward (registrado en migración CLI candidata, no aplicada)
 
@@ -207,4 +218,4 @@ $function$
 
 ## Gate de aplicación
 
-`CODE-AUD-021`, `AUTH-UI-061`, `VISO-SCH-001..008`, `DELIV-PKG-001..025`, `E5-GATE-008::VISO-SCHEDULE-MONTHLY-001` y aceptación funcional no están cerrados. QA sintética PostgreSQL 16 acreditó 7 escenarios y reversión de la función con trigger presente en [#41499473686](https://github.com/vento-group-sas/vento-shell/actions/runs/41499473686); la prueba **del archivo físico exacto** queda enlazada a su CI de rama. Aún faltan pgTAP/RLS/contrato individual/concurrencia, cruce de medianoche, datos reales minimizados, recuperación de respaldo hospedado, QA/E2E con actores y gate E5. La prueba aislada no autoriza liberación. **No utilizar `apply_migration` ni `execute_sql` en producción antes de estos controles.**
+`CODE-AUD-021`, `AUTH-UI-061`, `VISO-SCH-001..008`, `DELIV-PKG-001..025`, `E5-GATE-008::VISO-SCHEDULE-MONTHLY-001` y aceptación funcional no están cerrados. QA sintética sobre **archivo físico CLI exacto** terminó SUCCESS en PostgreSQL 16/17, siete escenarios, concurrencia de dos sesiones y restauración en [#41501914550](https://github.com/vento-group-sas/vento-shell/actions/runs/41501914550). Aún faltan pgTAP/RLS con esquema completo, contratos individuales y autorización efectiva, cruce de medianoche, datos reales minimizados, recuperación de respaldo hospedado, QA/E2E con actores y gate E5. La prueba aislada no autoriza liberación. **No utilizar `apply_migration` ni `execute_sql` en producción antes de estos controles.**
