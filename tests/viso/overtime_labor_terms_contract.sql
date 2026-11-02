@@ -13,9 +13,11 @@ DECLARE
  e1 uuid := '11111111-1111-4111-8111-111111111111';
  e2 uuid := '22222222-2222-4222-8222-222222222222';
  e3 uuid := '33333333-3333-4333-8333-333333333333';
+ e4 uuid := '44444444-4444-4444-8444-444444444444';
  site1 uuid := 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
  site2 uuid := 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
  denied boolean;
+ v_current_minutes integer;
 BEGIN
  IF has_table_privilege('authenticated','public.viso_labor_terms','SELECT')
     OR has_table_privilege('authenticated','public.viso_weekly_overtime_decisions','INSERT') THEN
@@ -82,6 +84,17 @@ BEGIN
  IF NOT denied THEN RAISE EXCEPTION 'FAIL: más de 2h extra/día'; END IF;
  RAISE NOTICE 'PASS: actualización de aprobación; límite diario pactado +2h';
 
+ INSERT INTO public.viso_weekly_overtime_decisions(employee_id,week_start,decision,authorized_minutes,reason,approval_reference,recorded_by)
+ VALUES(e1,'2026-11-02','approve',720,'Maximo semanal autorizado','AUT-12H',actor);
+ denied:=false;
+ BEGIN
+  INSERT INTO public.employee_shifts(employee_id,site_id,shift_date,start_time,end_time,published_at)
+  VALUES(e1,site2,'2026-11-07','08:00','15:00',now());
+ EXCEPTION WHEN SQLSTATE 'P0001' THEN denied:=true;
+ END;
+ IF NOT denied THEN RAISE EXCEPTION 'FAIL: 49h superan contrato de 36h +12h'; END IF;
+ RAISE NOTICE 'PASS: límite semanal contractual más 12h';
+
  INSERT INTO public.viso_labor_terms(employee_id,effective_week,ordinary_weekly_minutes,ordinary_daily_minutes,flexible_daily_agreement,agreement_reference,recorded_by)
  VALUES(e2,'2026-11-02',2520,480,false,'CONTRATO-42H',actor);
  INSERT INTO public.employee_shifts(employee_id,site_id,shift_date,start_time,end_time,published_at)
@@ -95,6 +108,14 @@ BEGIN
  END;
  IF NOT denied THEN RAISE EXCEPTION 'FAIL: séptimo día'; END IF;
  RAISE NOTICE 'PASS: máximo seis días laborales por semana';
+
+ INSERT INTO public.viso_labor_terms(employee_id,effective_week,ordinary_weekly_minutes,ordinary_daily_minutes,flexible_daily_agreement,agreement_reference,recorded_by)
+ VALUES(e2,'2026-11-09',2160,480,false,'NUEVO-PACO-36H',actor);
+ SELECT ordinary_weekly_minutes INTO v_current_minutes FROM public.viso_labor_terms
+ WHERE employee_id=e2 AND effective_week<=date '2026-11-09'
+ ORDER BY effective_week DESC LIMIT 1;
+ IF v_current_minutes<>2160 THEN RAISE EXCEPTION 'FAIL: nueva vigencia semanal'; END IF;
+ RAISE NOTICE 'PASS: cambio contractual versionado sin sobrescribir historia';
 
  INSERT INTO public.viso_labor_terms(employee_id,effective_week,ordinary_weekly_minutes,ordinary_daily_minutes,flexible_daily_agreement,agreement_reference,recorded_by)
  VALUES(e3,'2026-11-02',2520,480,false,'CONTRATO-42C',actor);
@@ -121,6 +142,30 @@ BEGIN
  END;
  IF NOT denied THEN RAISE EXCEPTION 'FAIL: revocación no respetada'; END IF;
  RAISE NOTICE 'PASS: revocación efectiva y auditada en nuevas publicaciones';
+
+ denied:=false;
+ BEGIN
+  INSERT INTO public.viso_labor_terms(employee_id,effective_week,ordinary_weekly_minutes,ordinary_daily_minutes,flexible_daily_agreement,agreement_reference,recorded_by)
+  VALUES(e4,'2026-11-02',2520,540,false,'PACTO-FLEX-INVALIDO',actor);
+ EXCEPTION WHEN SQLSTATE '23514' THEN denied:=true;
+ END;
+ IF NOT denied THEN RAISE EXCEPTION 'FAIL: nueve horas ordinarias sin pacto flexible'; END IF;
+ INSERT INTO public.viso_labor_terms(employee_id,effective_week,ordinary_weekly_minutes,ordinary_daily_minutes,flexible_daily_agreement,agreement_reference,recorded_by)
+ VALUES(e4,'2026-11-02',2520,540,true,'PACTO-FLEX-VALIDO',actor);
+ INSERT INTO public.employee_shifts(employee_id,site_id,shift_date,start_time,end_time,published_at)
+ VALUES(e4,site1,'2026-11-02','08:00','17:00',now());
+ INSERT INTO public.viso_weekly_overtime_decisions(employee_id,week_start,decision,authorized_minutes,reason,approval_reference,recorded_by)
+ VALUES(e4,'2026-11-02','approve',120,'Extension flexible autorizada','AUT-FLEX2H',actor);
+ INSERT INTO public.employee_shifts(employee_id,site_id,shift_date,start_time,end_time,published_at)
+ VALUES(e4,site1,'2026-11-02','17:00','19:00',now());
+ denied:=false;
+ BEGIN
+  INSERT INTO public.employee_shifts(employee_id,site_id,shift_date,start_time,end_time,published_at)
+  VALUES(e4,site1,'2026-11-02','19:00','20:00',now());
+ EXCEPTION WHEN SQLSTATE 'P0001' THEN denied:=true;
+ END;
+ IF NOT denied THEN RAISE EXCEPTION 'FAIL: flexibilidad no permite 12h diarias'; END IF;
+ RAISE NOTICE 'PASS: pacto flexible 9h ordinarias +2h extras, 12h denegadas';
 
  denied:=false;
  BEGIN
