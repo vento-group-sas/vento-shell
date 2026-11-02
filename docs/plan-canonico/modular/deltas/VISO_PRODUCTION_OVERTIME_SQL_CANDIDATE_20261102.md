@@ -41,16 +41,17 @@ begin
   );
 
   -- Permitir corregir/reducir tiempo publicado del mismo empleado y fecha.
-  if tg_op = 'UPDATE'
-    and old.published_at is not null
-    and old.employee_id = new.employee_id
-    and old.shift_date = new.shift_date
-    and v_new_minutes <= greatest(
-      0, floor(extract(epoch from (old.end_time - old.start_time)) / 60)::integer
-        - greatest(coalesce(old.break_minutes, 0), 0)
-    )
-  then
-    return new;
+  if tg_op = 'UPDATE' then
+    if old.published_at is not null
+      and old.employee_id = new.employee_id
+      and old.shift_date = new.shift_date
+      and v_new_minutes <= greatest(
+        0, floor(extract(epoch from (old.end_time - old.start_time)) / 60)::integer
+          - greatest(coalesce(old.break_minutes, 0), 0)
+      )
+    then
+      return new;
+    end if;
   end if;
 
   v_week_start := date_trunc('week', new.shift_date)::date;
