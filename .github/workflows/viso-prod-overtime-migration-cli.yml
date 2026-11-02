@@ -1,0 +1,45 @@
+name: VISO overtime migration CLI naming only
+
+on:
+  push:
+    branches:
+      - hotfix/viso-prod-overtime-sql-20261102
+    paths:
+      - .github/workflows/viso-prod-overtime-migration-cli.yml
+
+permissions:
+  contents: read
+
+jobs:
+  generate-migration-name:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout isolated Shell hotfix
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+      - name: Confirm Supabase CLI pinned version and migration flags
+        run: |
+          npx --yes --package supabase@2.121.0 -- supabase --version
+          npx --yes --package supabase@2.121.0 -- supabase migration new --help
+      - name: Generate canonical filename with Supabase CLI, no DB connection
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes --package supabase@2.121.0 -- supabase migration new viso_prod_monthly_overtime_publish
+          mapfile -t generated < <(find supabase/migrations -maxdepth 1 -type f -name '*_viso_prod_monthly_overtime_publish.sql')
+          if [ "${#generated[@]}" -ne 1 ]; then
+            echo "FAIL: migration new did not create exactly one candidate SQL file" >&2
+            exit 1
+          fi
+          file="${generated[0]}"
+          test -f "$file"
+          test ! -s "$file"
+          echo "CLI_MIGRATION_PATH=$file"
+          echo "CLI_MIGRATION_EMPTY_FILE=PASS"
+          echo "NO_DATABASE_CONNECTIONS_OR_MUTATIONS=PASS"
