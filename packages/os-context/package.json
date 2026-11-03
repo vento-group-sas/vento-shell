@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "node --test scripts/client.test.mjs scripts/boundaries.test.mjs",
+    "test": "node --test scripts/client.test.mjs scripts/boundaries.test.mjs scripts/source-boundary-safety.test.mjs",
     "validate": "node ../../scripts/quality/shared-package-distribution-gate.mjs @vento/os-context"
   },
   "dependencies": {

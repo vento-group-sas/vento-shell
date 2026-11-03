@@ -18,6 +18,7 @@ function main() {
 
   const execution = spawnSync(process.execPath, [
     "--test", "--test-reporter=tap", "scripts/client.test.mjs", "scripts/boundaries.test.mjs",
+    "scripts/source-boundary-safety.test.mjs",
   ], {
     cwd: path.resolve(import.meta.dirname, ".."),
     encoding: "utf8",

@@ -24,6 +24,7 @@
   ],
   "fixtures": [
     "scripts/client.test.mjs",
-    "scripts/boundaries.test.mjs"
+    "scripts/boundaries.test.mjs",
+    "scripts/source-boundary-safety.test.mjs"
   ]
 }
