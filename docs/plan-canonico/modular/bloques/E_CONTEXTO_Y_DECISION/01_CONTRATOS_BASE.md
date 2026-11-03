@@ -2006,6 +2006,108 @@ type AuthorizationRequestContext = {
 };
 ```
 
+##### 8.1. Formas físicas de `resource_request` — AUTH-CTX-026
+
+**Candidato de formalización física sujeto a revisión en PR DRAFT; no es una
+publicación ni modifica el contrato versionado actualmente distribuido.** Esta
+propuesta precisa las seis formas citadas en `AuthorizationRequestContext`,
+usando las identidades físicas `mode` existentes en las pruebas SQL de
+`AUTH-DB-034`. Su semántica deriva de `AUTH-CTX-018`, secciones 6–22:
+el cliente solo aporta referencias, filtros, borradores o condiciones no
+autoritativas; el servidor elige el contrato `resource_contract_id`, resolver
+privado, fuente de verdad, versión y alcance efectivo.
+
+```ts
+type ResourceRequestJsonValue =
+  | null | string | number | boolean
+  | ResourceRequestJsonValue[]
+  | { [key: string]: ResourceRequestJsonValue };
+type ResourceRequestJsonObject = Record<string, ResourceRequestJsonValue>;
+
+// La forma física de un localizador concreto depende del contrato del recurso.
+type ResourceRequestLocator = ResourceRequestJsonObject;
+
+type ExistingResourceRequest = {
+  mode: "EXISTING_RESOURCE";
+  locator: ResourceRequestLocator;
+  expected_version?: string;
+};
+type ResourceDraftRequest = {
+  mode: "RESOURCE_DRAFT";
+  draft: ResourceRequestJsonObject;
+  idempotency_key?: string;
+};
+type CollectionRequest = {
+  mode: "COLLECTION";
+  server_filter: ResourceRequestJsonObject;
+};
+type AggregateRequest = {
+  mode: "AGGREGATE";
+  server_filter: ResourceRequestJsonObject;
+};
+type BulkRequest = {
+  mode: "BULK";
+  items: ResourceRequestLocator[];
+  idempotency_key?: string;
+};
+type NonResourceRequest = {
+  mode: "NON_RESOURCE";
+};
+
+type ResourceRequestV1 =
+  | ExistingResourceRequest
+  | ResourceDraftRequest
+  | CollectionRequest
+  | AggregateRequest
+  | BulkRequest
+  | NonResourceRequest;
+```
+
+| `mode` físico de entrada | `request_shape` de salida | Dato mínimo aportado | Resolución exclusiva |
+| --- | --- | --- | --- |
+| `EXISTING_RESOURCE` | `EXISTING` | `locator` no vacío | Existencia, relaciones, territorio, estado y snapshot desde fuente de verdad |
+| `RESOURCE_DRAFT` | `DRAFT` | `draft` JSON (puede estar vacío si el contrato admite defaults) | Normalización, padres, territorio y estado inicial antes de crear |
+| `COLLECTION` | `COLLECTION` | `server_filter` JSON | Conjunto acotado por predicado **construido en servidor**; `{}` nunca implica todos |
+| `AGGREGATE` | `AGGREGATE` | `server_filter` JSON | Todos los contribuyentes y dimensiones filtradas por alcance, sin inferencias |
+| `BULK` | `BULK` | `items` no vacío de localizadores | Cada miembro exacto; permiso masivo o evaluación individual y política del contrato |
+| `NON_RESOURCE` | `NON_RESOURCE` | Solo `mode` | Exclusivamente cuando el contrato permite ausencia de recurso; no es fallback |
+
+Las claves de la raíz son **cerradas** por variante. Los únicos campos
+adicionales de este candidato son `expected_version` para
+`EXISTING_RESOURCE` e `idempotency_key` para `RESOURCE_DRAFT` y
+`BULK`: cuando aparezcan, deben ser strings no vacíos. No conceden
+autoridad; el servidor contrasta la versión e idempotencia. La selección de
+`ALL_OR_NOTHING` o `PARTIAL_WITH_RESULTS` **no** procede del caller ni
+se añade como `atomicity` al request: debe declararse y comprobarse en el
+contrato de recurso del backend, sin valor implícito.
+
+Todo valor de entrada deberá ser JSON finito, sin getters, prototipos especiales,
+símbolos, ciclos, funciones ni arreglos irregulares. `locator` y cada miembro de
+`items` deben ser objetos JSON no vacíos; `items` requiere al menos un miembro.
+Los nombres y tipos de los localizadores, las expresiones permitidas por
+`server_filter`, los campos mutables del `draft` y la deduplicación semántica
+de miembros son **propiedad del resolver privado asociado a
+`resource_contract_id`**. Un `id`, `site_id`, `owner_id`, `employee_id`
+o `role` dentro de datos de dominio **no se convierte en hecho
+autoritativo**: debe resolverse independientemente. `resource_type`, contrato
+de recurso, grants, actor, territorio efectivo, autorización y resultado no
+se eligen en el request.
+
+`mode` es el discriminador de entrada ya usado por
+`AUTH-DB-034`; `kind` no es alias. `request_shape` pertenece solo al
+resultado `ResolvedResourceContext` y debe coincidir con el mapeo indicado.
+Una forma ausente, extraña, incompleta o no admitida por el contrato se deniega
+como `RESOURCE_REQUEST_SHAPE_INVALID`, nunca se degrada a
+`NON_RESOURCE`. El inspector estructural puede rechazar la forma, pero **no
+verifica** permiso masivo, alcance, existencia, aislamiento, concurrencia,
+proveniencia, snapshot ni autenticidad del evaluador backend.
+
+Este detalle **no añade requisitos ni modifica filas de 04A**: desarrolla la
+unión de seis tipos ya aprobada, con `AUTH-CTX-026` como dueño del contrato,
+`AUTH-CTX-018` como semántica de recursos y `AUTH-CTX-030` como dueño
+de la certificación adversarial. La aprobación y publicación de una identidad
+contractual física requieren su revisión, pruebas y gates propios.
+
 Reglas:
 
 - `app_code` debe coincidir con la aplicación propietaria del permiso;

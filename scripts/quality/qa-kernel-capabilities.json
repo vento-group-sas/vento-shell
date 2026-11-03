@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "kernel_id": "VENTO-QA-KERNEL-001",
+  "execution_mode": "PLAN_ONLY",
+  "target_environment": "QA_LOCAL_ISOLATED",
+  "owner_repository": "vento-group-sas/vento-shell",
+  "capabilities": [
+    {
+      "id": "source_attestation",
+      "kind": "READ_ONLY",
+      "requires": []
+    },
+    {
+      "id": "migration_manifest",
+      "kind": "READ_ONLY",
+      "requires": [
+        "source_attestation"
+      ]
+    },
+    {
+      "id": "isolated_postgres",
+      "kind": "ISOLATED_RESOURCE",
+      "requires": [
+        "source_attestation"
+      ]
+    },
+    {
+      "id": "migration_replay",
+      "kind": "ISOLATED_WRITE",
+      "requires": [
+        "isolated_postgres",
+        "migration_manifest"
+      ]
+    },
+    {
+      "id": "pgtap",
+      "kind": "QA_VALIDATION",
+      "requires": [
+        "migration_replay"
+      ]
+    },
+    {
+      "id": "scram_loopback",
+      "kind": "QA_REVERSIBLE",
+      "requires": [
+        "isolated_postgres"
+      ]
+    },
+    {
+      "id": "fdw_server",
+      "kind": "QA_REVERSIBLE",
+      "requires": [
+        "scram_loopback"
+      ]
+    },
+    {
+      "id": "consumer_contract",
+      "kind": "READ_ONLY",
+      "requires": [
+        "source_attestation"
+      ]
+    },
+    {
+      "id": "rollback",
+      "kind": "QA_REVERSIBLE",
+      "requires": [
+        "isolated_postgres"
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "id": "foundation-baseline",
+      "owner": "QA-KERNEL",
+      "requires": [
+        "pgtap",
+        "rollback"
+      ],
+      "test_files": [
+        "supabase/tests/database/000_schema_harness.test.sql"
+      ]
+    },
+    {
+      "id": "auth-db-034",
+      "owner": "AUTH-DB-034",
+      "requires": [
+        "pgtap",
+        "fdw_server",
+        "rollback"
+      ],
+      "test_files": [
+        "supabase/tests/database/042_auth_db_035_context_freshness.test.sql",
+        "supabase/tests/database/048_auth_db_034_safe_projection.test.sql"
+      ]
+    },
+    {
+      "id": "gap-pkg-004",
+      "owner": "GAP-PKG-004",
+      "requires": [
+        "pgtap",
+        "rollback"
+      ],
+      "test_files": [
+        "supabase/tests/packages/GAP-PKG-004.sql"
+      ]
+    },
+    {
+      "id": "pass-redemption",
+      "owner": "VENTO-PASS",
+      "requires": [
+        "pgtap",
+        "consumer_contract",
+        "rollback"
+      ],
+      "test_files": [
+        "supabase/tests/database/048_pass_loyalty_redemption_v1.test.sql"
+      ]
+    }
+  ]
+}

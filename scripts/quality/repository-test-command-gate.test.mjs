@@ -113,6 +113,9 @@ const positiveCases = [
       assert.deepEqual(validateTestCommandContract(shellManifest(), 'vento-group-sas/vento-shell'), []);
       assert.ok(SHELL_REQUIRED_SUITE_GROUPS.length >= 2);
       assert.ok(SHELL_REQUIRED_QUALITY_TEST_FILES.length >= 2);
+      assert.ok(SHELL_REQUIRED_QUALITY_TEST_FILES.includes(
+        'scripts/quality/qa-kernel.test.mjs',
+      ));
     },
   },
   {

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "correction_id": "AUTH-DB-034::CORR-002",
+  "task_id": "AUTH-DB-034",
+  "target_instance_id": "AUTH-DB-034::GLOBAL",
+  "correction_type": "PHYSICAL",
+  "reason_code": "SECURITY_NON_CONFORMANCE",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "bc420d238028831af21f314648698796dab59915",
+    "target_task_path": "docs/plan-canonico/modular/bloques/R_SUPABASE/02_R1_FUNDACION_FISICA_CANONICA.md",
+    "target_task_sha256": "b428724a67032dfd1238e7537679c0bffcf62deddaff440b191c753506e696b7",
+    "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-034__GLOBAL.json",
+    "target_instance_record_sha256": "7b804a71b2cd24339159b591512a836befbdffd70ab42cf31a0567dcd0770f5c"
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-10-23T14:53:08.273Z"
+}
