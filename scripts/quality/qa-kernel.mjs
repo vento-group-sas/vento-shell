@@ -359,6 +359,64 @@ export function planTestPreflight({
   };
 }
 
+// P0: plan a future QA lane that does not require reading or writing HBA.
+// This is a SOURCE-ONLY contract: never executes SQL, CLI, Docker or a
+// recovery action, and cannot adopt a voucher from a previous F2 attempt.
+// Bootstrap is independently provisioned before the non-admin connection.
+// Compatibility of declared capabilities is not physical attestation.
+export function planNonPrivilegedQaLane(request = {}) {
+  closed(request, [
+    'catalog', 'profileId', 'source', 'availableTests', 'offeredRunner',
+  ], 'NON_ADMIN_REQUEST_KEYS_INVALID');
+  if (!Object.hasOwn(request, 'offeredRunner') || request.offeredRunner === undefined) {
+    fail('NON_ADMIN_RUNNER_REQUIRED');
+  }
+  const planned = planTestPreflight(request);
+  const gaps = planned.test_preflights
+    .filter((test) => test.runner_compatibility.status === 'BLOCKED')
+    .map((test) => ({
+      file: test.file,
+      reasons: [...test.runner_compatibility.gaps],
+    }));
+  const blocked = planned.status === 'BLOCKED' || gaps.length > 0;
+  return {
+    kernel_id: KERNEL_ID,
+    environment: TARGET_ENVIRONMENT,
+    execution_mode: 'PLAN_ONLY',
+    runtime_design: 'PREPROVISIONED_NON_ADMIN',
+    legacy_voucher_adoption: false,
+    hba_access: 'FORBIDDEN',
+    docker_root_exec: 'FORBIDDEN',
+    privileged_bootstrap_in_runner: false,
+    owner_and_source_attested: false,
+    runner_authenticated_non_admin_attested: false,
+    permission_probes_attested: false,
+    pg_tap_certified: false,
+    physical_postflight_attested: false,
+    qa_executed: false,
+    remote_mutations: false,
+    profile: planned.profile,
+    source: planned.source,
+    plan_sha256: planned.plan_sha256,
+    test_files: planned.test_preflights.map((test) => test.file),
+    missing_test_files: [...planned.missing_test_files],
+    missing_test_contracts: [...planned.missing_test_contracts],
+    unsupported_tests: gaps,
+    status: blocked ? 'BLOCKED' : 'PENDING',
+    reason: planned.status === 'BLOCKED' ? planned.reason
+      : gaps.length ? 'RUNNER_DECLARED_CAPABILITIES_INSUFFICIENT'
+        : 'PHYSICAL_NON_ADMIN_ATTESTATION_REQUIRED',
+    required_physical_evidence: [
+      'ISOLATED_OWNER_AND_SOURCE_SHA',
+      'PREPROVISIONED_ROLE_WITHOUT_BROAD_GRANTS',
+      'AUTHENTICATED_SESSION_USER_NOT_ADMIN',
+      'SAME_CONNECTION_CAPABILITY_PROBES',
+      'PGTAP_AND_ROLLBACK',
+      'OWNER_BOUND_CLEANUP_AND_TWO_POSTFLIGHTS',
+    ],
+  };
+}
+
 // Declarative lifecycle only. F0 never transitions a real database or runs SQL.
 export function transitionLifecycle(current, next) {
   if (typeof current !== 'string' || typeof next !== 'string'

@@ -12,6 +12,7 @@ import {
   validateSource,
   planWorkload,
   planTestPreflight,
+  planNonPrivilegedQaLane,
   compareRunnerEnvelope,
   reconcileMigrationCandidates,
   transitionLifecycle,
@@ -416,6 +417,107 @@ test('F2 test contracts reject undeclared permissions, unsafe probes and tamperi
   for (const mutate of cases) {
     assert.throws(() => validateCatalog(updated(mutate)), /QA_KERNEL_/u);
   }
+});
+
+test('P0 non-admin lane is only a bounded plan with no HBA or privileged Docker I/O', () => {
+  const profile = catalog.profiles[0];
+  const plan = planNonPrivilegedQaLane({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files,
+    offeredRunner: {
+      extensions: ['pgtap'], max_connections: 1, set_roles: [],
+      fixture_modes: ['NONE'], bootstrap_separated: true,
+    },
+  });
+  assert.equal(plan.status, 'PENDING');
+  assert.equal(plan.reason, 'PHYSICAL_NON_ADMIN_ATTESTATION_REQUIRED');
+  assert.equal(plan.runtime_design, 'PREPROVISIONED_NON_ADMIN');
+  assert.equal(plan.hba_access, 'FORBIDDEN');
+  assert.equal(plan.docker_root_exec, 'FORBIDDEN');
+  assert.equal(plan.legacy_voucher_adoption, false);
+  assert.equal(plan.privileged_bootstrap_in_runner, false);
+  assert.equal(plan.execution_mode, 'PLAN_ONLY');
+  assert.equal(plan.runner_authenticated_non_admin_attested, false);
+  assert.equal(plan.owner_and_source_attested, false);
+  assert.equal(plan.permission_probes_attested, false);
+  assert.equal(plan.qa_executed, false);
+  assert.equal(plan.pg_tap_certified, false);
+  assert.equal(plan.remote_mutations, false);
+  assert.deepEqual(plan.unsupported_tests, []);
+  assert.ok(plan.required_physical_evidence.includes('PGTAP_AND_ROLLBACK'));
+  assert.ok(!Object.hasOwn(plan, 'command'));
+  assert.ok(!Object.hasOwn(plan, 'docker_args'));
+  assert.ok(!Object.hasOwn(plan, 'hba_file'));
+});
+
+test('P0 non-admin lane blocks undeclared capabilities rather than granting admin access', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const plan = planNonPrivilegedQaLane({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files,
+    offeredRunner: {
+      extensions: ['pgtap'], max_connections: 1, set_roles: [],
+      fixture_modes: ['NONE'], bootstrap_separated: true,
+    },
+  });
+  assert.equal(plan.status, 'BLOCKED');
+  assert.equal(plan.reason, 'RUNNER_DECLARED_CAPABILITIES_INSUFFICIENT');
+  assert.equal(plan.unsupported_tests.length, 2);
+  assert.ok(plan.unsupported_tests[0].reasons.includes('REQUIRED_EXTENSION_UNSUPPORTED'));
+  assert.ok(plan.unsupported_tests[0].reasons.includes('MIN_CONNECTIONS_UNSUPPORTED'));
+  assert.ok(plan.unsupported_tests[1].reasons.includes('SET_ROLE_UNSUPPORTED'));
+  assert.equal(plan.qa_executed, false);
+  assert.equal(plan.pg_tap_certified, false);
+});
+
+test('P0 non-admin lane rejects missing SQL and absent per-test declarations', () => {
+  const runner = {
+    extensions: ['pgtap'], max_connections: 1, set_roles: [],
+    fixture_modes: ['NONE'], bootstrap_separated: true,
+  };
+  const missingSql = planNonPrivilegedQaLane({
+    catalog, profileId: 'foundation-baseline', source: source(),
+    availableTests: [], offeredRunner: runner,
+  });
+  assert.equal(missingSql.status, 'BLOCKED');
+  assert.equal(missingSql.reason, 'TEST_FILES_NOT_IN_SOURCE');
+  const absentContract = planNonPrivilegedQaLane({
+    catalog, profileId: 'gap-pkg-004', source: source(),
+    availableTests: catalog.profiles.find((p) => p.id === 'gap-pkg-004').test_files,
+    offeredRunner: runner,
+  });
+  assert.equal(absentContract.status, 'BLOCKED');
+  assert.equal(absentContract.reason, 'TEST_CONTRACTS_MISSING');
+  assert.equal(absentContract.pg_tap_certified, false);
+});
+
+test('P0 non-admin lane never accepts recovered vouchers, HBA paths, raw Docker or forged runner declarations', () => {
+  const valid = {
+    catalog, profileId: 'foundation-baseline', source: source(),
+    availableTests: catalog.profiles[0].test_files,
+    offeredRunner: {
+      extensions: ['pgtap'], max_connections: 1, set_roles: [],
+      fixture_modes: ['NONE'], bootstrap_separated: true,
+    },
+  };
+  for (const hostile of [
+    { session_id: 'LOCAL-QA::' + 'A'.repeat(32) },
+    { legacy_voucher: true }, { hba_file: '/var/lib/postgresql/data/pg_hba.conf' },
+    { docker_exec: 'root' }, { force_admin: true }, { db_url: 'postgres://test' },
+  ]) assert.throws(() => planNonPrivilegedQaLane({ ...valid, ...hostile }),
+    /QA_KERNEL_NON_ADMIN_REQUEST_KEYS_INVALID/u);
+  assert.throws(() => planNonPrivilegedQaLane({
+    ...valid, offeredRunner: { ...valid.offeredRunner, superuser: true },
+  }), /QA_KERNEL_RUNNER_ENVELOPE_INVALID/u);
+  assert.throws(() => planNonPrivilegedQaLane({
+    ...valid, source: source({ environment: 'PRODUCTION' }),
+  }), /QA_KERNEL_SOURCE_NOT_ATTESTABLE/u);
+  assert.throws(() => planNonPrivilegedQaLane({
+    ...valid, offeredRunner: undefined,
+  }), /QA_KERNEL_NON_ADMIN_RUNNER_REQUIRED/u);
+  const { offeredRunner: _absent, ...missing } = valid;
+  assert.throws(() => planNonPrivilegedQaLane(missing),
+    /QA_KERNEL_NON_ADMIN_RUNNER_REQUIRED/u);
 });
 
 test('lifecycle cannot skip owner attestation, rollback or terminal state', () => {
