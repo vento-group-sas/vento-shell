@@ -13,6 +13,7 @@ import {
 } from './correction-control.mjs';
 import { checkpointCorrection } from './correction-branch-lifecycle.mjs';
 import { resolveNpmInvocation } from './task-branch-lifecycle.mjs';
+import { assertTargetBinding, readEnvironmentBindings } from '../supabase/hosted-replay-precondition.mjs';
 
 const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
@@ -137,7 +138,46 @@ export function assertNonProductionEnvironment(environmentRole) {
   const role = String(environmentRole ?? '').trim().toUpperCase();
   if (!role) fail('ENVIRONMENT_ROLE_REQUIRED');
   if (role === 'PRODUCTION') fail('PRODUCTION_REMOTE_MUTATION_FORBIDDEN');
+  if (role !== 'STAGING') fail('ONLY_STAGING_IS_ALLOWED');
   return role;
+}
+
+
+/**
+ * The declared remote target and BOTH available local link markers must agree
+ * with the versioned STAGING binding before invoking any '--linked' command.
+ * A stale optional metadata file is a blocker, never an inferred authority.
+ */
+export function assertCanonicalLinkedStagingTarget({
+  root,
+  environmentRole,
+  projectRef,
+  owner,
+  bindings,
+} = {}) {
+  if (typeof root !== 'string' || !root.trim()) fail('CORRECTION_REPOSITORY_ROOT_REQUIRED');
+  const canonicalBindings = bindings ?? readEnvironmentBindings({ root });
+  assertTargetBinding({
+    projectRef,
+    owner,
+    environmentRole,
+    bindings: canonicalBindings,
+  });
+  const projectRefPath = path.join(root, 'supabase', '.temp', 'project-ref');
+  if (!fs.existsSync(projectRefPath)) fail('SUPABASE_LINKED_PROJECT_REF_MISSING');
+  const linkedRef = fs.readFileSync(projectRefPath, 'utf8').trim();
+  if (linkedRef !== projectRef) fail('SUPABASE_LINKED_PROJECT_REF_MISMATCH');
+  const metadataPath = path.join(root, 'supabase', '.temp', 'linked-project.json');
+  if (fs.existsSync(metadataPath)) {
+    let metadata;
+    try {
+      metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    } catch {
+      fail('SUPABASE_LINKED_PROJECT_METADATA_INVALID');
+    }
+    if (metadata?.ref !== linkedRef) fail('SUPABASE_LINKED_PROJECT_METADATA_MISMATCH');
+  }
+  return Object.freeze({ environment_role: 'STAGING', project_ref: linkedRef });
 }
 
 export function replaceEvidence(record, evidence) {
@@ -434,6 +474,8 @@ export function deployCorrectionSupabase({
 } = {}) {
   const id = normalizeCorrectionId(correctionId);
   const role = assertNonProductionEnvironment(environmentRole);
+  // Verify CLI's effective remote link before any checkpoint or hosted operation.
+  assertCanonicalLinkedStagingTarget({ root, environmentRole: role, projectRef, owner });
   const migrationName = String(migration ?? '').trim();
   const migrationRelativePath = `supabase/migrations/${migrationName}`;
   let record = readRecord(root, id);
@@ -454,6 +496,8 @@ export function deployCorrectionSupabase({
 
   let remoteMutation = false;
   if (classification.action === 'APPLY') {
+    // Recheck immediately before the remote DDL boundary (link may have changed).
+    assertCanonicalLinkedStagingTarget({ root, environmentRole: role, projectRef, owner });
     npm(['exec', '--', 'supabase', 'db', 'push', '--linked'], {
       cwd: root,
       input: 'y\n',
@@ -461,6 +505,7 @@ export function deployCorrectionSupabase({
     remoteMutation = true;
   }
 
+  assertCanonicalLinkedStagingTarget({ root, environmentRole: role, projectRef, owner });
   const postDryRun = npm(['exec', '--', 'supabase', 'db', 'push', '--linked', '--dry-run'], { cwd: root });
   const postDryRunText = outputText(postDryRun);
   const postPending = parsePendingMigrations(postDryRunText);
