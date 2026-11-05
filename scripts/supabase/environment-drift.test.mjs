@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import {
   __test,
   applyAllowlist,
+  assertCanonicalRemoteEnvironmentBinding,
   assertManagementRequest,
   compareFunctionSets,
   compareLocal,
@@ -28,6 +29,7 @@ import {
   validateAllowlist,
   validatePackageScripts,
 } from './environment-drift.mjs';
+import { readEnvironmentBindings } from './hosted-replay-precondition.mjs';
 
 function withTempRoot(callback) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-environment-drift-'));
@@ -376,6 +378,71 @@ test('CORR-011 multipart Edge Function body: rechaza rutas multipart que escapen
     ),
     /REMOTE_FUNCTION_FILE_PATH_UNSAFE/u,
   );
+});
+
+// Canonical project IDs, NOT the historical display name "vento-os-dev".
+function canonicalBindings() {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  return readEnvironmentBindings({ root });
+}
+
+test('AUTH-DB-028: production/staging are exactly bound by the canonical readiness contract', () => {
+  const bindings = canonicalBindings();
+  assert.equal(bindings.production.project_ref, 'clzdpinthhtknkmefsxx');
+  assert.equal(bindings.production.classification, 'PRODUCTION');
+  assert.equal(bindings.staging.project_ref, 'rcrxixmqhrndcervbllp');
+  assert.equal(bindings.staging.classification, 'STAGING');
+  for (const [role, b] of [['production', bindings.production], ['staging', bindings.staging]]) {
+    const result = assertCanonicalRemoteEnvironmentBinding({
+      environmentRole: role, projectRef: b.project_ref, owner: b.owner, bindings,
+    });
+    assert.equal(result.environment_role, role);
+    assert.equal(result.target_authority, 'VENTO_SHELL_VERSIONED_LOCAL_CANDIDATE');
+    assert.equal(result.observation_purpose,
+      role === 'production' ? 'LEGACY_AS_IS_OBSERVATION_ONLY' : 'STAGING_OBSERVATION_ONLY');
+  }
+});
+
+test('AUTH-DB-028: rejects swapped identities, DEV role, alien ref and missing binding', () => {
+  const bindings = canonicalBindings();
+  const correct = { environmentRole: 'staging', projectRef: bindings.staging.project_ref,
+    owner: bindings.staging.owner, bindings };
+  const negatives = [
+    [{ ...correct, projectRef: bindings.production.project_ref }, /PRODUCTION_REF_MISCLASSIFIED_AS_STAGING/u],
+    [{ ...correct, environmentRole: 'production' }, /STAGING_REF_MISCLASSIFIED_AS_PRODUCTION/u],
+    [{ ...correct, environmentRole: 'dev' }, /CANONICAL_HOSTED_ROLE_NOT_ALLOWED/u],
+    [{ ...correct, projectRef: 'noncanonical-ref' }, /CANONICAL_HOSTED_PROJECT_REF_MISMATCH/u],
+    [{ ...correct, owner: 'UNAUTHORIZED_OWNER' }, /CANONICAL_HOSTED_OWNER_MISMATCH/u],
+    [{ ...correct, bindings: null }, /CANONICAL_HOSTED_BINDINGS_MISSING_OR_INVALID/u],
+    [{ ...correct, bindings: {
+      staging: bindings.staging,
+      production: { ...bindings.production, project_ref: bindings.staging.project_ref },
+    } }, /CANONICAL_HOSTED_BINDINGS_MISSING_OR_INVALID/u],
+  ];
+  for (const [input, regex] of negatives) {
+    assert.throws(() => assertCanonicalRemoteEnvironmentBinding(input), regex);
+  }
+});
+
+test('AUTH-DB-028: remote CLI fails before any remote read for mislabeled production', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const { staging, production } = canonicalBindings();
+  for (const [role, ref, code] of [
+    ['staging', production.project_ref, 'PRODUCTION_REF_MISCLASSIFIED_AS_STAGING'],
+    ['production', staging.project_ref, 'STAGING_REF_MISCLASSIFIED_AS_PRODUCTION'],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      'scripts/supabase/environment-drift.mjs', 'remote',
+      '--environment-role', role, '--project-ref', ref,
+      '--owner', staging.owner, '--scope', 'environment',
+    ], { cwd: root, encoding: 'utf8', timeout: 15000,
+      env: { ...process.env, SUPABASE_ACCESS_TOKEN: '' } });
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, new RegExp(code, 'u'));
+    assert.match(result.stdout, /REMOTE_MUTATIONS: NO/u);
+    assert.doesNotMatch(result.stdout, /SUPABASE_ACCESS_TOKEN_MISSING/u);
+  }
 });
 
 test('Management API queda cerrada a GET y SQL read-only', () => {
@@ -946,6 +1013,158 @@ test('MRP015-040 SQL fingerprint: separa version de PostgreSQL y extensiones adm
   assert.doesNotMatch(capabilities, /extversion/u);
 });
 
+
+test('AUTH-DB-028 catalog: captura grants predeterminados y PUBLIC sin inferir seguridad por count', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /default_privileges as \(/u);
+  assert.match(sql, /pg_catalog\.pg_default_acl/u);
+  assert.match(sql, /pg_catalog\.aclexplode\(d\.defaclacl\)/u);
+  assert.match(sql, /'default_privileges', \(select value from default_privileges\)/u);
+  assert.match(sql, /\('anon', 'authenticated', 'service_role', 'PUBLIC'\)/u);
+  assert.match(sql, /coalesce\(c\.relacl, pg_catalog\.acldefault/u);
+  assert.match(sql, /MANAGED_SCHEMAS_PLACEHOLDER_WILL_NOT_BE_EMITTED|join governed_schemas as n on n\.oid = d\.defaclnamespace/u);
+});
+
+test('AUTH-DB-028 catalog: registra roles y permisos efectivos por identidad', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /pg_catalog\.pg_auth_members/u);
+  assert.match(sql, /member_role\.rolname in \('anon', 'authenticated', 'service_role'\)/u);
+  assert.match(sql, /pg_catalog\.has_schema_privilege/u);
+  assert.match(sql, /pg_catalog\.has_table_privilege/u);
+  assert.match(sql, /pg_catalog\.has_function_privilege/u);
+  for (const key of [
+    'role_memberships',
+    'effective_schema_usage',
+    'effective_table_privileges',
+    'effective_routine_privileges',
+  ]) {
+    assert.ok(sql.includes("'" + key + "', (select value from " + key + ")"), key);
+  }
+});
+
+test('AUTH-DB-028 catalog: version de extension solo de esquemas gobernados', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  const capabilities = __test.EXTENSION_CAPABILITIES_SQL;
+  assert.match(sql, /governed_extensions as \(/u);
+  assert.match(sql, /pg_catalog\.pg_extension as e\s+join governed_schemas as n on n\.oid = e\.extnamespace/u);
+  assert.match(sql, /'version', e\.extversion/u);
+  assert.match(sql, /'governed_extensions', \(select value from governed_extensions\)/u);
+  assert.doesNotMatch(capabilities, /extversion/u);
+});
+
+test('AUTH-DB-028: el catalogo de autorizacion no expone identificadores personales', () => {
+  const sql = __test.FINGERPRINT_SQL;
+  assert.match(sql, /authorization_catalog as \(/u);
+  assert.match(sql, /from public\.apps as a/u);
+  assert.match(sql, /from public\.app_permissions as p/u);
+  assert.match(sql, /from public\.role_permissions as rp/u);
+  assert.match(sql, /from public\.employee_permissions as ep/u);
+  assert.match(sql, /'authorization_catalog', \(select value from authorization_catalog\)/u);
+  assert.match(sql, /'role_assignment_count'/u);
+  assert.match(sql, /'employee_assignment_count'/u);
+  assert.doesNotMatch(sql.slice(sql.indexOf('authorization_catalog as ('), sql.indexOf('publications as (')), /'employee_id'|'role_id'|'email'|'user_id'/u);
+});
+
+test('AUTH-DB-028: faltante de permiso VISO bloquea certificacion aunque DDL coincida', () => {
+  const cron = [{
+    jobname: 'anima_shift_runtime_processor_every_5m',
+    schedule: '*/5 * * * *',
+    active: true,
+  }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const baseline = {
+      functions: [],
+      authorization_catalog: {
+        apps: ['viso'],
+        permissions: [{
+          app_code: 'viso',
+          permission_code: 'workforce.employees.view',
+          active: true,
+          audience: 'administrative',
+          operational: false,
+          requires_active_work_context: false,
+          role_assignment_count: 0,
+          employee_assignment_count: 0,
+        }],
+      },
+    };
+    const remote = structuredClone(baseline);
+    remote.authorization_catalog.permissions = [];
+    fixture.localObserved.sql_fingerprint = baseline;
+    fixture.remoteObserved.surfaces.find((entry) => entry.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
+test('AUTH-DB-028: asignaciones heredadas difieren sin publicar identidad de actor', () => {
+  const cron = [{
+    jobname: 'anima_shift_runtime_processor_every_5m',
+    schedule: '*/5 * * * *',
+    active: true,
+  }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const baseline = {
+      functions: [],
+      authorization_catalog: {
+        apps: ['viso'],
+        permissions: [{
+          app_code: 'viso', permission_code: 'staff.read',
+          role_assignment_count: 4, employee_assignment_count: 1,
+        }],
+      },
+    };
+    const remote = structuredClone(baseline);
+    remote.authorization_catalog.permissions[0].role_assignment_count = 0;
+    fixture.localObserved.sql_fingerprint = baseline;
+    fixture.remoteObserved.surfaces.find((entry) => entry.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
+test('AUTH-DB-028 catalog: grants predeterminados divergentes bloquean paridad', () => {
+  const cron = [{ jobname: 'anima_shift_runtime_processor_every_5m', schedule: '*/5 * * * *', active: true }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const local = {
+      functions: [],
+      default_privileges: [{
+        schema: 'public', owner: 'postgres', kind: 'r',
+        grantor: 'postgres', grantee: 'anon', privilege: 'SELECT', grantable: false,
+      }],
+    };
+    const remote = structuredClone(local);
+    remote.default_privileges = [];
+    fixture.localObserved.sql_fingerprint = local;
+    fixture.remoteObserved.surfaces.find((row) => row.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
+
+test('AUTH-DB-028 catalog: rol efectivo y version gobernada divergentes bloquean paridad', () => {
+  const cron = [{ jobname: 'anima_shift_runtime_processor_every_5m', schedule: '*/5 * * * *', active: true }];
+  const result = corr011HostedCronFixture(cron, ['shift_runtime_processor_cron'], (fixture) => {
+    const local = {
+      functions: [],
+      role_memberships: [{ member: 'anon', parent: 'authenticated', inherit: true }],
+      effective_routine_privileges: [{ schema: 'public', routine: 'critical', role: 'anon', executable: false }],
+      governed_extensions: [{ name: 'unaccent', schema: 'public', version: '1.1' }],
+    };
+    const remote = structuredClone(local);
+    remote.role_memberships = [];
+    remote.effective_routine_privileges[0].executable = true;
+    remote.governed_extensions[0].version = '1.2';
+    fixture.localObserved.sql_fingerprint = local;
+    fixture.remoteObserved.surfaces.find((row) => row.name === 'sql_fingerprint').value = remote;
+    return fixture;
+  });
+  assert.equal(result.certification, 'UNAUTHORIZED_DRIFT');
+  assert.deepEqual(result.drifts.map((entry) => entry.surface), ['database.sql_fingerprint']);
+});
 
 test('MRP015-040 SQL fingerprint: excluye _realtime y pgbouncer administrados por Supabase', () => {
   assert.equal(
