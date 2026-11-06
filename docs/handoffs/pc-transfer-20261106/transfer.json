@@ -1,0 +1,694 @@
+{
+  "schema": 1,
+  "date": "2026-11-06",
+  "repositories": {
+    "vento-anima": {
+      "url": "https://github.com/vento-group-sas/vento-anima.git",
+      "branches": [
+        {
+          "name": "handoff/pc-20261106",
+          "sha": "9a844cadc17983d1ba651941e4a114b0f0c8f47e",
+          "tracking": "handoff/pc-20261106"
+        },
+        {
+          "name": "infra/package-gate-gap-pkg-004",
+          "sha": "a8dd1f1ea9f0f6ab7f89e4f736287d46f62e4c6d",
+          "tracking": "infra/package-gate-gap-pkg-004"
+        },
+        {
+          "name": "main",
+          "sha": "e8e39ccd54598fb3c06ba768031023760846f701",
+          "tracking": "main"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "e1698c49c15983cd8d7d32108b3c9a6c5f5e9886",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-fogo": {
+      "url": "https://github.com/vento-group-sas/vento-fogo.git",
+      "branches": [
+        {
+          "name": "chore/next-security-fogo",
+          "sha": "261a3140594ca641b4b530ed23abc91ad4bc53a6",
+          "tracking": "chore/next-security-fogo"
+        },
+        {
+          "name": "main",
+          "sha": "d5f722d3a20939cbacdb361fdaa1f5eca5031270",
+          "tracking": "main"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "0b68be9023eebafa010fbc2bdbe32a4ee7e8401d",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-nexo": {
+      "url": "https://github.com/vento-group-sas/vento-nexo.git",
+      "branches": [
+        {
+          "name": "chore/next-security-nexo",
+          "sha": "9da61528cdb07cd395e495c33ab5c4d297a6d9ac",
+          "tracking": "chore/next-security-nexo"
+        },
+        {
+          "name": "feat/inventory-count-workbook",
+          "sha": "fab8413d4ca83b85e8eb38a87434ebab33a4e0b9",
+          "tracking": "feat/inventory-count-workbook"
+        },
+        {
+          "name": "feature/request-policy-completion",
+          "sha": "ee3e088b1314dcf9be2f2981cefa341304bca2a8",
+          "tracking": null
+        },
+        {
+          "name": "main",
+          "sha": "b699dd7d2b4947144e21827b16fe673b106c9daf",
+          "tracking": "main"
+        },
+        {
+          "name": "preview",
+          "sha": "3a02d99c1c74cba960197af3d0bce8bf4d2a6ddf",
+          "tracking": "handoff/pc-20261106/preserve/preview"
+        },
+        {
+          "name": "prueba-local",
+          "sha": "d0d315e67dd6d1c1de357ccff95cccb1e1c23942",
+          "tracking": null
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "483a792955ae03e8e403428a3163ed37dc84a784",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [
+        {
+          "sha": "12b92b6ba5b7372a2959b2672de1d9c2a73140bf",
+          "ref": "stash@{0}",
+          "message": "On main: temp-sync"
+        }
+      ],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-origo": {
+      "url": "https://github.com/vento-group-sas/vento-origo.git",
+      "branches": [
+        {
+          "name": "chore/next-security-origo",
+          "sha": "5cccc1224b3da3b355630a83f0813c04f8842c6d",
+          "tracking": "chore/next-security-origo"
+        },
+        {
+          "name": "fix/gap-pkg-004-origo-pdf-token",
+          "sha": "985eee77a98260545af66be29ec1e5b39046f227",
+          "tracking": "fix/gap-pkg-004-origo-pdf-token"
+        },
+        {
+          "name": "main",
+          "sha": "9742afd5d8b32eaca4f9734c74afa1585f0b55bd",
+          "tracking": "main"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "50317ea8381ef1c6c997e5a89d6b4cea24bb4197",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-pass": {
+      "url": "https://github.com/carlosibarraariza/vento-pass.git",
+      "branches": [
+        {
+          "name": "agent/gift-orders-v1",
+          "sha": "9a4602cb7ce4592754f3f9c4f3f04cb7f86bd840",
+          "tracking": null
+        },
+        {
+          "name": "agent/native-multicollection-catalog",
+          "sha": "81fc864df2051c5749ee4b79c27b52ea4bf6d513",
+          "tracking": null
+        },
+        {
+          "name": "agent/pass-order-tracking-pin",
+          "sha": "b4a5401ef062faceed883e4697c232d04af83b65",
+          "tracking": null
+        },
+        {
+          "name": "handoff/pc-20261106",
+          "sha": "bf207d27b286bc1616a92c480aa7253d92952575",
+          "tracking": "handoff/pc-20261106"
+        },
+        {
+          "name": "main",
+          "sha": "bd007f19eaa14c9f22fb5d63ecb532a1047e54e3",
+          "tracking": "main"
+        },
+        {
+          "name": "security/pass-qa-20261026",
+          "sha": "bd007f19eaa14c9f22fb5d63ecb532a1047e54e3",
+          "tracking": "security/pass-qa-20261026"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-pulso": {
+      "url": "https://github.com/vento-group-sas/vento-pulso.git",
+      "branches": [
+        {
+          "name": "agent/pulso-live-final-clean",
+          "sha": "4cabe5f11bd360d7c41d4edfcaf78b1055c52df0",
+          "tracking": null
+        },
+        {
+          "name": "agent/pulso-live-operations-2",
+          "sha": "e1a19e74790e7d8f3aa28f6b7fecc38cf1bf0f4b",
+          "tracking": null
+        },
+        {
+          "name": "chore/next-security-pulso",
+          "sha": "998cce8cccee301e759a4b2300e315fb160c1e77",
+          "tracking": "chore/next-security-pulso"
+        },
+        {
+          "name": "chore/next-security-viso",
+          "sha": "998cce8cccee301e759a4b2300e315fb160c1e77",
+          "tracking": null
+        },
+        {
+          "name": "handoff/pc-20261106",
+          "sha": "a5865fc4978dff496a475b6ddc513bba9a25700c",
+          "tracking": "handoff/pc-20261106"
+        },
+        {
+          "name": "main",
+          "sha": "715b5683db05caa010d725679b5ada4705a6da6e",
+          "tracking": "main"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "2d9800aac3c8e832edcaecc395b7ff0b8a9931e1",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-shell": {
+      "url": "https://github.com/vento-group-sas/vento-shell.git",
+      "branches": [
+        {
+          "name": "agent/cerrar-bloque-e1",
+          "sha": "25beb0e90ef8dbf0513fa5beed882947fb0ce5df",
+          "tracking": "handoff/pc-20261106/preserve/agent/cerrar-bloque-e1"
+        },
+        {
+          "name": "agent/corregir-e5-treq-validator",
+          "sha": "9bc5702b7eb3389b1dc4a96e3817edc11c11fc4b",
+          "tracking": null
+        },
+        {
+          "name": "checkpoint/mrp015-040-entrypoint-normalization",
+          "sha": "ab1a0fc0ad314301e2804584de1e784c5f8d81b4",
+          "tracking": "checkpoint/mrp015-040-entrypoint-normalization"
+        },
+        {
+          "name": "checkpoint/mrp015-040-lote-local",
+          "sha": "ff9e31c3161c71035815372331a2a99494113e04",
+          "tracking": "checkpoint/mrp015-040-lote-local"
+        },
+        {
+          "name": "checkpoint/mrp015-040-source-parity-normalization",
+          "sha": "0d7bb40e8c026427eca2c925ab38dff6c3cb1699",
+          "tracking": "checkpoint/mrp015-040-source-parity-normalization"
+        },
+        {
+          "name": "codex/ejecutar-puerta-e1",
+          "sha": "3ffbad7aa55fc7417528d5eb16c81a7cb9e4957a",
+          "tracking": null
+        },
+        {
+          "name": "codex/limpiar-y-consolidar-e1",
+          "sha": "cdee38e0170fb764d50ad65f9bd7bb416a676821",
+          "tracking": null
+        },
+        {
+          "name": "correction/auth-db-034/corr-002",
+          "sha": "27a85704c210138b885166c42a72d3bb2add262e",
+          "tracking": "correction/auth-db-034/corr-002"
+        },
+        {
+          "name": "docs/format-trailing-whitespace-history",
+          "sha": "c5a21fb053b46cd8b0704f1caeb5752b6c009a27",
+          "tracking": "docs/format-trailing-whitespace-history"
+        },
+        {
+          "name": "fix/shell-con-013-conditional-families",
+          "sha": "024c1ee64f5848aa45baf416a37a324c10f5fbfc",
+          "tracking": null
+        },
+        {
+          "name": "fix/supabase-clean-migration-replay",
+          "sha": "074c3e44315264e350af300fdf5bb389dd3b2a53",
+          "tracking": null
+        },
+        {
+          "name": "handoff/pc-20261106/auth-db-034-corr-002",
+          "sha": "a430827b96236bc721d68ab4d368d70925ab28bf",
+          "tracking": "handoff/pc-20261106/auth-db-034-corr-002"
+        },
+        {
+          "name": "implementation/auth-db-034/global",
+          "sha": "cb0f91f5e94571b820b740d494f777933fdca58b",
+          "tracking": null
+        },
+        {
+          "name": "implementation/shell-ci-020/gap-pkg-001",
+          "sha": "2cc12083fe74b45d57c8b33bd45aef374e2d09ed",
+          "tracking": "implementation/shell-ci-020/gap-pkg-001"
+        },
+        {
+          "name": "implementation/shell-ci-021/gap-pkg-002",
+          "sha": "0073f6050cb28ecc227f3111ce222733a5047054",
+          "tracking": "implementation/shell-ci-021/gap-pkg-002"
+        },
+        {
+          "name": "implementation/shell-ci-022/gap-pkg-001",
+          "sha": "dc4cc3fbcaa837868bd50edb964c7101378ff278",
+          "tracking": "implementation/shell-ci-022/gap-pkg-001"
+        },
+        {
+          "name": "implementation/shell-ui-015/global",
+          "sha": "2250904159f5d71419e69ef2ee70f243179c6f10",
+          "tracking": null
+        },
+        {
+          "name": "infra/auth-db-034-reconcile",
+          "sha": "8b837fce12dba215a224a42d55c8d2c5d4bbdca6",
+          "tracking": "handoff/pc-20261106/preserve/infra/auth-db-034-reconcile"
+        },
+        {
+          "name": "infra/chatgpt-starter-hardened-lifecycle",
+          "sha": "1ab4fea1163e6a298cdbf54ef2b5433fe89e2b37",
+          "tracking": null
+        },
+        {
+          "name": "infra/gap-pkg-019-extensible-db-oracles",
+          "sha": "a7d0f1e751abf4bc72735f79cd597c845fed0ed1",
+          "tracking": "infra/gap-pkg-019-extensible-db-oracles"
+        },
+        {
+          "name": "infra/gap-pkg-019-physical-preflight",
+          "sha": "6ec6c81dcf0205b26250a9ced948cfbb156c027e",
+          "tracking": "handoff/pc-20261106/preserve/infra/gap-pkg-019-physical-preflight"
+        },
+        {
+          "name": "infra/mrp015-040-foundation-evidence",
+          "sha": "a9148fb4e4de24ee5cdba82cccb6b1a8d9ddd986",
+          "tracking": null
+        },
+        {
+          "name": "infra/package-gate-gap-pkg-004",
+          "sha": "f9bc22634c23bd9b27e46928180dc5f09df68130",
+          "tracking": "infra/package-gate-gap-pkg-004"
+        },
+        {
+          "name": "infra/physical-lane-documentary-decoupling",
+          "sha": "bbf3263b4e3cd08b999b8f99c3e2dc55fad1ae94",
+          "tracking": null
+        },
+        {
+          "name": "infra/qa-kernel-f0",
+          "sha": "1ade7bf982d18e2cc12bf0d6d64e936d8035b8c8",
+          "tracking": "infra/qa-kernel-f0"
+        },
+        {
+          "name": "infra/qa-kernel-f2-per-test-preflight",
+          "sha": "d85b981dda804b6de340f53192ffef61c404f6ef",
+          "tracking": "infra/qa-kernel-f2-per-test-preflight"
+        },
+        {
+          "name": "infra/qa-kernel-p1-contracts",
+          "sha": "b10799d406d5fd82d7a51d62222e4dabc39d0379",
+          "tracking": "handoff/pc-20261106/preserve/infra/qa-kernel-p1-contracts"
+        },
+        {
+          "name": "infra/supabase-baseline-cutover",
+          "sha": "b321e028de482e61d48e4fc6c05c2f1ccfc09d02",
+          "tracking": null
+        },
+        {
+          "name": "infra/transversal-delivery-control",
+          "sha": "9107306c42378647358b9dd8a348e01e114b16f7",
+          "tracking": "infra/transversal-delivery-control"
+        },
+        {
+          "name": "main",
+          "sha": "03d3be4a5f396ede66084c6ab217203f0f48c14c",
+          "tracking": "main"
+        },
+        {
+          "name": "priority/pass-loyalty-001-documentation",
+          "sha": "6a1c782ea82dc35d5270991cff4904eafaa56d6e",
+          "tracking": "handoff/pc-20261106/preserve/priority/pass-loyalty-001-documentation"
+        },
+        {
+          "name": "priority/pass-loyalty-001-scope-split-recovery",
+          "sha": "d085dcd9a23073cc2b1b1c974a33011b80e46d76",
+          "tracking": "main"
+        },
+        {
+          "name": "safety/gap-pkg-004-20261021-134501",
+          "sha": "43c07cad98ce2ad6c1b05500442b3f83828ea9eb",
+          "tracking": "handoff/pc-20261106/preserve/safety/gap-pkg-004-20261021-134501"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "fe209c7d82048489576841c673c36cb3a3462206",
+          "tracking": null
+        },
+        {
+          "name": "sync/request-policy-schema-from-db",
+          "sha": "f1e7b216da0f6e4601c8270efea8fb19d898f851",
+          "tracking": null
+        },
+        {
+          "name": "task/anima-auth-012",
+          "sha": "a301ea30fb2f7d24dd06a7e255996252b17370e6",
+          "tracking": null
+        },
+        {
+          "name": "task/data-norm-db-010",
+          "sha": "2d231b133a30382d4249896f25b4611ab11eb1b9",
+          "tracking": null
+        },
+        {
+          "name": "task/nexo-ux-026",
+          "sha": "cc1fadae1294b08a4f89eae98067c867ecae9297",
+          "tracking": "task/nexo-ux-026"
+        },
+        {
+          "name": "task/ux-qa-027",
+          "sha": "97409091d2c86041588f4f3d8e93665703409dc2",
+          "tracking": "task/ux-qa-027"
+        },
+        {
+          "name": "task/viso-core-005",
+          "sha": "4146ae797b9f0b483918e43d8fd7a9be81138bbe",
+          "tracking": "handoff/pc-20261106/preserve/task/viso-core-005"
+        },
+        {
+          "name": "work/os-context-1035",
+          "sha": "7c0e887d46e6bc58f479661a5e9bef9889656062",
+          "tracking": null
+        },
+        {
+          "name": "work/os-context-1058",
+          "sha": "c3a1723aca88153b4b56e3b02065d2b633742bdb",
+          "tracking": "feat/os-context-isolated-scope-draft-20261103"
+        }
+      ],
+      "stashes": [
+        {
+          "sha": "f3603343d579d5a6f7cf0d7e0b836fe931305cdf",
+          "ref": "stash@{0}",
+          "message": "On main: VENTO_PRESERVE_SHELL_CI_020_GAP_PKG_045_AUTHORIZED_FOR_CORR_018"
+        },
+        {
+          "sha": "31779441a7f391e2fad1e9c495ced3bd20546455",
+          "ref": "stash@{1}",
+          "message": "On correction/deliv-pkg-015/corr-013: VENTO CORR-013 preservation 20260911225829"
+        },
+        {
+          "sha": "ac2ccbe7f2da931c9ab7d8898e85ec5a88f08a68",
+          "ref": "stash@{2}",
+          "message": "On main: VENTO_STEP_GLOBAL_04_OWN_RESIDUAL_2026-09-11T00:15:19.671Z"
+        },
+        {
+          "sha": "6b9ac4e665a0dfa477aa4d9a1ba64540a2e0ff1d",
+          "ref": "stash@{3}",
+          "message": "On implementation/shell-ci-022/gap-pkg-001: VENTO_ENTREGA3_PARK_CI022_1788995149449"
+        },
+        {
+          "sha": "592d10a51686ff10738afd2570ded10d65457e15",
+          "ref": "stash@{4}",
+          "message": "On main: RECOVERY VISO-AUTH-015 before branch repair"
+        },
+        {
+          "sha": "ee6faac253df994b8014dd7ae97aca0e69d6ee72",
+          "ref": "stash@{5}",
+          "message": "On main: PRE_AUTH AUTH-DB-032 migration reservation"
+        },
+        {
+          "sha": "6960fcf39ba9e5809b370346db0dba64ba4ccd47",
+          "ref": "stash@{6}",
+          "message": "On main: pre-sync-pc-20260901"
+        },
+        {
+          "sha": "1d61b9712c6e36409a5bb1136fd2082d40398bdb",
+          "ref": "stash@{7}",
+          "message": "On main: SHELL-UI-019-IN_PROGRESS"
+        }
+      ],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-talento": {
+      "url": "https://github.com/devVentoGroup/vento-talento.git",
+      "branches": [
+        {
+          "name": "main",
+          "sha": "adb3d0cd11d96cfd5649d1d2de49bb8d04c8ae9b",
+          "tracking": "main"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-viso": {
+      "url": "https://github.com/vento-group-sas/vento-viso.git",
+      "branches": [
+        {
+          "name": "chore/next-security-viso",
+          "sha": "35e07b4ca59e9ebd524d0a8b92c9141df7c996ba",
+          "tracking": "chore/next-security-viso"
+        },
+        {
+          "name": "fix/gap-pkg-004-viso-qa",
+          "sha": "94d3b8fd72309a3f8e71f055c31fc7c2b6e0587b",
+          "tracking": "fix/gap-pkg-004-viso-qa"
+        },
+        {
+          "name": "main",
+          "sha": "df3f28654188e4c8a4dd64e057c1f01ef602a2ba",
+          "tracking": "main"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-numera": {
+      "url": "https://github.com/vento-group-sas/vento-numera.git",
+      "branches": [
+        {
+          "name": "chore/next-security-numera",
+          "sha": "1cdc7bb9c4fa2f4fd422b0790c31da24f2c477b2",
+          "tracking": "chore/next-security-numera"
+        },
+        {
+          "name": "main",
+          "sha": "87fdd0ff1b6dc29348d84bde9a59a8e2741186ab",
+          "tracking": "main"
+        },
+        {
+          "name": "shell-ci-018-global",
+          "sha": "b649c1f76c85947a9fc3491147560095de855709",
+          "tracking": "shell-ci-018-global"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-group-web": {
+      "url": "https://github.com/devVentoGroup/Vento-Group.git",
+      "branches": [
+        {
+          "name": "main",
+          "sha": "aa5290cb2336681bf0a84bcf6dc03faca10c7c0d",
+          "tracking": "main"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    },
+    "vento-mcp": {
+      "url": "https://github.com/vento-group-sas/vento-mcp.git",
+      "branches": [
+        {
+          "name": "infra/qa-kernel-rootless-runtime",
+          "sha": "cb67e8c1812e9158189ca1d59de780af8d3ca202",
+          "tracking": "infra/qa-kernel-rootless-runtime"
+        },
+        {
+          "name": "main",
+          "sha": "0667e4fad52db16af9cf86e7e65222fc5ef94494",
+          "tracking": "main"
+        }
+      ],
+      "stashes": [],
+      "coverage": "ALL_LOCAL_BRANCH_TIPS_REACHABLE"
+    }
+  },
+  "folders": [
+    {
+      "name": "vento-anima",
+      "repository": "vento-anima",
+      "branch": "handoff/pc-20261106",
+      "sha": "9a844cadc17983d1ba651941e4a114b0f0c8f47e",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-fogo",
+      "repository": "vento-fogo",
+      "branch": "chore/next-security-fogo",
+      "sha": "261a3140594ca641b4b530ed23abc91ad4bc53a6",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-nexo",
+      "repository": "vento-nexo",
+      "branch": "main",
+      "sha": "b699dd7d2b4947144e21827b16fe673b106c9daf",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-origo",
+      "repository": "vento-origo",
+      "branch": "fix/gap-pkg-004-origo-pdf-token",
+      "sha": "985eee77a98260545af66be29ec1e5b39046f227",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-pass",
+      "repository": "vento-pass",
+      "branch": "handoff/pc-20261106",
+      "sha": "bf207d27b286bc1616a92c480aa7253d92952575",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-pulso",
+      "repository": "vento-pulso",
+      "branch": "handoff/pc-20261106",
+      "sha": "a5865fc4978dff496a475b6ddc513bba9a25700c",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-shell",
+      "repository": "vento-shell",
+      "branch": "infra/package-gate-gap-pkg-004",
+      "sha": "f9bc22634c23bd9b27e46928180dc5f09df68130",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-talento",
+      "repository": "vento-talento",
+      "branch": "main",
+      "sha": "adb3d0cd11d96cfd5649d1d2de49bb8d04c8ae9b",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-viso",
+      "repository": "vento-viso",
+      "branch": "fix/gap-pkg-004-viso-qa",
+      "sha": "94d3b8fd72309a3f8e71f055c31fc7c2b6e0587b",
+      "local_env_files_excluded": [
+        ".env.example",
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-numera",
+      "repository": "vento-numera",
+      "branch": "chore/next-security-numera",
+      "sha": "1cdc7bb9c4fa2f4fd422b0790c31da24f2c477b2",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-group-web",
+      "repository": "vento-group-web",
+      "branch": "main",
+      "sha": "aa5290cb2336681bf0a84bcf6dc03faca10c7c0d",
+      "local_env_files_excluded": [
+        ".env.local"
+      ]
+    },
+    {
+      "name": "vento-shell-correction-auth-db-034-corr-002",
+      "repository": "vento-shell",
+      "branch": "handoff/pc-20261106/auth-db-034-corr-002",
+      "sha": "a430827b96236bc721d68ab4d368d70925ab28bf",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-shell-qa-kernel",
+      "repository": "vento-shell",
+      "branch": "infra/qa-kernel-f2-per-test-preflight",
+      "sha": "d85b981dda804b6de340f53192ffef61c404f6ef",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-mcp",
+      "repository": "vento-mcp",
+      "branch": "main",
+      "sha": "0667e4fad52db16af9cf86e7e65222fc5ef94494",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-shell-os-context",
+      "repository": "vento-shell",
+      "branch": "work/os-context-1058",
+      "sha": "c3a1723aca88153b4b56e3b02065d2b633742bdb",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-shell-qa-kernel-p1",
+      "repository": "vento-shell",
+      "branch": "infra/qa-kernel-p1-contracts",
+      "sha": "b10799d406d5fd82d7a51d62222e4dabc39d0379",
+      "local_env_files_excluded": []
+    },
+    {
+      "name": "vento-mcp-qa-rootless",
+      "repository": "vento-mcp",
+      "branch": "infra/qa-kernel-rootless-runtime",
+      "sha": "cb67e8c1812e9158189ca1d59de780af8d3ca202",
+      "local_env_files_excluded": []
+    }
+  ]
+}

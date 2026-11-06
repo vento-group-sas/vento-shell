@@ -1,0 +1,66 @@
+{
+	"folders": [
+		{
+			"name": "vento-anima",
+			"path": "vento-anima"
+		},
+		{
+			"name": "vento-fogo",
+			"path": "vento-fogo"
+		},
+		{
+			"name": "vento-nexo",
+			"path": "vento-nexo"
+		},
+		{
+			"name": "vento-origo",
+			"path": "vento-origo"
+		},
+		{
+			"name": "vento-pass",
+			"path": "vento-pass"
+		},
+		{
+			"name": "vento-pulso",
+			"path": "vento-pulso"
+		},
+		{
+			"name": "vento-shell",
+			"path": "vento-shell"
+		},
+		{
+			"name": "vento-talento",
+			"path": "vento-talento"
+		},
+		{
+			"name": "vento-viso",
+			"path": "vento-viso"
+		},
+		{
+			"path": "vento-numera"
+		},
+		{
+			"path": "vento-group-web"
+		},
+		{
+			"name": "vento-shell-correction-auth-db-034-corr-002",
+			"path": "vento-shell-correction-auth-db-034-corr-002"
+		},
+		{
+			"path": "vento-shell-qa-kernel"
+		},
+		{
+			"name": "vento-mcp",
+			"path": "vento-mcp"
+		},
+		{
+			"path": "vento-shell-os-context"
+		},
+		{
+			"path": "vento-shell-qa-kernel-p1"
+		},
+		{
+			"path": "vento-mcp-qa-rootless"
+		}
+	]
+}
