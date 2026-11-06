@@ -22,6 +22,9 @@
   - `CREATE` `supabase/migrations/20261023023158_auth_db_034_corr_002_safe_projection.sql`
   - `CREATE` `supabase/tests/database/048_auth_db_034_safe_projection.test.sql`
   - `MODIFY` `supabase/MIGRATION_MANIFEST.md`
+  - `CREATE` `scripts/quality/supabase-qa-baseline.mjs`
+  - `CREATE` `scripts/quality/supabase-qa-baseline.test.mjs`
+  - `MODIFY` `package.json`
   - `EXECUTE_ONLY` `scripts/docs/repair-working-copy.mjs`
   - `EXECUTE_ONLY` `scripts/supabase/migration-manifest.mjs`
   - `EXECUTE_ONLY` `scripts/quality/supabase-db-harness.mjs`
@@ -32,13 +35,15 @@
   - `EXECUTE_ONLY` `scripts/docs/correction-control.mjs`
 - **Valida, en este orden:**
   1. `npm run supabase:migrations:manifest:check`
-  2. `npm run supabase:db:test:clean`
-  3. `npm run supabase:recovery:local`
-  4. `node scripts/supabase/environment-drift.mjs local --strict`
-  5. `npm run quality:lint:ratchet`
-  6. `npm run docs:correction:check`
-  7. `npm run docs:correction:test`
-  8. `git --no-pager diff --check`
+  2. `npm run supabase:qa:baseline:test`
+  3. `npm run supabase:qa:baseline:replay`
+  4. `npm run supabase:db:test:clean`
+  5. `npm run supabase:recovery:local`
+  6. `node scripts/supabase/environment-drift.mjs local --strict`
+  7. `npm run quality:lint:ratchet`
+  8. `npm run docs:correction:check`
+  9. `npm run docs:correction:test`
+  10. `git --no-pager diff --check`
 - **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id AUTH-DB-034::CORR-002`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
