@@ -58,7 +58,7 @@ async function sendPush(messages: { to: string; title: string; body: string; dat
     })
     const payload = await res.json()
     const data = Array.isArray(payload?.data) ? payload.data : []
-    data.forEach((item: any, index: number) => {
+    data.forEach((item: { status?: string; details?: { error?: string } } | null, index: number) => {
       if (item?.status === "error" && item?.details?.error === "DeviceNotRegistered") {
         const token = chunk[index]?.to
         if (token) invalidTokens.add(token)

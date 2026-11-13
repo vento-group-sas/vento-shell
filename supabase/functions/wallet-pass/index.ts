@@ -89,12 +89,6 @@ Deno.serve(async (req) => {
     const pointsRaw = Number(profile?.loyalty_points ?? 0)
     const tier = profile?.tier || "Miembro"
 
-    const formatPoints = (v: number) =>
-      Math.trunc(v)
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    const pointsFormatted = formatPoints(pointsRaw)
-
     const normalizeTierLabel = (value: string | null | undefined): string => {
       const v = String(value ?? "").trim()
       if (!v) return "Miembro"

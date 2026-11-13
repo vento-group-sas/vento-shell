@@ -169,10 +169,15 @@ export function VentoChrome({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [permMap, setPermMap] = useState<Record<string, boolean>>({});
-  const [permissionsReady, setPermissionsReady] = useState(false);
+  const [permissionSnapshot, setPermissionSnapshot] = useState<{
+    siteId: string | null;
+    map: Record<string, boolean>;
+  } | null>(null);
 
   const currentSiteId = searchParams.get("site_id") ?? activeSiteId ?? "";
+  const resolvedSiteId = currentSiteId || activeSiteId || null;
+  const permissionsReady = permissionSnapshot !== null && permissionSnapshot.siteId === resolvedSiteId;
+  const permMap = permissionsReady ? permissionSnapshot.map : {};
   const currentSite = useMemo(
     () => sites.find((site) => site.id === currentSiteId),
     [sites, currentSiteId]
@@ -204,9 +209,7 @@ export function VentoChrome({
   useEffect(() => {
     let isActiveRequest = true;
     const supabase = createClient();
-    const siteId = currentSiteId || activeSiteId || null;
-
-    setPermissionsReady(false);
+    const siteId = resolvedSiteId;
 
     Promise.all(
       permissionCodes.map((code) =>
@@ -223,19 +226,17 @@ export function VentoChrome({
         results.forEach((res, idx) => {
           nextMap[permissionCodes[idx]] = !res.error && Boolean(res.data);
         });
-        setPermMap(nextMap);
-        setPermissionsReady(true);
+        setPermissionSnapshot({ siteId, map: nextMap });
       })
       .catch(() => {
         if (!isActiveRequest) return;
-        setPermMap({});
-        setPermissionsReady(true);
+        setPermissionSnapshot({ siteId, map: {} });
       });
 
     return () => {
       isActiveRequest = false;
     };
-  }, [currentSiteId, activeSiteId, permissionCodes]);
+  }, [resolvedSiteId, permissionCodes]);
 
   const can = (code?: string) => (code ? Boolean(permMap[code]) : false);
 
@@ -246,13 +247,12 @@ export function VentoChrome({
     return true;
   };
 
-  const visibleGroups = useMemo(() => {
-    if (!permissionsReady) return [];
-    return NAV_GROUPS.map((group) => ({
-      label: group.label,
-      items: group.items.filter((item) => isItemVisible(item)),
-    })).filter((group) => group.items.length > 0);
-  }, [permissionsReady, permMap]);
+  const visibleGroups = permissionsReady
+    ? NAV_GROUPS.map((group) => ({
+        label: group.label,
+        items: group.items.filter((item) => isItemVisible(item)),
+      })).filter((group) => group.items.length > 0)
+    : [];
 
   return (
     <div className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)]">
