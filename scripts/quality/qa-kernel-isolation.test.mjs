@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { loadCatalog, TARGET_ENVIRONMENT } from './qa-kernel.mjs';
 import {
@@ -391,6 +392,45 @@ test('first real failure remains FAIL after STOPPED and no SQL test executed',()
   assert.equal(result.pg_tap_certified,false);
   assert.equal(result.qa_executed,false);
 });
+test('intentional test failure is always TEST_FAILURE, never infrastructure or PASS',()=>{
+  // Executed subprocess failure with no Docker, SQL, shell or network.
+  const child=spawnSync(process.execPath,['-e','process.exit(19)'],
+    {encoding:'utf8',timeout:10000,shell:false});
+  assert.equal(child.error,undefined);
+  assert.equal(child.status,19);
+  const ctx=context();
+  const observed=status({
+    status:'FAIL',stage:'TEST',running:false,code:'QA_TEST_FAILED',
+    tests_completed:1,diagnostic:{category:'DOCKER',sqlstate:null},
+  });
+  const classified=classifyLocalStatus({context:ctx,status:observed});
+  assert.equal(classified.status,'FAIL');
+  assert.equal(classified.category,'PGTAP');
+  assert.equal(classified.pg_tap_certified,false);
+  const result=attestTerminalEvidence({context:ctx,
+    artifact:artifact({terminal:'FAIL',pgTap_summary:{
+      ...artifact().pgTap_summary,files_fail:1,files_pass:0,
+    },events:[{stage:'TEST',status:'FAIL',code:'QA_TEST_FAILED',
+      diagnostic:{category:'DOCKER',sqlstate:null}}]}),
+    end:ended(),postflight:postflight()});
+  assert.equal(result.status,'FAIL');
+  assert.equal(result.failure_type,'TEST_FAILURE');
+  assert.equal(result.qa_executed,true);
+  assert.equal(result.cleanup_attested,true);
+  assert.equal(result.pg_tap_certified,false);
+  assert.equal(result.direct_parity,false);
+});
+
+test('bootstrap failure cannot be reported as executed SQL',()=>{
+  const classified=classifyLocalStatus({context:context(),
+    status:status({status:'FAIL',stage:'BOOTSTRAP',running:false,
+      code:'QA_TEST_FAILED',tests_completed:0,
+      diagnostic:{category:'DOCKER'}})});
+  assert.equal(classified.status,'FAIL');
+  assert.equal(classified.qa_executed,false);
+  assert.equal(classified.pg_tap_certified,false);
+});
+
 test('partial SQL FAIL acknowledges executed pgTAP but never certifies',()=>{
   const result=attestTerminalEvidence({context:context(),
     artifact:artifact({terminal:'FAIL',pgTap_summary:{
