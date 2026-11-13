@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.91.0"
-import ExcelJS from "https://esm.sh/exceljs@4.4.0"
+import ExcelJS from "npm:exceljs@4.4.0"
 
 type EmployeeRow = {
   id: string
@@ -433,7 +433,7 @@ function buildSessionKey(employeeId: string, checkInAtIso: string, siteId: strin
 }
 
 async function fetchAllPages<T>(
-  fetchPage: (from: number, to: number) => Promise<{ data: T[] | null; error: unknown }>,
+  fetchPage: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
 ) {
   const rows: T[] = []
   let from = 0
@@ -1752,7 +1752,7 @@ serve(async (req: Request) => {
         .select("late_grace_minutes, auto_checkout_grace_minutes_after_end")
         .limit(1)
         .maybeSingle<ShiftPolicyRow>(),
-      () => fetchAllPages<AttendanceRow>((from, to) => {
+      fetchAllPages<AttendanceRow>((from, to) => {
         let query = supabase
           .from("attendance_logs")
           .select(
