@@ -6,7 +6,7 @@ on:
     paths:
       - 'supabase/functions/**'
       - '.github/workflows/vento-edge-typecheck.yml'
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 permissions:
