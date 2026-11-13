@@ -15,9 +15,38 @@
   "output_root": "dist",
   "public_surface": [
     {
-      "subpath": ".",
-      "runtime": "dist/index.js",
-      "types": "dist/index.d.ts",
+      "subpath": "./server",
+      "runtime": "dist/server/index.js",
+      "types": "dist/server/index.d.ts",
+      "expected_exports": [
+        "resolveAccessContext",
+        "evaluateAuthorization",
+        "requireAuthorization",
+        "getSafeContextProjection",
+        "getSafeDecisionProjection"
+      ]
+    },
+    {
+      "subpath": "./client",
+      "runtime": "dist/client/index.js",
+      "types": "dist/client/index.d.ts",
+      "expected_exports": [
+        "parseSafeContextProjection",
+        "parseSafeDecisionProjection"
+      ]
+    },
+    {
+      "subpath": "./testing",
+      "runtime": "dist/testing/index.js",
+      "types": "dist/testing/index.d.ts",
+      "expected_exports": [
+        "makeInvalidAuthorizationFixture"
+      ]
+    },
+    {
+      "subpath": "./legacy",
+      "runtime": "dist/legacy/index.js",
+      "types": "dist/legacy/index.d.ts",
       "expected_exports": [
         "getEffectiveContext",
         "hasEffectivePermission",
@@ -27,7 +56,14 @@
     }
   ],
   "assets": [],
-  "internal_dependencies": [],
+  "internal_dependencies": [
+    {
+      "name": "@vento/contracts",
+      "range": "1.0.0-alpha.1",
+      "section": "dependencies",
+      "identity": "@vento/contracts@1.0.0-alpha.1 immutable GitLab source"
+    }
+  ],
   "external_peers": {
     "@supabase/supabase-js": ">=2.90.0 <3"
   },

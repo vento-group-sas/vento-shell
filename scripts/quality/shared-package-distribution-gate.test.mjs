@@ -100,7 +100,10 @@ test('las entradas ESM y subpaths empaquetados se pueden importar en Node', asyn
     '@vento/contracts/authorization/catalog/v1',
     '@vento/contracts/authorization/base-roles/v1',
     '@vento/contracts/authorization/response-contracts/v1',
-    '@vento/os-context',
+    '@vento/os-context/server',
+    '@vento/os-context/client',
+    '@vento/os-context/testing',
+    '@vento/os-context/legacy',
     '@vento/supabase/browser',
     '@vento/supabase/server',
     '@vento/supabase/native',
@@ -112,8 +115,9 @@ test('las entradas ESM y subpaths empaquetados se pueden importar en Node', asyn
     assert(exports && typeof exports === 'object', 'FAILED_IMPORT:' + subpath);
     imported.push(subpath);
   }
-  assert.equal(imported.length, 16);
-  const context = await import('@vento/os-context');
+  assert.equal(imported.length, 19);
+  await assert.rejects(import('@vento/os-context'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+  const context = await import('@vento/os-context/legacy');
   assert.equal(typeof context.getEffectiveContext, 'function');
   const browser = await import('@vento/supabase/browser');
   assert.equal(typeof browser.createBrowserClient, 'function');
@@ -156,7 +160,10 @@ test('tarballs reales: instalacion npm con peers exactos, ESM y tipos aislados',
   const imports = [
     '@vento/contracts/processes',
     '@vento/contracts/authorization/catalog/v1',
-    '@vento/os-context',
+    '@vento/os-context/server',
+    '@vento/os-context/client',
+    '@vento/os-context/testing',
+    '@vento/os-context/legacy',
     '@vento/supabase/browser',
     '@vento/supabase/server',
     '@vento/supabase/native',
@@ -167,13 +174,13 @@ test('tarballs reales: instalacion npm con peers exactos, ESM y tipos aislados',
     ...imports.map((p, i) => "import * as pkg" + i + " from '" + p + "';"),
     ...imports.map((_p, i) => "if (!pkg" + i + ") throw new Error('ESM_IMPORT_FAILED_" + i + "');"),
     "if (typeof pkg0.isProcessId !== 'function') throw new Error('CONTRACT_RUNTIME_MISSING');",
-    "if (typeof pkg2.getEffectiveContext !== 'function') throw new Error('CONTEXT_RUNTIME_MISSING');",
-    "if (typeof pkg3.createBrowserClient !== 'function') throw new Error('BROWSER_RUNTIME_MISSING');",
-    "const webCookie = pkg7.resolveCanonicalCookieOptions({currentHost:'viso.ventogroup.co',isSecureContext:true,cookiePolicy:{allowSharedDomain:true,sharedDomain:'ventogroup.co',allowInsecureHttp:false}});",
+    "if (typeof pkg5.getEffectiveContext !== 'function') throw new Error('CONTEXT_RUNTIME_MISSING');",
+    "if (typeof pkg6.createBrowserClient !== 'function') throw new Error('BROWSER_RUNTIME_MISSING');",
+    "const webCookie = pkg10.resolveCanonicalCookieOptions({currentHost:'viso.ventogroup.co',isSecureContext:true,cookiePolicy:{allowSharedDomain:true,sharedDomain:'ventogroup.co',allowInsecureHttp:false}});",
     "if (webCookie.domain !== 'ventogroup.co' || webCookie.secure !== true) throw new Error('SSR_SHARED_COOKIE_POLICY_MISMATCH');",
-    "const localCookie = pkg7.resolveCanonicalCookieOptions({currentHost:'localhost',isSecureContext:false,cookiePolicy:{allowSharedDomain:true,sharedDomain:'ventogroup.co',allowInsecureHttp:true}});",
+    "const localCookie = pkg10.resolveCanonicalCookieOptions({currentHost:'localhost',isSecureContext:false,cookiePolicy:{allowSharedDomain:true,sharedDomain:'ventogroup.co',allowInsecureHttp:true}});",
     "if ('domain' in localCookie || localCookie.secure !== false) throw new Error('SSR_LOCAL_COOKIE_POLICY_MISMATCH');",
-    "try { pkg7.assertPublicSupabaseKey('sb_secret_synthetic'); throw new Error('SECRET_ACCEPTED_IN_BROWSER'); } catch (error) { if (!String(error.message).includes('publicKey cannot')) throw error; }",
+    "try { pkg10.assertPublicSupabaseKey('sb_secret_synthetic'); throw new Error('SECRET_ACCEPTED_IN_BROWSER'); } catch (error) { if (!String(error.message).includes('publicKey cannot')) throw error; }",
     "console.log('ISOLATED_CONSUMER_ESM:PASS');",
   ].join('\n') + '\n';
   const smoke = path.join(temp, 'consumer.mjs');
@@ -187,7 +194,8 @@ test('tarballs reales: instalacion npm con peers exactos, ESM y tipos aislados',
   const types = [
     "import { isProcessId } from '@vento/contracts/processes';",
     "import type { ProcessId } from '@vento/contracts/processes';",
-    "import type { EffectiveContext } from '@vento/os-context';",
+    "import type { EffectiveContext } from '@vento/os-context/legacy';",
+    "import type { AccessContextV1 } from '@vento/os-context/server';",
     "import type { BrowserClientConfig } from '@vento/supabase/browser';",
     "import type { ServerClientConfig } from '@vento/supabase/server';",
     "import type { NativeClientConfig } from '@vento/supabase/native';",
@@ -211,9 +219,10 @@ test('tarballs reales: instalacion npm con peers exactos, ESM y tipos aislados',
     "const id: ProcessId = 'VPROC-0001';",
     'if (!isProcessId(id)) throw new Error("ID_INVALID");',
     'declare const effective: EffectiveContext;',
+    'declare const canonical: AccessContextV1;',
     'declare const browser: BrowserClientConfig;',
     'declare const server: ServerClientConfig;',
-    'void effective; void browser; void server;',
+    'void effective; void canonical; void browser; void server;',
   ].join('\n') + '\n';
   fs.writeFileSync(path.join(temp, 'consumer.mts'), types);
   const config = path.join(temp, 'tsconfig.json');
