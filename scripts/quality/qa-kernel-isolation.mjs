@@ -166,10 +166,14 @@ export function classifyLocalStatus({ context, status } = {}) {
       ? status.code : 'UNCLASSIFIED_RUNTIME_FAILURE';
     // A cancelled/aborted bootstrap without a SQLSTATE is a process failure,
     // not evidence that a migration SQL invariant failed.
+    // Preserve an intentional pgTAP failure even if diagnostic metadata
+    // inconsistently calls the TEST failure an infrastructure fault.
     const category = code === 'ABORTED' && status.diagnostic?.sqlstate == null
       ? 'PROCESS'
-      : ['MIGRATION', 'POSTGRES', 'DOCKER', 'AUTH', 'PGTAP']
-        .includes(status.diagnostic?.category) ? status.diagnostic.category : 'OTHER';
+      : status.stage === 'TEST' && code === 'QA_TEST_FAILED'
+        ? 'PGTAP'
+        : ['MIGRATION', 'POSTGRES', 'DOCKER', 'AUTH', 'PGTAP']
+          .includes(status.diagnostic?.category) ? status.diagnostic.category : 'OTHER';
     return {
       status: 'FAIL', stage: status.stage, category, code,
       qa_executed: (status.tests_completed ?? 0) > 0,
@@ -306,7 +310,9 @@ export function attestTerminalEvidence({ context, artifact, end, postflight } = 
     return {
       status: 'FAIL', stage: last?.stage ?? 'UNKNOWN', code,
       failure_type: code === 'ABORTED' && last?.diagnostic?.sqlstate == null
-        ? 'PROCESS_INTERRUPTED' : 'EXECUTION_FAILURE',
+        ? 'PROCESS_INTERRUPTED'
+        : last?.stage === 'TEST' && code === 'QA_TEST_FAILED'
+          ? 'TEST_FAILURE' : 'EXECUTION_FAILURE',
       qa_executed: Number.isSafeInteger(artifact.pgTap_summary?.files_completed)
         && artifact.pgTap_summary.files_completed > 0,
       pg_tap_certified: false, cleanup_attested: cleanupAttested,
