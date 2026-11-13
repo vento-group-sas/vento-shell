@@ -46,6 +46,19 @@ Un cambio material posterior al cierre de E1 no reabre ni reescribe snapshots ap
 `DELTA-VISO-SCHEDULE-20260731-001` antes de aprobar
 `VISO-SCHEDULE-MONTHLY-001`, sin modificar la tarea documental activa.
 
+**Adenda posterior a documentación, 2026-11-02:** el hotfix mínimo de
+programación VISO se desplegó en producción **antes de** obtener
+`E5-GATE-008::VISO-SCHEDULE-MONTHLY-001`. La fuente de verdad del hecho,
+sus SHA, el registro de migración real distinto del nombre de archivo SQL,
+los controles implementados y las brechas se conservan en
+[`DELTA-VISO-SCHEDULE-POSTDOC-PROD-20261102-001`](deltas/DELTA-VISO-SCHEDULE-POSTDOC-PROD-20261102-001.md),
+sin reescribir el snapshot E1 `DELTA-VISO-SCHEDULE-20260731-001`.
+El despliegue físico es **evidencia de ejecución fuera de secuencia**, **no**
+un E5 aprobado, un cambio de prioridad, ni una reducción del alcance objetivo.
+`CODE-AUD-021`, `AUTH-UI-061`, `VISO-SCH-001..008`,
+la reconciliación integral de `04A` y el E2E de `VPROC-0007`
+continúan pendientes.
+
 7. BLOQUE E1 está **CERRADO DOCUMENTALMENTE** mediante `E1-GATE-001 — APROBADA` y `E1-GATE-MANIFEST-002`, con resultado `PASS_WITH_CARRYOVER`. El catálogo de procesos `PROC-CAT-001` a `PROC-CAT-020` y el mapa de actores `PROC-ACTOR-001` a `PROC-ACTOR-010` están **APROBADOS**; la continuidad documental pasa a `UX-STATION-001`.
 8. BLOQUE E2 — Diseñar procesos TO-BE, actores, pantallas, experiencia y requisitos no funcionales.
 
