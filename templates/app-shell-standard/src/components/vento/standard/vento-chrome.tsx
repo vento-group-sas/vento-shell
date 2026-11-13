@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AppSwitcher } from "./app-switcher";
 import { ProfileMenu } from "./profile-menu";
 import { createClient } from "@/lib/supabase/client";
+import { createPermissionSessionGuard, emptyPermissionState } from "./permission-session-guard";
 
 type SiteOption = {
   id: string;
@@ -169,15 +170,17 @@ export function VentoChrome({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [permissionSnapshot, setPermissionSnapshot] = useState<{
-    siteId: string | null;
-    map: Record<string, boolean>;
-  } | null>(null);
+  const [permissionState, setPermissionState] = useState(emptyPermissionState);
+  const guardRef = useRef<ReturnType<typeof createPermissionSessionGuard> | null>(null);
 
   const currentSiteId = searchParams.get("site_id") ?? activeSiteId ?? "";
   const resolvedSiteId = currentSiteId || activeSiteId || null;
-  const permissionsReady = permissionSnapshot !== null && permissionSnapshot.siteId === resolvedSiteId;
-  const permMap = permissionsReady ? permissionSnapshot.map : {};
+  const permissionsReady =
+    permissionState.ready &&
+    permissionState.userId !== null &&
+    permissionState.siteId === resolvedSiteId &&
+    permissionState.roleKey === (role ?? null);
+  const permMap = permissionsReady ? permissionState.map : {};
   const currentSite = useMemo(
     () => sites.find((site) => site.id === currentSiteId),
     [sites, currentSiteId]
@@ -207,36 +210,42 @@ export function VentoChrome({
   );
 
   useEffect(() => {
-    let isActiveRequest = true;
     const supabase = createClient();
-    const siteId = resolvedSiteId;
-
-    Promise.all(
-      permissionCodes.map((code) =>
-        supabase.rpc("has_permission", {
-          p_permission_code: `nexo.${code}`,
-          p_site_id: siteId,
-          p_area_id: null,
-        })
-      )
-    )
-      .then((results) => {
-        if (!isActiveRequest) return;
-        const nextMap: Record<string, boolean> = {};
-        results.forEach((res, idx) => {
-          nextMap[permissionCodes[idx]] = !res.error && Boolean(res.data);
-        });
-        setPermissionSnapshot({ siteId, map: nextMap });
-      })
-      .catch(() => {
-        if (!isActiveRequest) return;
-        setPermissionSnapshot({ siteId, map: {} });
-      });
-
+    const guard = createPermissionSessionGuard(
+      {
+        getAuthenticatedUserId: async () => {
+          const { data, error } = await supabase.auth.getUser();
+          return error ? null : (data.user?.id ?? null);
+        },
+        subscribeToAuthChanges: (listener) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            listener(event);
+          });
+          return () => subscription.unsubscribe();
+        },
+        hasPermission: async (code, siteId) => {
+          const { data, error } = await supabase.rpc("has_permission", {
+            p_permission_code: `nexo.${code}`,
+            p_site_id: siteId,
+            p_area_id: null,
+          });
+          return !error && Boolean(data);
+        },
+      },
+      permissionCodes,
+      setPermissionState,
+    );
+    guardRef.current = guard;
+    guard.start();
     return () => {
-      isActiveRequest = false;
+      guard.dispose();
+      guardRef.current = null;
     };
-  }, [resolvedSiteId, permissionCodes]);
+  }, [permissionCodes]);
+
+  useEffect(() => {
+    guardRef.current?.setScope({ siteId: resolvedSiteId, roleKey: role ?? null });
+  }, [resolvedSiteId, role]);
 
   const can = (code?: string) => (code ? Boolean(permMap[code]) : false);
 
