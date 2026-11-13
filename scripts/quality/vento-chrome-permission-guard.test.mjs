@@ -94,7 +94,7 @@ test("stale verification and RPC cannot overwrite new identity", async () => {
   const guard = createPermissionSessionGuard({
     getAuthenticatedUserId() { const d = deferred(); auth.push(d); return d.promise; },
     subscribeToAuthChanges(callback) { listener = callback; return () => { listener = null; }; },
-    hasPermission(code, siteId) { const d = deferred(); permission.push(d); return d.promise; },
+    hasPermission() { const d = deferred(); permission.push(d); return d.promise; },
   }, ["nexo.access"], () => {});
   guard.setScope({ siteId: "site-a", roleKey: "staff" });
   guard.start();
@@ -114,6 +114,33 @@ test("stale verification and RPC cannot overwrite new identity", async () => {
   assert.equal(guard.getState().userId, "user-new");
   assert.equal(guard.getState().map["nexo.access"], false);
   guard.dispose();
+});
+
+test("in-flight RPC from previous user cannot restore links after same-site login", async () => {
+  const f = fixture("user-a");
+  f.guard.setScope({ siteId: "site-a", roleKey: "staff" });
+  f.guard.start();
+  await tick();
+  const oldRequests = [...f.requests];
+  assert.equal(oldRequests.length, 2);
+
+  f.setUser("user-b");
+  f.emit("SIGNED_IN");
+  assert.equal(f.guard.getState().ready, false);
+  await tick();
+  assert.equal(f.requests.length, 4);
+
+  for (const req of oldRequests) req.pending.resolve(true);
+  await tick();
+  assert.equal(f.guard.getState().ready, false);
+  assert.deepEqual(f.guard.getState().map, {});
+
+  for (const req of f.requests.slice(2)) req.pending.resolve(false);
+  await tick();
+  assert.equal(f.guard.getState().userId, "user-b");
+  assert.equal(f.guard.getState().ready, true);
+  assert.equal(f.guard.getState().map["nexo.access"], false);
+  f.guard.dispose();
 });
 
 test("role change at same site invalidates permissions and starts a new check", async () => {
