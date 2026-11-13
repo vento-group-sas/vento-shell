@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 // Aggregate all QA Kernel phase suites behind the stable, approved npm command.
@@ -10,6 +11,8 @@ import {
   validateCatalog,
   validateSource,
   planWorkload,
+  planTestPreflight,
+  compareRunnerEnvelope,
   reconcileMigrationCandidates,
   transitionLifecycle,
 } from './qa-kernel.mjs';
@@ -97,7 +100,8 @@ test('capabilities resolve dependencies in correct order', () => {
   assert.ok(names.indexOf('source_attestation') < names.indexOf('isolated_postgres'));
   assert.ok(names.indexOf('migration_manifest') < names.indexOf('migration_replay'));
   assert.ok(names.indexOf('isolated_postgres') < names.indexOf('scram_loopback'));
-  assert.ok(names.indexOf('scram_loopback') < names.indexOf('fdw_server'));
+  assert.ok(names.includes('scram_loopback'));
+  assert.ok(!names.includes('fdw_server'), 'AUTH 042 usa SCRAM/BIND sin foreign server ni GRANT FDW');
   assert.ok(names.indexOf('migration_replay') < names.indexOf('pgtap'));
   assert.ok(names.indexOf('rollback') >= 0);
   assert.equal(new Set(names).size, names.length);
@@ -189,6 +193,229 @@ test('planner refuses invented test inventories and unknown lane', () => {
   assert.throws(() => planWorkload({
     catalog, profileId: 'gap-pkg-004', source: source(),
   }), /QA_KERNEL_TEST_INVENTORY_INVALID/u);
+});
+
+
+test('F2 preflight separates actual 042 SCRAM and 048 private projection requirements', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const preflight = planTestPreflight({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files,
+  });
+  assert.equal(preflight.status, 'PENDING');
+  assert.equal(preflight.reason, 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.deepEqual(preflight.missing_test_contracts, []);
+  assert.deepEqual(preflight.test_preflights.map((x) => x.file), profile.test_files);
+  const [context, projection] = preflight.test_preflights;
+  assert.deepEqual(context.probes.extensions, ['pgtap', 'dblink']);
+  assert.equal(context.probes.min_connections, 2);
+  assert.deepEqual(context.probes.set_roles,
+    ['vento_context_freshness_owner', 'vento_ddl_owner']);
+  assert.deepEqual(context.requires, ['pgtap', 'scram_loopback', 'rollback']);
+  assert.deepEqual(projection.probes.extensions, ['pgtap']);
+  assert.equal(projection.probes.min_connections, 1);
+  assert.deepEqual(projection.probes.set_roles, ['vento_authorization_owner']);
+  assert.deepEqual(projection.requires, ['pgtap', 'rollback']);
+  assert.equal(projection.probes.fixtures, 'SYNTHETIC_ONLY');
+  assert.equal(projection.probes.bootstrap, 'PRIVILEGED_SETUP_REQUIRED');
+  for (const item of [context, projection]) {
+    assert.ok(!item.requires.includes('fdw_server'));
+    assert.equal(item.probes.fixtures, 'SYNTHETIC_ONLY');
+  }
+  assert.equal(preflight.bootstrap_attested, false);
+  assert.equal(preflight.runner_non_admin_attested, false);
+  assert.equal(preflight.runtime_probes_executed, false);
+  assert.equal(preflight.qa_executed, false);
+  assert.equal(preflight.pg_tap_certified, false);
+});
+
+test('F2 AUTH source inventory blocks absent 048 even when its contract is declared', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const availableTests = profile.test_files.filter((file) => fs.existsSync(file));
+  const preflight = planTestPreflight({
+    catalog, profileId: profile.id, source: source(), availableTests,
+  });
+  assert.deepEqual(preflight.missing_test_contracts, []);
+  assert.deepEqual(preflight.missing_test_files,
+    profile.test_files.filter((file) => !availableTests.includes(file)));
+  assert.equal(preflight.status, preflight.missing_test_files.length ? 'BLOCKED' : 'PENDING');
+  assert.equal(preflight.reason, preflight.missing_test_files.length
+    ? 'TEST_FILES_NOT_IN_SOURCE' : 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.equal(preflight.qa_executed, false);
+  assert.equal(preflight.pg_tap_certified, false);
+});
+
+test('F2 basic non-admin declaration rejects 042 and 048 without fake PASS', () => {
+  // The current first-runner envelope is deliberately minimal.
+  // This only compares data; it does not attest installed MCP capabilities.
+  const offeredRunner = {
+    extensions: ['pgtap'], max_connections: 1,
+    set_roles: [], fixture_modes: ['NONE'], bootstrap_separated: true,
+  };
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const plan = planTestPreflight({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files.slice(0, 1), offeredRunner,
+  });
+  assert.equal(plan.status, 'BLOCKED');
+  assert.deepEqual(plan.missing_test_files, [profile.test_files[1]]);
+  const [context, projection] = plan.test_preflights.map((x) => x.runner_compatibility);
+  assert.equal(context.status, 'BLOCKED');
+  assert.deepEqual(context.gaps, [
+    'REQUIRED_EXTENSION_UNSUPPORTED', 'MIN_CONNECTIONS_UNSUPPORTED',
+    'SET_ROLE_UNSUPPORTED', 'FIXTURE_MODE_UNSUPPORTED',
+  ]);
+  assert.equal(projection.status, 'BLOCKED');
+  assert.deepEqual(projection.gaps, [
+    'SET_ROLE_UNSUPPORTED', 'FIXTURE_MODE_UNSUPPORTED',
+  ]);
+  assert.equal(plan.pg_tap_certified, false);
+  assert.equal(plan.runner_non_admin_attested, false);
+  assert.equal(projection.role_authorization_attested, false);
+});
+
+test('F2 matching declared permissions remain PENDING physical admission', () => {
+  const offer = {
+    extensions: ['pgtap'], max_connections: 1,
+    set_roles: ['vento_authorization_owner'],
+    fixture_modes: ['NONE', 'SYNTHETIC_ONLY'],
+    bootstrap_separated: true,
+  };
+  const contract = catalog.profiles.find((p) => p.id === 'auth-db-034')
+    .test_contracts[1];
+  const comparison = compareRunnerEnvelope(contract.probes, offer);
+  assert.equal(comparison.status, 'PENDING');
+  assert.equal(comparison.reason, 'PHYSICAL_RUNNER_AND_OWNER_ATTESTATION_REQUIRED');
+  assert.deepEqual(comparison.gaps, []);
+  assert.equal(comparison.offered_capabilities_attested, false);
+  assert.equal(comparison.qa_executed, false);
+  assert.equal(comparison.pg_tap_certified, false);
+  const baseline = catalog.profiles.find((p) => p.id === 'foundation-baseline');
+  const simpler = planTestPreflight({
+    catalog, profileId: baseline.id, source: source(),
+    availableTests: baseline.test_files,
+    offeredRunner: {
+      extensions: ['pgtap'], max_connections: 1, set_roles: [],
+      fixture_modes: ['NONE'], bootstrap_separated: true,
+    },
+  });
+  assert.equal(simpler.test_preflights[0].runner_compatibility.status, 'PENDING');
+  assert.equal(simpler.qa_executed, false);
+});
+
+test('F2 runner envelope rejects forged privileges or invalid declarations', () => {
+  const probes = catalog.profiles.find((p) => p.id === 'auth-db-034')
+    .test_contracts[1].probes;
+  const valid = {
+    extensions: ['pgtap'], max_connections: 1,
+    set_roles: [], fixture_modes: ['NONE'],
+    bootstrap_separated: false,
+  };
+  for (const change of [
+    { max_connections: 0 }, { max_connections: 17 },
+    { extensions: ['pgtap', 'pgtap'] }, { extensions: [] },
+    { set_roles: ['postgres;GRANT'] }, { set_roles: ['owner', 'owner'] },
+    { fixture_modes: ['LIVE_DATA'] }, { fixture_modes: [] },
+    { bootstrap_separated: 'true' }, { admin_override: true },
+  ]) assert.throws(() => compareRunnerEnvelope(probes, { ...valid, ...change }),
+    /QA_KERNEL_RUNNER_ENVELOPE_INVALID/u);
+  for (const changed of [
+    { extensions: [] }, { min_connections: 0 },
+    { set_roles: 'vento_authorization_owner' },
+    { fixtures: 'LIVE_DATA' }, { bootstrap: 'AUTO_ADMIN_GRANT' },
+    { unbounded_sql: true },
+  ]) assert.throws(() => compareRunnerEnvelope({ ...probes, ...changed }, valid),
+    /QA_KERNEL_RUNNER_PROBES_INVALID/u);
+  const result = compareRunnerEnvelope(probes, valid);
+  assert.ok(result.gaps.includes('PRIVILEGED_BOOTSTRAP_SEPARATION_UNDECLARED'));
+  assert.equal(result.status, 'BLOCKED');
+});
+
+test('F2 without external runner declaration preserves existing planner contract', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const plan = planTestPreflight({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files,
+  });
+  assert.equal(plan.status, 'PENDING');
+  assert.equal(plan.reason, 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.ok(plan.test_preflights.every((x) => !Object.hasOwn(x, 'runner_compatibility')));
+  assert.equal(plan.pg_tap_certified, false);
+});
+
+test('F2 contract tracks actual SET ROLE actors in 042 source SQL', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'auth-db-034');
+  const contract = profile.test_contracts[0];
+  const sql = fs.readFileSync(contract.file, 'utf8');
+  const used = [...sql.matchAll(/\bset\s+(?:local\s+)?role\s+([a-z][a-z0-9_]*)/giu)]
+    .map((match) => match[1].toLowerCase());
+  assert.deepEqual([...new Set(used)].sort(), [...contract.probes.set_roles].sort());
+  assert.deepEqual([...new Set(used)].sort(),
+    ['vento_context_freshness_owner', 'vento_ddl_owner'].sort());
+});
+
+test('F2 preflight never turns a full plan into runtime PASS', () => {
+  const profile = catalog.profiles.find((p) => p.id === 'foundation-baseline');
+  const preflight = planTestPreflight({
+    catalog, profileId: profile.id, source: source(),
+    availableTests: profile.test_files,
+  });
+  assert.equal(preflight.status, 'PENDING');
+  assert.equal(preflight.reason, 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED');
+  assert.deepEqual(preflight.missing_test_contracts, []);
+  assert.equal(preflight.test_preflights.length, 1);
+  assert.equal(preflight.test_preflights[0].probes.bootstrap,
+    'PRIVILEGED_SETUP_REQUIRED');
+  assert.equal(preflight.bootstrap_attested, false);
+  assert.equal(preflight.runner_non_admin_attested, false);
+  assert.equal(preflight.qa_executed, false);
+  assert.equal(preflight.pg_tap_certified, false);
+});
+
+test('F2 preflight blocks absent source SQL before considering runner privileges', () => {
+  const preflight = planTestPreflight({
+    catalog, profileId: 'foundation-baseline', source: source(),
+    availableTests: [],
+  });
+  assert.equal(preflight.status, 'BLOCKED');
+  assert.equal(preflight.reason, 'TEST_FILES_NOT_IN_SOURCE');
+  assert.equal(preflight.missing_test_files.length, 1);
+  assert.equal(preflight.runtime_probes_executed, false);
+});
+
+test('F2 preflight fingerprint follows source SHA and fails closed on hostile source', () => {
+  const args = {
+    catalog, profileId: 'foundation-baseline',
+    availableTests: catalog.profiles[0].test_files,
+  };
+  const first = planTestPreflight({ ...args, source: source() });
+  const changed = planTestPreflight({
+    ...args, source: source({ head: 'b'.repeat(40) }),
+  });
+  assert.notEqual(first.plan_sha256, changed.plan_sha256);
+  assert.throws(() => planTestPreflight({
+    ...args, source: source({ environment: 'STAGING' }),
+  }), /QA_KERNEL_SOURCE_NOT_ATTESTABLE/u);
+});
+
+test('F2 test contracts reject undeclared permissions, unsafe probes and tampering', () => {
+  const cases = [
+    (c) => { c.profiles[0].test_contracts[0].file = '../evil.sql'; },
+    (c) => { c.profiles[0].test_contracts.push(
+      structuredClone(c.profiles[0].test_contracts[0])); },
+    (c) => { c.profiles[0].test_contracts[0].requires = ['fdw_server']; },
+    (c) => { c.profiles[0].test_contracts[0].probes.extensions = ['pgtap', 'pgtap']; },
+    (c) => { c.profiles[0].test_contracts[0].probes.min_connections = 0; },
+    (c) => { c.profiles[0].test_contracts[0].probes.set_roles = ['postgres;drop']; },
+    (c) => { c.profiles[0].test_contracts[0].probes.fixtures = 'LIVE_USERS'; },
+    (c) => { c.profiles[0].test_contracts[0].probes.bootstrap = 'AUTO_GRANT_ADMIN'; },
+    (c) => { c.profiles[0].test_contracts[0].probes.sql = 'GRANT ALL'; },
+    (c) => { c.profiles[0].test_contracts[0].command = 'docker exec'; },
+    (c) => { c.profiles[0].test_contracts = 'none'; },
+  ];
+  for (const mutate of cases) {
+    assert.throws(() => validateCatalog(updated(mutate)), /QA_KERNEL_/u);
+  }
 });
 
 test('lifecycle cannot skip owner attestation, rollback or terminal state', () => {

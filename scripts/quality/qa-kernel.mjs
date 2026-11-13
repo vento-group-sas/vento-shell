@@ -98,7 +98,7 @@ export function validateCatalog(catalog) {
   nonEmptyArray(catalog.profiles, 'PROFILES_EMPTY');
   const profiles = new Set();
   for (const profile of catalog.profiles) {
-    closed(profile, ['id', 'owner', 'requires', 'test_files'], 'PROFILE_KEYS_INVALID');
+    closed(profile, ['id', 'owner', 'requires', 'test_files', 'test_contracts'], 'PROFILE_KEYS_INVALID');
     if (typeof profile.id !== 'string' || !ID.test(profile.id)
       || typeof profile.owner !== 'string' || !OWNER.test(profile.owner)
       || profiles.has(profile.id)) fail('PROFILE_INVALID_OR_DUPLICATE');
@@ -111,6 +111,43 @@ export function validateCatalog(catalog) {
     if (new Set(profile.test_files).size !== profile.test_files.length
       || profile.test_files.some((file) => !validateTestPath(file))) {
       fail('PROFILE_TEST_FILES_INVALID');
+    }
+
+    // F2: a partial declaration is permitted, but an undeclared test is never READY.
+    // Contracts are data, never executable SQL, shell fragments or permission grants.
+    if (profile.test_contracts !== undefined) {
+      if (!Array.isArray(profile.test_contracts)) fail('TEST_CONTRACTS_INVALID');
+      const seen = new Set();
+      for (const contract of profile.test_contracts) {
+        closed(contract, ['file', 'requires', 'probes'], 'TEST_CONTRACT_KEYS_INVALID');
+        if (!validateTestPath(contract.file)
+          || !profile.test_files.includes(contract.file) || seen.has(contract.file)) {
+          fail('TEST_CONTRACT_FILE_INVALID');
+        }
+        seen.add(contract.file);
+        uniqueStrings(contract.requires, CAPABILITY, 'TEST_CONTRACT_CAPABILITIES_INVALID');
+        if (contract.requires.some((id) => !profile.requires.includes(id))) {
+          fail('TEST_CONTRACT_CAPABILITIES_OUT_OF_SCOPE');
+        }
+        closed(contract.probes, [
+          'extensions', 'min_connections', 'set_roles', 'fixtures', 'bootstrap',
+        ], 'TEST_CONTRACT_PROBES_INVALID');
+        const p = contract.probes;
+        if (!Array.isArray(p.extensions) || p.extensions.length === 0
+          || p.extensions.some((value) => typeof value !== 'string'
+            || !CAPABILITY.test(value))
+          || new Set(p.extensions).size !== p.extensions.length
+          || !Number.isInteger(p.min_connections)
+          || p.min_connections < 1 || p.min_connections > 16
+          || !Array.isArray(p.set_roles)
+          || p.set_roles.some((role) => typeof role !== 'string'
+            || !/^[a-z][a-z0-9_]{1,62}$/u.test(role))
+          || new Set(p.set_roles).size !== p.set_roles.length
+          || !['NONE', 'SYNTHETIC_ONLY'].includes(p.fixtures)
+          || p.bootstrap !== 'PRIVILEGED_SETUP_REQUIRED') {
+          fail('TEST_CONTRACT_PROBES_INVALID');
+        }
+      }
     }
     // Full paths, not the numeric 048 prefix, identify tests across lanes.
   }
@@ -198,6 +235,124 @@ export function planWorkload({
     missing_test_files: missing,
     status: missing.length ? 'BLOCKED' : 'PENDING',
     reason: missing.length ? 'TEST_FILES_NOT_IN_SOURCE' : 'RUNTIME_NOT_EXECUTED',
+    qa_executed: false,
+    pg_tap_certified: false,
+    remote_mutations: false,
+  };
+}
+
+// Compare an externally DECLARED runner envelope against per-test contracts.
+// Never infer capabilities from a passing test or from a caller-provided flag:
+// even compatible envelopes remain PENDING until owner/physical QA attestation.
+export function compareRunnerEnvelope(probes, offered) {
+  closed(probes, [
+    'extensions', 'min_connections', 'set_roles', 'fixtures', 'bootstrap',
+  ], 'RUNNER_PROBES_INVALID');
+  if (!Array.isArray(probes.extensions) || probes.extensions.length === 0
+    || probes.extensions.some((x) => typeof x !== 'string' || !CAPABILITY.test(x))
+    || new Set(probes.extensions).size !== probes.extensions.length
+    || !Number.isInteger(probes.min_connections)
+    || probes.min_connections < 1 || probes.min_connections > 16
+    || !Array.isArray(probes.set_roles)
+    || probes.set_roles.some((x) => typeof x !== 'string'
+      || !/^[a-z][a-z0-9_]{1,62}$/u.test(x))
+    || new Set(probes.set_roles).size !== probes.set_roles.length
+    || !['NONE', 'SYNTHETIC_ONLY'].includes(probes.fixtures)
+    || probes.bootstrap !== 'PRIVILEGED_SETUP_REQUIRED') {
+    fail('RUNNER_PROBES_INVALID');
+  }
+  closed(offered, [
+    'extensions', 'max_connections', 'set_roles', 'fixture_modes',
+    'bootstrap_separated',
+  ], 'RUNNER_ENVELOPE_INVALID');
+  if (!Array.isArray(offered.extensions) || offered.extensions.length === 0
+    || offered.extensions.some((value) => typeof value !== 'string'
+      || !CAPABILITY.test(value))
+    || new Set(offered.extensions).size !== offered.extensions.length
+    || !Number.isInteger(offered.max_connections)
+    || offered.max_connections < 1 || offered.max_connections > 16
+    || !Array.isArray(offered.set_roles)
+    || offered.set_roles.some((value) => typeof value !== 'string'
+      || !/^[a-z][a-z0-9_]{1,62}$/u.test(value))
+    || new Set(offered.set_roles).size !== offered.set_roles.length
+    || !Array.isArray(offered.fixture_modes)
+    || offered.fixture_modes.length === 0
+    || offered.fixture_modes.some((x) => !['NONE', 'SYNTHETIC_ONLY'].includes(x))
+    || new Set(offered.fixture_modes).size !== offered.fixture_modes.length
+    || typeof offered.bootstrap_separated !== 'boolean') {
+    fail('RUNNER_ENVELOPE_INVALID');
+  }
+  const gaps = [];
+  if (probes.extensions.some((x) => !offered.extensions.includes(x)))
+    gaps.push('REQUIRED_EXTENSION_UNSUPPORTED');
+  if (probes.min_connections > offered.max_connections)
+    gaps.push('MIN_CONNECTIONS_UNSUPPORTED');
+  if (probes.set_roles.some((x) => !offered.set_roles.includes(x)))
+    gaps.push('SET_ROLE_UNSUPPORTED');
+  if (!offered.fixture_modes.includes(probes.fixtures))
+    gaps.push('FIXTURE_MODE_UNSUPPORTED');
+  if (probes.bootstrap === 'PRIVILEGED_SETUP_REQUIRED'
+    && !offered.bootstrap_separated)
+    gaps.push('PRIVILEGED_BOOTSTRAP_SEPARATION_UNDECLARED');
+  return {
+    status: gaps.length ? 'BLOCKED' : 'PENDING',
+    reason: gaps.length ? 'RUNNER_DECLARED_CAPABILITIES_INSUFFICIENT'
+      : 'PHYSICAL_RUNNER_AND_OWNER_ATTESTATION_REQUIRED',
+    gaps,
+    offered_capabilities_attested: false,
+    role_authorization_attested: false,
+    qa_executed: false,
+    pg_tap_certified: false,
+  };
+}
+
+// F2: read-only, per-test requirements for a separately authorized MCP runner.
+// This is NOT a physical probe, permission grant, SQL execution or QA certification.
+export function planTestPreflight({
+  catalog, profileId, source, availableTests, offeredRunner,
+} = {}) {
+  const plan = planWorkload({ catalog, profileId, source, availableTests });
+  const profile = catalog.profiles.find((item) => item.id === profileId);
+  const contracts = new Map((profile.test_contracts || []).map((item) => [item.file, item]));
+  const missingContracts = profile.test_files.filter((file) => !contracts.has(file));
+  const requestedProbes = profile.test_files.filter((file) => contracts.has(file))
+    .map((file) => {
+      const item = contracts.get(file);
+      return {
+        file,
+        requires: [...item.requires],
+        probes: {
+          extensions: [...item.probes.extensions],
+          min_connections: item.probes.min_connections,
+          set_roles: [...item.probes.set_roles],
+          fixtures: item.probes.fixtures,
+          bootstrap: item.probes.bootstrap,
+        },
+        ...(offeredRunner === undefined ? {}
+          : { runner_compatibility: compareRunnerEnvelope(item.probes, offeredRunner) }),
+      };
+    });
+  const status = plan.missing_test_files.length || missingContracts.length
+    ? 'BLOCKED' : 'PENDING';
+  const reason = plan.missing_test_files.length
+    ? 'TEST_FILES_NOT_IN_SOURCE'
+    : missingContracts.length ? 'TEST_CONTRACTS_MISSING'
+      : 'RUNTIME_PROBES_AND_RUNNER_SEPARATION_REQUIRED';
+  return {
+    kernel_id: KERNEL_ID,
+    execution_mode: 'PLAN_ONLY',
+    environment: TARGET_ENVIRONMENT,
+    profile: profile.id,
+    source: plan.source,
+    plan_sha256: plan.plan_sha256,
+    status,
+    reason,
+    missing_test_files: [...plan.missing_test_files],
+    missing_test_contracts: missingContracts,
+    test_preflights: requestedProbes,
+    bootstrap_attested: false,
+    runner_non_admin_attested: false,
+    runtime_probes_executed: false,
     qa_executed: false,
     pg_tap_certified: false,
     remote_mutations: false,
