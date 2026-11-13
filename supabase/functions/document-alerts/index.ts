@@ -19,7 +19,7 @@ type DocumentRow = {
   status: string
   owner_employee_id: string | null
   target_employee_id: string | null
-  document_type: { name: string | null; reminder_days: number | null } | null
+  document_type: { name: string | null; reminder_days: number | null } | { name: string | null; reminder_days: number | null }[] | null
 }
 
 type TokenRow = { token: string; employee_id: string }
@@ -58,7 +58,7 @@ async function sendPush(messages: { to: string; title: string; body: string; dat
     })
     const payload = await res.json()
     const data = Array.isArray(payload?.data) ? payload.data : []
-    data.forEach((item: any, index: number) => {
+    data.forEach((item: { status?: string; details?: { error?: string } } | null, index: number) => {
       if (item?.status === "error" && item?.details?.error === "DeviceNotRegistered") {
         const token = chunk[index]?.to
         if (token) invalidTokens.add(token)
@@ -135,8 +135,11 @@ serve(async (req) => {
 
   for (const doc of (docs as DocumentRow[]) ?? []) {
     if (!doc.expiry_date) continue
+    const documentType = Array.isArray(doc.document_type)
+      ? (doc.document_type[0] ?? null)
+      : doc.document_type
     const reminderDays =
-      doc.document_type?.reminder_days ?? DEFAULT_REMINDER_DAYS
+      documentType?.reminder_days ?? DEFAULT_REMINDER_DAYS
     const expiry = parseDateOnlyUtc(doc.expiry_date)
     const reminderDate = addDaysUtc(expiry, -reminderDays)
 
@@ -152,7 +155,7 @@ serve(async (req) => {
     targets.push({
       docId: doc.id,
       employeeId,
-      title: doc.document_type?.name ?? doc.title ?? "Documento",
+      title: documentType?.name ?? doc.title ?? "Documento",
       expiryDate: doc.expiry_date,
     })
   }

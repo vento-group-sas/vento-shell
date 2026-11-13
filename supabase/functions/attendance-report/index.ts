@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.91.0"
-import ExcelJS from "https://esm.sh/exceljs@4.4.0"
+import ExcelJS from "npm:exceljs@4.4.0"
 
 type EmployeeRow = {
   id: string
@@ -332,12 +332,6 @@ function minutesToHoursLabel(value: number): string {
   return `${hours.toFixed(1).replace(".", ",")} h`
 }
 
-function formatSignedMinutes(value: number): string {
-  if (!Number.isFinite(value) || value === 0) return "0 min"
-  const sign = value > 0 ? "+" : "-"
-  return `${sign}${minutesToLabel(Math.abs(value))}`
-}
-
 function sanitizeSheetName(base: string, used: Set<string>): string {
   const clean = base.replace(/[\\/*?:[\]]/g, " ").replace(/\s+/g, " ").trim() || "Empleado"
   let candidate = clean.slice(0, 31)
@@ -434,18 +428,12 @@ function formatDateKeyInTimeZone(value: Date, timeZone: string): string {
   }).format(value)
 }
 
-function addDaysToDateKey(dateKey: string, delta: number): string {
-  const base = new Date(`${dateKey}T12:00:00.000Z`)
-  base.setUTCDate(base.getUTCDate() + delta)
-  return base.toISOString().slice(0, 10)
-}
-
 function buildSessionKey(employeeId: string, checkInAtIso: string, siteId: string) {
   return `${employeeId}|${siteId}|${checkInAtIso}`
 }
 
 async function fetchAllPages<T>(
-  fetchPage: (from: number, to: number) => Promise<{ data: T[] | null; error: unknown }>,
+  fetchPage: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
 ) {
   const rows: T[] = []
   let from = 0
@@ -474,7 +462,7 @@ function rangesOverlap(
 
 function applyHeaderStyle(row: ExcelJS.Row) {
   row.height = 20
-  row.eachCell((cell: any) => {
+  row.eachCell((cell) => {
     cell.font = { bold: true, size: 9 }
     cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true }
     cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "D9E8F6" } }
@@ -488,7 +476,7 @@ function applyHeaderStyle(row: ExcelJS.Row) {
 }
 
 function applyDataStyle(row: ExcelJS.Row, zebra: boolean) {
-  row.eachCell((cell: any) => {
+  row.eachCell((cell) => {
     cell.font = { size: 9 }
     cell.alignment = { vertical: "middle", horizontal: "left", wrapText: true }
     cell.border = {
@@ -499,20 +487,6 @@ function applyDataStyle(row: ExcelJS.Row, zebra: boolean) {
     }
     if (zebra) {
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "F7F5F8" } }
-    }
-  })
-}
-
-function applyTotalsStyle(row: ExcelJS.Row) {
-  row.eachCell((cell: any) => {
-    cell.font = { size: 9, bold: true }
-    cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true }
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "E6E1EA" } }
-    cell.border = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      bottom: { style: "thin" },
-      right: { style: "thin" },
     }
   })
 }
@@ -1778,7 +1752,7 @@ serve(async (req: Request) => {
         .select("late_grace_minutes, auto_checkout_grace_minutes_after_end")
         .limit(1)
         .maybeSingle<ShiftPolicyRow>(),
-      () => fetchAllPages<AttendanceRow>((from, to) => {
+      fetchAllPages<AttendanceRow>((from, to) => {
         let query = supabase
           .from("attendance_logs")
           .select(

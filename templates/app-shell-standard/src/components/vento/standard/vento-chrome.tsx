@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AppSwitcher } from "./app-switcher";
 import { ProfileMenu } from "./profile-menu";
 import { createClient } from "@/lib/supabase/client";
+import { createPermissionSessionGuard, emptyPermissionState } from "./permission-session-guard";
 
 type SiteOption = {
   id: string;
@@ -169,10 +170,17 @@ export function VentoChrome({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [permMap, setPermMap] = useState<Record<string, boolean>>({});
-  const [permissionsReady, setPermissionsReady] = useState(false);
+  const [permissionState, setPermissionState] = useState(emptyPermissionState);
+  const guardRef = useRef<ReturnType<typeof createPermissionSessionGuard> | null>(null);
 
   const currentSiteId = searchParams.get("site_id") ?? activeSiteId ?? "";
+  const resolvedSiteId = currentSiteId || activeSiteId || null;
+  const permissionsReady =
+    permissionState.ready &&
+    permissionState.userId !== null &&
+    permissionState.siteId === resolvedSiteId &&
+    permissionState.roleKey === (role ?? null);
+  const permMap = permissionsReady ? permissionState.map : {};
   const currentSite = useMemo(
     () => sites.find((site) => site.id === currentSiteId),
     [sites, currentSiteId]
@@ -202,40 +210,42 @@ export function VentoChrome({
   );
 
   useEffect(() => {
-    let isActiveRequest = true;
     const supabase = createClient();
-    const siteId = currentSiteId || activeSiteId || null;
-
-    setPermissionsReady(false);
-
-    Promise.all(
-      permissionCodes.map((code) =>
-        supabase.rpc("has_permission", {
-          p_permission_code: `nexo.${code}`,
-          p_site_id: siteId,
-          p_area_id: null,
-        })
-      )
-    )
-      .then((results) => {
-        if (!isActiveRequest) return;
-        const nextMap: Record<string, boolean> = {};
-        results.forEach((res, idx) => {
-          nextMap[permissionCodes[idx]] = !res.error && Boolean(res.data);
-        });
-        setPermMap(nextMap);
-        setPermissionsReady(true);
-      })
-      .catch(() => {
-        if (!isActiveRequest) return;
-        setPermMap({});
-        setPermissionsReady(true);
-      });
-
+    const guard = createPermissionSessionGuard(
+      {
+        getAuthenticatedUserId: async () => {
+          const { data, error } = await supabase.auth.getUser();
+          return error ? null : (data.user?.id ?? null);
+        },
+        subscribeToAuthChanges: (listener) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            listener(event);
+          });
+          return () => subscription.unsubscribe();
+        },
+        hasPermission: async (code, siteId) => {
+          const { data, error } = await supabase.rpc("has_permission", {
+            p_permission_code: `nexo.${code}`,
+            p_site_id: siteId,
+            p_area_id: null,
+          });
+          return !error && Boolean(data);
+        },
+      },
+      permissionCodes,
+      setPermissionState,
+    );
+    guardRef.current = guard;
+    guard.start();
     return () => {
-      isActiveRequest = false;
+      guard.dispose();
+      guardRef.current = null;
     };
-  }, [currentSiteId, activeSiteId, permissionCodes]);
+  }, [permissionCodes]);
+
+  useEffect(() => {
+    guardRef.current?.setScope({ siteId: resolvedSiteId, roleKey: role ?? null });
+  }, [resolvedSiteId, role]);
 
   const can = (code?: string) => (code ? Boolean(permMap[code]) : false);
 
@@ -246,13 +256,12 @@ export function VentoChrome({
     return true;
   };
 
-  const visibleGroups = useMemo(() => {
-    if (!permissionsReady) return [];
-    return NAV_GROUPS.map((group) => ({
-      label: group.label,
-      items: group.items.filter((item) => isItemVisible(item)),
-    })).filter((group) => group.items.length > 0);
-  }, [permissionsReady, permMap]);
+  const visibleGroups = permissionsReady
+    ? NAV_GROUPS.map((group) => ({
+        label: group.label,
+        items: group.items.filter((item) => isItemVisible(item)),
+      })).filter((group) => group.items.length > 0)
+    : [];
 
   return (
     <div className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)]">

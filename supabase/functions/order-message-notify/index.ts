@@ -41,7 +41,7 @@ async function sendExpoPush(
     const payload = await response.json().catch(() => null);
     const results = Array.isArray(payload?.data) ? payload.data : [];
 
-    results.forEach((item: any, itemIndex: number) => {
+    results.forEach((item: { status?: string; details?: { error?: string } } | null, itemIndex: number) => {
       if (item?.status === "error" && item?.details?.error === "DeviceNotRegistered") {
         const token = chunk[itemIndex]?.to;
         if (token) invalidTokens.add(token);

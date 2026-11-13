@@ -89,12 +89,6 @@ Deno.serve(async (req) => {
     const pointsRaw = Number(profile?.loyalty_points ?? 0)
     const tier = profile?.tier || "Miembro"
 
-    const formatPoints = (v: number) =>
-      Math.trunc(v)
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    const pointsFormatted = formatPoints(pointsRaw)
-
     const normalizeTierLabel = (value: string | null | undefined): string => {
       const v = String(value ?? "").trim()
       if (!v) return "Miembro"
@@ -156,8 +150,9 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     )
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
     return new Response(
-      JSON.stringify({ error: error?.message ?? "Unknown error" }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     )
   }

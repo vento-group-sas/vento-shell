@@ -1,0 +1,64 @@
+name: VENTO Edge Function Typecheck
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+      - '.github/workflows/vento-edge-typecheck.yml'
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  edge-types:
+    name: Deno typecheck of changed Edge Functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Install pinned Deno
+        uses: denoland/setup-deno@v2.0.5
+        with:
+          deno-version: 'v2.9.8'
+
+      - name: Check Edge entrypoints
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          file_list="$RUNNER_TEMP/vento-edge-entrypoints"
+          : > "$file_list"
+
+          if [[ -n "$BASE_SHA" && -n "$HEAD_SHA" ]]; then
+            git diff --name-only -z "$BASE_SHA" "$HEAD_SHA" -- 'supabase/functions' > "$file_list"
+          else
+            find supabase/functions -mindepth 2 -maxdepth 2 -name index.ts -print0 > "$file_list"
+          fi
+
+          files=()
+          while IFS= read -r -d '' path; do
+            if [[ "$path" =~ ^supabase/functions/[a-z0-9-]+/index[.]ts$ ]]; then
+              if [[ ! -f "$path" ]]; then
+                echo "Missing changed Edge entrypoint: $path" >&2
+                exit 1
+              fi
+              files+=("$path")
+            fi
+          done < "$file_list"
+
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo 'No changed Edge entrypoints to check.'
+            exit 0
+          fi
+
+          deno check --config supabase/functions/deno.json "${files[@]}"
