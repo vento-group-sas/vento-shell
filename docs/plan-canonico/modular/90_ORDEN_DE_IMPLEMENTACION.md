@@ -429,6 +429,19 @@ confirmación explícita.
 - las tareas posteriores preservadas continúan en el flujo normal y no pueden
   marcarse completas por el cierre de remisiones.
 
+**Continuidad y QA proporcional al riesgo (decisión del responsable, 13-nov-2026):**
+se aplica la política transversal ubicada al comienzo de `01_PROTOCOLO.md`.
+Los gates y pruebas se evalúan respecto de **la fase, paquete, proceso y riesgo
+efectivamente intervenidos**; no se exige QA Kernel F2, Docker, regresión
+integral ni autorización documental repetida como condición genérica para
+continuar desarrollo local independiente. Se reutiliza la aprobación vigente
+de una fase dentro de su alcance. Un impedimento no aplicable se registra
+sin inmovilizar otros frentes; uno aplicable impide únicamente el cierre o la
+operación que protege. Readiness, `E5-GATE-008::<package_id>`, pruebas de
+integridad/RLS y certificación funcional E2E no se dan por superados sin
+su evidencia, permisos y aceptación exigibles. Esta aclaración **no crea
+excepciones de seguridad ni modifica tareas, 04A o datos**.
+
 La ejecución prioritaria no permite:
 
 - saltar una dependencia aplicable;

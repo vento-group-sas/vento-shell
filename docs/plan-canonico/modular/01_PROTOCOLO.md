@@ -1,5 +1,19 @@
 ## Protocolo obligatorio de continuidad
 
+### Política transversal de continuidad y QA proporcional al riesgo — decisión del responsable (13-nov-2026)
+
+**Objetivo vinculante de ejecución:** el plan canónico guía qué construir y cómo aceptar resultados; **no es un veto genérico para investigar, implementar, integrar o continuar una fase autorizada**. La deuda de QA, un entorno auxiliar averiado o una tarea documental histórica no paralizan trabajo independiente. Esta política gobierna la interpretación operativa de las puertas genéricas de este documento, sin borrar requisitos ni alterar evidencias históricas.
+
+1. **Una autorización por fase y alcance.** Una instrucción expresa del responsable que identifique el objetivo y alcance habilita las actividades locales ordinarias de esa fase (diagnóstico, edición controlada, pruebas afectadas, correcciones y commit local) cuando el repositorio y el MCP permitan esa operación. No se solicita aprobación por cada archivo, test o comando. Al ampliar materialmente el alcance, actuar sobre otra fase o realizar acciones privilegiadas, se vuelve a comprobar autorización. Una conversación nueva recuperará la decisión vigente y continuará desde Git/CI reales, sin reiniciar fases ya verificadas.
+2. **Pruebas por impacto, no por acumulación.** Todo cambio requiere al menos las verificaciones relevantes para su comportamiento: cambios visuales, lint/build y comprobación de pantalla aplicables; lógica/contratos, pruebas focales y de integración donde haya dependencia; datos/migraciones/RLS, pruebas de integridad, aislamiento y reversión; procesos completos, escenarios E2E, excepciones y aceptación según `PROC-COVER-007`. El responsable de la fase define antes de cerrar las pruebas aplicables, las omitidas justificadas y sus evidencias. No se sustituyen por infraestructura compilada ni por un test no ejecutado.
+3. **Entorno mínimo suficiente.** Desarrollo ordinario usa comprobaciones locales y CI disponible. STAGING es el destino de integración y datos autorizado cuando resulte aplicable. Docker, QA Kernel F2, restauraciones PostgreSQL, pruebas de dispositivos y entornos alternativos **solo** son requisitos cuando el cambio o la puerta de aceptación involucren de verdad sus riesgos. No crear ni configurar un entorno auxiliar únicamente para superar un trámite genérico.
+4. **No repetir evidencia idéntica.** Una prueba PASS puede reutilizarse si coinciden SHA del código, ámbito, entorno relevante y comprobaciones exigidas. Después de cambios materiales, repetir únicamente las pruebas afectadas y los gates exigidos. Un fallo aplicable se corrige; un estado `BLOCKED` o `PENDING` no se convierte en PASS por decisión administrativa.
+5. **Bloqueos limitados al riesgo que protegen.** Si QA F2, CI externo, Docker u otra dependencia está bloqueada, registrar responsable, alcance y requisito concreto y continuar en tareas independientes y reversibles. Se detiene **solo** la operación cuyo gate aplicable falta, o las que arriesguen datos, seguridad o trabajo ajeno. No cerrar readiness, E2E, publicación ni producción sin sus comprobaciones obligatorias. Las fases diferidas permanecen diferidas hasta reactivación expresa.
+6. **Fronteras que siguen siendo obligatorias.** Preservar permisos Git/E5, rama y SHA, locks, secretos, RLS, auditoría, idempotencia, migraciones versionadas en `vento-shell`, backups, rollback y autorización específica de acciones destructivas, SQL remoto, merge protegido, publicación y despliegue. Estas protecciones no se eliminan ni se infieren de una autorización documental. Respetar propietario, datos y ambientes reales: VENTO STAGING es `rcrxixmqhrndcervbllp`; el proyecto padre `clzdpinthhtknkmefsxx` no lo sustituye.
+7. **Cómo resolver conflictos y continuar en futuras conversaciones.** Si un texto anterior exige QA integral, montaje Docker, aprobación repetida o espera de una tarea que no protege el alcance presente, aplicar esta regla de proporcionalidad como **interpretación operativa posterior aprobada**, señalar la discrepancia y continuar con el trabajo autorizado. En caso de conflicto con una protección específica de datos, seguridad, E5, aceptación o producción, esa protección sigue vigente. Mantener separados los estados `documentado`, `código parcial`, `QA PASS`, `integrado`, `E2E certificado` y `operativo`, indicando la siguiente acción concreta, no proponiendo un nuevo programa de infraestructura.
+
+**Registro:** esta decisión modifica el protocolo de ejecución y su priorización; no reabre las 1.596 tareas, no modifica IDs/`04A`, no altera por inferencia las 69 fichas `VPROC` y no certifica automáticamente ningún paquete. Evidencia y enlace de adopción: tableros GitHub #1020 (técnico) y #1038 (funcional).
+
 1. Leer primero el `Estado canónico` y la `Continuidad inmediata`.
 
    Ambos bloques deberán coincidir en:
@@ -932,6 +946,16 @@
     El BLOQUE U no deberá utilizarse para aplazar pruebas que debieron
     implementarse junto con el código. El BLOQUE U ejecutará regresión integral,
     escenarios de extremo a extremo, seguridad, experiencia y pilotos.
+
+    **Aplicación de la política transversal de QA proporcional:** `TREQ-*` y
+    las pruebas del paquete siguen vigentes, pero su ejecución se selecciona
+    por impacto y por gate aplicable. No exigir Docker/F2 o certificación global
+    de otro dominio para integrar código independiente con sus propias pruebas.
+    Una prueba pendiente y no aplicable al cambio no es un bloqueo transversal;
+    si es aplicable a su cierre o despliegue, registrar `BLOCKED` y no
+    promover ese cierre. La certificación completa de procesos y la protección
+    de datos conservan sus requisitos.
+
 
 ---
 
