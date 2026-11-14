@@ -74,11 +74,13 @@ function exactData(input: unknown, fields: readonly string[]): Record<string, un
 
 /** Copy an untrusted list without invoking getters, serializers or methods. */
 function safeStringList(input: unknown, predicate: (value: unknown) => boolean): readonly string[] {
-  if (!Array.isArray(input) || Object.getPrototypeOf(input) !== Array.prototype) fail();
-  const descriptors = Object.getOwnPropertyDescriptors(input);
-  if (Reflect.ownKeys(descriptors).length !== input.length + 1) fail();
+  if (!Array.isArray(input)) return fail();
+  if (Object.getPrototypeOf(input) !== Array.prototype) return fail();
+  const array = input as unknown[];
+  const descriptors = Object.getOwnPropertyDescriptors(array);
+  if (Reflect.ownKeys(descriptors).length !== array.length + 1) fail();
   const result: string[] = [];
-  for (let i = 0; i < input.length; i += 1) {
+  for (let i = 0; i < array.length; i += 1) {
     const descriptor = descriptors[String(i)];
     if (!descriptor || !Object.hasOwn(descriptor, "value") || !descriptor.enumerable
       || !predicate(descriptor.value)) fail();
@@ -119,7 +121,7 @@ export function parseSafeContextProjection(input: unknown): SafeContextProjectio
       operational_readiness: v.operational_readiness,
     }) as unknown as SafeContextProjectionV1;
   } catch {
-    fail();
+    return fail();
   }
 }
 
@@ -156,6 +158,6 @@ export function parseSafeDecisionProjection(input: unknown): SafeDecisionProject
       mutable_fields: mutable,
     }) as unknown as SafeDecisionProjectionV1;
   } catch {
-    fail();
+    return fail();
   }
 }
