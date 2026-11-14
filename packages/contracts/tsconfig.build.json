@@ -19,7 +19,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "**/generated/**/*.ts"
+    "**/generated/**/*.ts",
+    "authorization/runtime/**/*.ts"
   ],
   "exclude": [
     "dist",

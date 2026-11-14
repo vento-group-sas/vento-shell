@@ -9,6 +9,7 @@ import { AUTHORIZATION_REASON_CODES } from "@vento/contracts/authorization/reaso
 import {
   parseSafeContextProjection, parseSafeDecisionProjection,
 } from "./safe-projections-v1.mjs";
+import { parseSafeContextProjection as parsePublicContext, parseSafeDecisionProjection as parsePublicDecision } from "@vento/contracts/authorization/safe-projections/v1";
 
 const context = () => ({
   projection_version: "1.0.0",
@@ -315,4 +316,22 @@ test("security: no Supabase, network, renderer or global grant state enters cont
   assert.deepEqual(Object.keys(await import("./safe-projections-v1.mjs")).sort(), [
     "parseSafeContextProjection", "parseSafeDecisionProjection",
   ]);
+});
+
+// Version-candidate parity: exported DTO parsers must stay identical to the
+// previously reviewed source-only candidate; these are presentation data only.
+test("private alpha.2: compiled public projection contract matches source candidate", () => {
+  assert.deepEqual(parsePublicContext(context()), parseSafeContextProjection(context()));
+  assert.deepEqual(parsePublicDecision(decision()), parseSafeDecisionProjection(decision()));
+  const allowed = { ...decision(), outcome: "ALLOW", safe_message_code: null, reason_codes: [] };
+  assert.deepEqual(parsePublicDecision(allowed), parseSafeDecisionProjection(allowed));
+  for (const bad of [
+    { ...decision(), permission_key: "shell.*" },
+    { ...decision(), outcome: "WOULD_ALLOW" },
+    { ...decision(), decision_id: "client-minted" },
+  ]) reject(parsePublicDecision, bad);
+  for (const bad of [
+    { ...context(), actor_id: "private" },
+    { ...context(), base_readiness: "ALLOW" },
+  ]) reject(parsePublicContext, bad);
 });
