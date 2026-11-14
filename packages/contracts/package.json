@@ -1,6 +1,6 @@
 {
   "name": "@vento/contracts",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.1",
   "private": true,
   "type": "module",
   "description": "Contratos y catalogos canonicos versionados de VENTO OS; empaquetado privado en validacion.",
@@ -79,11 +79,6 @@
       "types": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.d.ts",
       "import": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.js",
       "default": "./dist/authorization/generated/response-contracts/versions/1.0.0/index.js"
-    },
-    "./authorization/safe-projections/v1": {
-      "types": "./dist/authorization/runtime/safe-projections-v1.d.ts",
-      "import": "./dist/authorization/runtime/safe-projections-v1.js",
-      "default": "./dist/authorization/runtime/safe-projections-v1.js"
     }
   },
   "files": [
