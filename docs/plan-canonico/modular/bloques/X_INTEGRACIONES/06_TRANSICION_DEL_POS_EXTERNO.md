@@ -10,6 +10,12 @@ Esta sección organiza **transición del pos externo** dentro de **X INTEGRACION
 **Límites funcionales:** comienza con “Auditar documentación, endpoints, webhooks y límites del POS vigente” y concluye con “Definir revocación o reducción de credenciales cuando PULSO asuma la fuente”.
 <!-- PLAN-SECTION-META:END -->
 
+> **DECISIÓN VIGENTE 2026-10-22 · GOBIERNO DE ALCANCE POS PROPIO:** VENTO construirá el POS integral **nativo en PULSO**. Se **CANCELA COMO OBJETIVO** la integración con Makos u otro POS externo; no se implementarán credenciales, API, webhooks, polling, XLSX, sincronización de precios del proveedor, mapeos, conciliación ni pilotos como solución intermedia. Las **24 identidades INT-POS-001..024** y sus secciones aprobadas quedan preservadas **como historia documental**, no como cartera física por ejecutar. Esta declaración de supersesión no es ejecución de migración, retiro SQL, aprobación de deploy ni acreditación de POS E2E. La disposición por ID y las proyecciones generadas permanecen sujetas a reconciliación canónica y gates; ver [#1038](https://github.com/vento-group-sas/vento-shell/issues/1038).
+>
+> **Disposición objetivo por familias (24/24 identidades):** `INT-POS-001..004` = auditoría/integración/credenciales externas descartadas; `INT-POS-005` = **reutilizar solo el contrato canónico de venta nativa**, sin proveedor POS externo; `INT-POS-006..014` = importación, mapping, cuarentena y polling externos descartados; `INT-POS-015..019` = conservar semánticas de **eventos de venta, inventario NEXO, NUMERA, PASS y reversas**, pero **originados directamente por PULSO nativo** bajo contratos gobernados distintos del adaptador externo; `INT-POS-020` = conciliación con proveedor POS externo descartada, mantener conciliación **interna** de caja/venta/pago; `INT-POS-021..024` = pilotos de convivencia, transición y credenciales de proveedor descartados. Mantener evidencia histórica y datos existentes; no reactivar la funcionalidad `/sales-imports`.
+>
+> **Fronteras preservadas:** el catálogo y las unidades siguen en NEXO; recetas y producción en FOGO; la venta, oferta/precios/comandas, pagos y caja en PULSO; fidelidad en PASS; hechos económicos en NUMERA. Las integraciones con canales externos de pedidos y con proveedores de pagos/fiscalidad **no son integraciones de POS externo**. Se permiten incrementos internos de ingeniería/QA sin despliegue comercial hasta E2E integral.
+
 ### ✅ INT-POS-001 — Auditar documentación, endpoints, webhooks y límites del POS vigente
 
 **Estado:** APROBADA  
